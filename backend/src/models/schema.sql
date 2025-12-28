@@ -1,118 +1,107 @@
--- TODO: Cleanup all tables, create User table, create Sessions table linked to User table IF using sessions and NOT JWTs + refresh tokens
+-- TODO: Cleanup all tables
+-- create Sessions table linked to User table IF using sessions and NOT JWTs + refresh token
+-- serial CAN'T BE USED IN FOREIGN KEYS BECAUSE IT'S NOT A REAL TYPE
 
+DROP TYPE IF EXISTS SavedStatus;
 CREATE TYPE SavedStatus AS ENUM ('unread', 'reading', 'read');
 
-CREATE TABLE User (
-    uid uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    email text NOT NULL,
+CREATE TABLE IF NOT EXISTS Users (
+    uid uuid DEFAULT gen_random_uuid(),
+    email text NOT NULL UNIQUE,
     password VARCHAR (64) NOT NULL, -- assuming SHA-256 hash, change length to length of the output of the encryption algo
-    name text NOT NULL,
+    username text NOT NULL,
+    profile_image text NOT NULL,
     joined_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT User_pkey PRIMARY KEY (uid)
+    PRIMARY KEY (uid)
 );
 
-CREATE TABLE UserProfiles (
-    uid uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    image text NOT NULL,
-    CONSTRAINT UserProfiles_pkey PRIMARY KEY (uid, image),
-    CONSTRAINT UserProfiles_uid_fkey FOREIGN KEY (uid) REFERENCES Users(id)
-);
-
-CREATE TABLE Book (
-    bid uuid NOT NULL DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS Book (
+    bid uuid DEFAULT gen_random_uuid(),
     title text NOT NULL,
     blurb text,
     image text,
     written_by uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     published_at timestamp with time zone,
-    CONSTRAINT Book_pkey PRIMARY KEY (bid),
-    CONSTRAINT Book_written_by_fkey FOREIGN KEY (written_by) REFERENCES Users(id)
+    PRIMARY KEY (bid),
+    FOREIGN KEY (written_by) REFERENCES Users(uid) ON DELETE CASCADE
 );
 
-CREATE TABLE BookSaves (
-    uid uuid NOT NULL,
-    bid uuid NOT NULL,
+
+CREATE TABLE IF NOT EXISTS Tag (
+    tag_name text,
+    PRIMARY KEY (tag_name)
+);
+
+CREATE TABLE IF NOT EXISTS BookTags (
+    bid uuid,
+    tag_name text,
+    PRIMARY KEY (bid, tag_name),
+    FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE,
+    FOREIGN KEY (tag_name) REFERENCES Tag(tag_name) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS BookSaves (
+    uid uuid,
+    bid uuid,
     saved_at timestamp with time zone DEFAULT now(),
-    status USER-DEFINED DEFAULT 'unread'::"SavedStatus",
-    CONSTRAINT BookSaves_pkey PRIMARY KEY (uid, bid),
-    CONSTRAINT BookSaves_uid_fkey FOREIGN KEY (uid) REFERENCES Users(id),
-    CONSTRAINT BookSaves_bid_fkey FOREIGN KEY (bid) REFERENCES Book(bid)
+    status SavedStatus DEFAULT 'unread'::SavedStatus,
+    PRIMARY KEY (uid, bid),
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE,
+    FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
 
-CREATE TABLE Tag (
-    tag_name text NOT NULL,
-    CONSTRAINT Tag_pkey PRIMARY KEY (tag_name)
-);
-
-CREATE TABLE BookTags (
-    bid uuid NOT NULL,
-    tag_name text NOT NULL DEFAULT ''::text,
-    CONSTRAINT BookTags_pkey PRIMARY KEY (bid, tag_name),
-    CONSTRAINT BookTags_bid_fkey FOREIGN KEY (bid) REFERENCES Book(bid),
-    CONSTRAINT BookTags_tag_name_fkey FOREIGN KEY (tag_name) REFERENCES Tag(tag_name)
-);
-
-CREATE TABLE Chapter (
-    bid uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    number integer NOT NULL DEFAULT nextval('"Chapter_number_seq"'::regclass),
+CREATE TABLE IF NOT EXISTS Chapter (
+    bid uuid,
+    number integer,
     title text NOT NULL,
     content text,
     created_at timestamp with time zone DEFAULT now(),
     published_at timestamp with time zone,
-    likes bigint DEFAULT '0'::bigint,
-    reads bigint DEFAULT '0'::bigint,
-    CONSTRAINT Chapter_pkey PRIMARY KEY (bid, number),
-    CONSTRAINT Chapter_bid_fkey FOREIGN KEY (bid) REFERENCES Book(bid)
+    likes bigint DEFAULT 0,
+    reads bigint DEFAULT 0,
+    PRIMARY KEY (bid, number),
+    FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
 
-CREATE TABLE ChapterLikes (
-    uid uuid NOT NULL,
-    bid uuid NOT NULL,
-    number integer NOT NULL DEFAULT nextval('"ChapterLikes_number_seq"'::regclass),
-    CONSTRAINT ChapterLikes_pkey PRIMARY KEY (uid, bid, number),
-    CONSTRAINT ChapterLikes_uid_fkey FOREIGN KEY (uid) REFERENCES Users(id),
-    CONSTRAINT fk_chapter_bid_number FOREIGN KEY (bid) REFERENCES Chapter(bid),
-    CONSTRAINT fk_chapter_bid_number FOREIGN KEY (bid) REFERENCES Chapter(number),
-    CONSTRAINT fk_chapter_bid_number FOREIGN KEY (number) REFERENCES Chapter(bid),
-    CONSTRAINT fk_chapter_bid_number FOREIGN KEY (number) REFERENCES Chapter(number)
+CREATE TABLE IF NOT EXISTS ChapterLikes (
+    uid uuid,
+    bid uuid,
+    number integer,
+    PRIMARY KEY (uid, bid, number),
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE,
+    FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE
 );
 
-CREATE TABLE ChapterReads (
-    uid uuid NOT NULL,
-    bid uuid NOT NULL,
-    number integer NOT NULL DEFAULT nextval('"ChapterReads_number_seq"'::regclass),
+CREATE TABLE IF NOT EXISTS ChapterReads (
+    uid uuid,
+    bid uuid,
+    number integer,
     read_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT ChapterReads_pkey PRIMARY KEY (uid, bid, number),
-    CONSTRAINT ChapterReads_uid_fkey FOREIGN KEY (uid) REFERENCES Users(id),
-    CONSTRAINT ChapterReads_bid_number_fkey FOREIGN KEY (bid) REFERENCES Chapter(bid),
-    CONSTRAINT ChapterReads_bid_number_fkey FOREIGN KEY (bid) REFERENCES Chapter(number),
-    CONSTRAINT ChapterReads_bid_number_fkey FOREIGN KEY (number) REFERENCES Chapter(bid),
-    CONSTRAINT ChapterReads_bid_number_fkey FOREIGN KEY (number) REFERENCES Chapter(number)
+    PRIMARY KEY (uid, bid, number),
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE,
+    FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE
 );
 
-CREATE TABLE Comment (
-    cid uuid NOT NULL DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS Comment (
+    cid uuid DEFAULT gen_random_uuid(),
     message text,
-    bid uuid NOT NULL DEFAULT gen_random_uuid(),
+    bid uuid NOT NULL,
     posted_at timestamp with time zone DEFAULT now(),
     posted_by uuid NOT NULL,
-    number integer NOT NULL DEFAULT nextval('"Comment_number_seq"'::regclass),
+    number integer,
     replies_to uuid,
-    likes bigint DEFAULT '0'::bigint,
-    CONSTRAINT Comment_pkey PRIMARY KEY (cid),
-    CONSTRAINT Comment_posted_by_fkey FOREIGN KEY (posted_by) REFERENCES Users(id),
-    CONSTRAINT Comment_bid_number_fkey FOREIGN KEY (bid) REFERENCES Chapter(bid),
-    CONSTRAINT Comment_bid_number_fkey FOREIGN KEY (bid) REFERENCES Chapter(number),
-    CONSTRAINT Comment_bid_number_fkey FOREIGN KEY (number) REFERENCES Chapter(bid),
-    CONSTRAINT Comment_bid_number_fkey FOREIGN KEY (number) REFERENCES Chapter(number),
-    CONSTRAINT Comment_replies_to_fkey FOREIGN KEY (replies_to) REFERENCES Comment(cid)
+    likes bigint DEFAULT 0,
+    PRIMARY KEY (cid),
+    FOREIGN KEY (posted_by) REFERENCES Users(uid) ON DELETE CASCADE,
+    FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE,
+    FOREIGN KEY (replies_to) REFERENCES Comment(cid) ON DELETE CASCADE
 );
 
-CREATE TABLE CommentLikes (
+CREATE TABLE IF NOT EXISTS CommentLikes (
     cid uuid NOT NULL,
     uid uuid NOT NULL,
-    CONSTRAINT CommentLikes_pkey PRIMARY KEY (cid, uid),
-    CONSTRAINT CommentLikes_cid_fkey FOREIGN KEY (cid) REFERENCES Comment(cid),
-    CONSTRAINT CommentLikes_uid_fkey FOREIGN KEY (uid) REFERENCES Users(id)
+    PRIMARY KEY (cid, uid),
+    FOREIGN KEY (cid) REFERENCES Comment(cid) ON DELETE CASCADE,
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
 );
