@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
+import supabase from './src/models/db.js'
 
 // Load environment variables
 dotenv.config();
@@ -18,14 +19,26 @@ const WHITE = '\x1b[37m';
 // TODO: Allow all origins for now
 app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json())
 
 // app.get('/', (req, res) => {
 //     res.json({message: 'Hello World!'});
 // });
 
-
 // app.get('/:name', (req, res) => {
 //     res.json({message: `Hello ${req.params.name}!`});
+// });
+
+// app.post('/signup', async (req, res) => {
+//     const { email, password } = req.body
+
+//     const { data, error } = await supabase.auth.signUp({email, password});
+//     if (error) {
+//         res.status(error.status);
+//         res.json({ code: error.code });
+//     } else {
+//         res.json({ code: 'success!' });
+//     }
 // });
 
 app.listen(PORT, IP, () => {
