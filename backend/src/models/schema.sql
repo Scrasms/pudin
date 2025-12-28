@@ -7,7 +7,8 @@ CREATE TABLE User (
     email text NOT NULL,
     password VARCHAR (64) NOT NULL, -- assuming SHA-256 hash, change length to length of the output of the encryption algo
     name text NOT NULL,
-    joined_at timestamp with time zone DEFAULT now()
+    joined_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT User_pkey PRIMARY KEY (uid)
 );
 
 CREATE TABLE UserProfiles (
