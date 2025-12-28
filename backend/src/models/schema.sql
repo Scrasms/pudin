@@ -1,4 +1,4 @@
--- TODO: Cleanup all tables
+-- TODO: Cleanup all tables further
 -- create Sessions table linked to User table IF using sessions and NOT JWTs + refresh token
 -- serial CAN'T BE USED IN FOREIGN KEYS BECAUSE IT'S NOT A REAL TYPE
 
@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS Book (
     PRIMARY KEY (bid),
     FOREIGN KEY (written_by) REFERENCES Users(uid) ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS Tag (
     tag_name text,

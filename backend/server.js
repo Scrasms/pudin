@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
-import supabase from './src/models/db.js'
+import userRouter from './src/routes/userRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -21,26 +21,10 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json())
 
-// app.get('/', (req, res) => {
-//     res.json({message: 'Hello World!'});
-// });
+// Routers
+app.use('/user', userRouter);
 
-// app.get('/:name', (req, res) => {
-//     res.json({message: `Hello ${req.params.name}!`});
-// });
-
-// app.post('/signup', async (req, res) => {
-//     const { email, password } = req.body
-
-//     const { data, error } = await supabase.auth.signUp({email, password});
-//     if (error) {
-//         res.status(error.status);
-//         res.json({ code: error.code });
-//     } else {
-//         res.json({ code: 'success!' });
-//     }
-// });
-
-app.listen(PORT, IP, () => {
+app.listen(PORT, IP, (error) => {
+    if (error) throw error;
     console.log(GREEN + `Server started at http://${IP}:${PORT}` + WHITE);
 });
