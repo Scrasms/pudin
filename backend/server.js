@@ -1,8 +1,8 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import morgan from 'morgan';
-import userRouter from './src/routes/userRoutes.js';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
+import userRouter from "./src/routes/userRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -10,19 +10,19 @@ dotenv.config();
 const app = express();
 
 // Constants
-const IP = process.env.IP || 'localhost'
+const IP = process.env.IP || "localhost";
 const PORT = process.env.PORT || 3000;
-const GREEN = '\x1b[32m';
-const WHITE = '\x1b[37m';
+const GREEN = "\x1b[32m";
+const WHITE = "\x1b[37m";
 
 // Middleware
 // TODO: Allow all origins for now
 app.use(cors());
-app.use(morgan('dev'));
-app.use(express.json())
+app.use(morgan("dev"));
+app.use(express.json());
 
 // Routers
-app.use('/user', userRouter);
+app.use("/user", userRouter);
 
 app.listen(PORT, IP, (error) => {
     if (error) throw error;

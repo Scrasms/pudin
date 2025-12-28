@@ -1,9 +1,11 @@
-import postgres from 'postgres'
-import dotenv from 'dotenv';
+import { Pool } from "pg";
+import dotenv from "dotenv";
 dotenv.config();
 
-// TODO: Add DATABASE_URL to .env (probs localhost and random port for now)
-const connectionString = process.env.DATABASE_URL
-const sql = postgres(connectionString)
+const pool = new Pool({
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DB
+});
 
-export default sql
+export default pool;
