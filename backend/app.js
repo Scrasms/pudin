@@ -16,13 +16,15 @@ const GREEN = "\x1b[32m";
 const WHITE = "\x1b[37m";
 
 // Middleware
-// TODO: Allow all origins for now
+// TODO: Allow all origins for now, restrict to frontend later
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
 // Routers
 app.use("/user", userRouter);
+
+// TODO: Error handler
 
 app.listen(PORT, IP, (error) => {
     if (error) throw error;

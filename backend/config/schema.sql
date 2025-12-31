@@ -8,9 +8,9 @@ CREATE TYPE SavedStatus AS ENUM ('unread', 'reading', 'read');
 CREATE TABLE IF NOT EXISTS Users (
     uid uuid DEFAULT gen_random_uuid(),
     email text NOT NULL UNIQUE,
-    password VARCHAR (64) NOT NULL, -- assuming SHA-256 hash, change length to length of the output of the encryption algo
+    password text NOT NULL,
     username text NOT NULL,
-    profile_image text NOT NULL,
+    profile_image text, -- set DEFAULT to a link to the default image
     joined_at timestamp with time zone DEFAULT now(),
     PRIMARY KEY (uid)
 );
