@@ -4,8 +4,6 @@ import userController from "../controllers/userController.js";
 
 const userRouter = Router();
 
-// TODO: protect routes by writing custom auth middleware and checking req.isAuthenticated()
-
 userRouter.post("/signup", userController.signup);
 
 userRouter.post("/login", passport.authenticate("local"), userController.login);

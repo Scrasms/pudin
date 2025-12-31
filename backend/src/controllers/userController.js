@@ -1,38 +1,42 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/userModel.js";
 
+// TODO: Update all to next(err) when error handler is written
+
 const test = async (req, res) => {
-    res.json({ message: "Hello World!" });
+    return res.json({ success: true, message: "Hello World!" });
 };
 
 const testName = async (req, res) => {
-    res.json({ message: `Hello ${req.params.name}!` });
+    return res.json({ success: true, message: `Hello ${req.params.name}!` });
 };
 
 const signup = async (req, res, next) => {
     try {
         const { email, password, username } = req.body;
 
+        // TODO: input validation
+
         // Bcrypt automatically generates the salt
         const hashedPassword = await bcrypt.hash(password, 10);
         await userModel.createUser(email, hashedPassword, username);
 
-        res.json({ success: true });
+        return res.json({ success: true });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
 const login = async (req, res) => {
     const user = req.user;
-    res.json({
+    return res.json({
         success: true,
         user: {
             uid: user.uid,
             email: user.email,
             username: user.username,
-            image: user.profile_image
-        }
+            image: user.profile_image,
+        },
     });
 };
 
@@ -41,7 +45,7 @@ const logout = async (req, res, next) => {
         if (err) {
             return next(err);
         }
-        res.json({ success: true });
+        return res.json({ success: true });
     });
 };
 
