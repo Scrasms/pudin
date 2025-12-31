@@ -2,7 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
+import sessionMiddleware from "./config/session.js";
 import userRouter from "./src/routes/userRoutes.js";
+import passport from "passport";
+import "./config/passport.js";
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +23,11 @@ const WHITE = "\x1b[37m";
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Auth middleware
+app.use(sessionMiddleware);
+app.use(passport.session());
 
 // Routers
 app.use("/user", userRouter);

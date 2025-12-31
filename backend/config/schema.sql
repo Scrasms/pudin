@@ -1,15 +1,18 @@
 -- TODO: Cleanup all tables further
 -- create Sessions table linked to User table IF using sessions and NOT JWTs + refresh token
 -- serial CAN'T BE USED IN FOREIGN KEYS BECAUSE IT'S NOT A REAL TYPE
+-- add indexes to tables for faster queries
 
+-- Types
 DROP TYPE IF EXISTS SavedStatus;
 CREATE TYPE SavedStatus AS ENUM ('unread', 'reading', 'read');
 
+-- Tables
 CREATE TABLE IF NOT EXISTS Users (
     uid uuid DEFAULT gen_random_uuid(),
     email text NOT NULL UNIQUE,
     password text NOT NULL,
-    username text NOT NULL,
+    username text NOT NULL UNIQUE,
     profile_image text, -- set DEFAULT to a link to the default image
     joined_at timestamp with time zone DEFAULT now(),
     PRIMARY KEY (uid)
@@ -104,3 +107,7 @@ CREATE TABLE IF NOT EXISTS CommentLikes (
     FOREIGN KEY (cid) REFERENCES Comment(cid) ON DELETE CASCADE,
     FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
 );
+
+-- Indexes
+
+
