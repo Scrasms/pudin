@@ -5,6 +5,7 @@ import morgan from "morgan";
 import sessionMiddleware from "./config/session.js";
 import userRouter from "./src/routes/userRoutes.js";
 import passport from "passport";
+import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
 
 // Load environment variables
@@ -24,15 +25,18 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 // Auth middleware
 app.use(sessionMiddleware);
+app.use(passport.initialize());
 app.use(passport.session());
 
 // Routers
 app.use("/user", userRouter);
 
-// TODO: Error handler
+// Error handler
+app.use(errorHandler);
 
 app.listen(PORT, IP, (error) => {
     if (error) throw error;

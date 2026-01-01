@@ -1,33 +1,28 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/userModel.js";
+import DBError from "../errors/DBError.js";
 
-// TODO: Update all to next(err) when error handler is written
-
-const test = async (req, res) => {
-    return res.json({ success: true, message: "Hello World!" });
+const test = (req, res) => {
+    return res.json({ success: true, message: `Hello ${req.user.username}!` });
 };
 
-const testName = async (req, res) => {
-    return res.json({ success: true, message: `Hello ${req.params.name}!` });
-};
+const signup = async (req, res) => {
+    const { email, password, username } = req.body;
 
-const signup = async (req, res, next) => {
+    // TODO: input validation
+
+    // Bcrypt automatically generates the salt
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     try {
-        const { email, password, username } = req.body;
-
-        // TODO: input validation
-
-        // Bcrypt automatically generates the salt
-        const hashedPassword = await bcrypt.hash(password, 10);
         await userModel.createUser(email, hashedPassword, username);
-
         return res.json({ success: true });
     } catch (err) {
-        return next(err);
+        throw new DBError(err);
     }
 };
 
-const login = async (req, res) => {
+const login = (req, res) => {
     const user = req.user;
     return res.json({
         success: true,
@@ -40,13 +35,11 @@ const login = async (req, res) => {
     });
 };
 
-const logout = async (req, res, next) => {
+const logout = (req, res) => {
     req.logout((err) => {
-        if (err) {
-            return next(err);
-        }
+        if (err) throw err;
         return res.json({ success: true });
     });
 };
 
-export default { test, testName, signup, login, logout };
+export default { test, signup, login, logout };
