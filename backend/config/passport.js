@@ -1,19 +1,14 @@
 import passport from "passport";
 import passportLocal from "passport-local";
-import pool from "./db.js";
 import bcrypt from "bcryptjs";
+import { getUserByUsername, getUserById } from "../src/models/userModel.js";
 
 const LocalStrategy = passportLocal.Strategy;
 
 // Used by password.authenticate()
 const verify = async (username, password, done) => {
     try {
-        const { rows } = await pool.query(
-            "SELECT * FROM users WHERE username = $1",
-            [username]
-        );
-        const user = rows[0];
-
+        const user = await getUserByUsername(username);
         if (!user) {
             return done(null, false, { message: "Username not found" });
         }
@@ -34,7 +29,7 @@ passport.use(new LocalStrategy(verify));
 // When session is created, takes user object from successful login
 // and stores its id in session data
 passport.serializeUser((user, done) => {
-    done(null, user.uid);
+    return done(null, user.uid);
 });
 
 // When a matching session for a request is found (i.e. user is logged in),
@@ -42,14 +37,15 @@ passport.serializeUser((user, done) => {
 // So if a user is logged in, the request will have a user field.
 passport.deserializeUser(async (id, done) => {
     try {
-        const { rows } = await pool.query(
-            "SELECT * FROM users WHERE uid = $1",
-            [id]
-        );
-        const user = rows[0];
+        const user = await getUserById(id);
+        if (!user) {
+            return done(null, false, {
+                message: "User with given uid not found",
+            });
+        }
 
-        done(null, user);
+        return done(null, user);
     } catch (err) {
-        done(err);
+        return done(err);
     }
 });
