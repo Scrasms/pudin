@@ -59,7 +59,7 @@ const login = (req, res, next) => {
 
 const logout = (req, res) => {
     req.logout((err) => {
-        if (err) throw err;
+        if (err) return next(err);
         return res.json({ success: true });
     });
 };
