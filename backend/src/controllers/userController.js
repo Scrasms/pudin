@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/userModel.js";
 import DBError from "../errors/DBError.js";
+import AuthError from "../errors/AuthError.js";
 
 const test = (req, res) => {
     return res.json({ success: true, message: `Hello ${req.user.username}!` });
 };
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
     const { email, password, username } = req.body;
 
     // TODO: input validation
@@ -15,8 +16,19 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-        await userModel.createUser(email, hashedPassword, username);
-        return res.json({ success: true });
+        const user = await userModel.createUser(
+            email,
+            hashedPassword,
+            username
+        );
+
+        // Login after signup
+        req.login(user, (err) => {
+            if (err) throw new AuthError();
+
+            return res.json({ success: true });
+        });
+
     } catch (err) {
         throw new DBError(err);
     }
