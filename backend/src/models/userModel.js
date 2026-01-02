@@ -6,13 +6,12 @@ import pool from "../../config/db.js";
  * @returns the user if found or undefined otherwise
  */
 const getUserById = async (uid) => {
-    const { rows } = await pool.query(
-        "SELECT * FROM users WHERE uid = $1",
-        [uid]
-    );
+    const { rows } = await pool.query("SELECT * FROM users WHERE uid = $1", [
+        uid,
+    ]);
 
     return rows[0];
-}
+};
 
 /**
  * Finds and returns user with matching username
@@ -25,7 +24,7 @@ const getUserByUsername = async (username) => {
         [username]
     );
     return rows[0];
-}
+};
 
 /**
  * Adds user to User table
@@ -43,4 +42,12 @@ const createUser = async (email, password, username) => {
     return rows[0].uid;
 };
 
-export { createUser, getUserById, getUserByUsername };
+/**
+ * Deletes user from User table
+ * @param {string} username - user's unqiue username
+ */
+const deleteUser = async (username) => {
+    await pool.query("DELETE FROM users WHERE username = $1", [username]);
+};
+
+export { createUser, getUserById, getUserByUsername, deleteUser };

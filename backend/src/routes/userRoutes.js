@@ -1,15 +1,17 @@
 import Router from "express";
 import isAuth from "../middleware/isAuth.js";
-import { signup, login, logout, test } from "../controllers/userController.js";
+import { userTest, userSignup, userLogin, userLogout, userDelete } from "../controllers/userController.js";
 
 const userRouter = Router();
 
-userRouter.post("/signup", signup);
+userRouter.post("/signup", userSignup);
 
-userRouter.post("/login", login);
+userRouter.post("/login", userLogin);
 
-userRouter.post("/logout", isAuth, logout);
+userRouter.post("/logout", isAuth, userLogout);
 
-userRouter.get("/", isAuth, test);
+userRouter.post("/delete", isAuth, userDelete);
+
+userRouter.get("/", isAuth, userTest);
 
 export default userRouter;
