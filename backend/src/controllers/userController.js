@@ -18,10 +18,10 @@ const userSignup = async (req, res, next) => {
     const { email, password, username } = req.body;
 
     // TODO: input validation (especially sending verification email)
-    // const err = validatePassword(password);
-    // if (err) {
-    //     throw new InputError(err);
-    // }
+    const err = validatePassword(password);
+    if (err) {
+        throw new InputError(err);
+    }
 
     // Bcrypt automatically generates the salt
     const hashedPassword = await bcrypt.hash(password, 10);
