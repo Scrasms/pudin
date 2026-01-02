@@ -68,9 +68,13 @@ const userLogin = (req, res, next) => {
 };
 
 const userLogout = (req, res) => {
-    req.logout((err) => {
-        if (err) return next(err);
-        return res.json({ success: true });
+    // Remove cookies and session (from DB) on logout
+    req.logout(() => {
+        req.session.destroy((err) => {
+            if (err) return next(err);
+            res.clearCookie("connect.sid");
+            return res.json({ success: true });
+        });
     });
 };
 
