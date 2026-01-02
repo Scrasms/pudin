@@ -1,8 +1,10 @@
 import bcrypt from "bcryptjs";
-import { createUser, deleteUser } from "../models/userModel.js";
-import DBError from "../errors/DBError.js";
 import passport from "passport";
+import { createUser, deleteUser } from "../models/userModel.js";
+import { validatePassword } from "../utils/password.js";
 import AuthError from "../errors/AuthError.js";
+import DBError from "../errors/DBError.js";
+import InputError from "../errors/InputError.js";
 
 const userTest = (req, res) => {
     return res.json({ success: true, message: `Hello ${req.user.username}!` });
@@ -12,6 +14,10 @@ const userSignup = async (req, res, next) => {
     const { email, password, username } = req.body;
 
     // TODO: input validation (especially sending verification email)
+    const err = validatePassword(password);
+    if (err) {
+        throw new InputError(err);
+    }
 
     // Bcrypt automatically generates the salt
     const hashedPassword = await bcrypt.hash(password, 10);
