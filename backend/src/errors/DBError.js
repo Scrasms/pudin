@@ -1,4 +1,8 @@
-import * as dbErrors from "../constants/dbErrors.js";
+import {
+    FOREIGN_KEY_VIOLATION,
+    NOT_NULL_VIOLATION,
+    UNIQUE_VIOLATION,
+} from "../constants/dbErrors.js";
 
 // Map postgres errors to HTTP
 class DBError extends Error {
@@ -8,23 +12,35 @@ class DBError extends Error {
 
         const errCode = Number(err.code);
 
-        if (errCode === dbErrors.UNIQUE_VIOLATION) {
-            this.status = 409;
-            if (
-                err.detail.includes("username") ||
-                err.detail.includes("email")
-            ) {
-                this.message =
-                    "A user with this username or email already exists";
-            } else {
-                let key = err.detail.split(" ")[1];
-                key = key.slice(1, key.length - 1);
-
-                this.message = `A ${err.detail.table} with this ${key} already exists`;
-            }
-        }
-
         // TODO: extend to more errors
+        switch (errCode) {
+            case UNIQUE_VIOLATION:
+                this.status = 409;
+                if (
+                    err.detail.includes("username") ||
+                    err.detail.includes("email")
+                ) {
+                    this.message =
+                        "A user with this username or email already exists";
+                } else {
+                    const key = this.#getKey(err.detail);
+                    this.message = `A ${err.table} with this ${key} already exists`;
+                }
+                break;
+            case NOT_NULL_VIOLATION:
+                this.status = 400;
+                break;
+            case FOREIGN_KEY_VIOLATION:
+                this.status = 400;
+                break;
+        }
+    }
+
+    // Extract key from error detail message
+    #getKey(detail) {
+        let key = detail.split(" ")[1].split("=")[0];
+        key = key.slice(1, key.length - 1);
+        return key;
     }
 }
 

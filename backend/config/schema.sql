@@ -1,6 +1,4 @@
 -- TODO: Cleanup all tables further
--- create Sessions table linked to User table IF using sessions and NOT JWTs + refresh token
--- serial CAN'T BE USED IN FOREIGN KEYS BECAUSE IT'S NOT A REAL TYPE
 -- add indexes to tables for faster queries
 
 -- Types
