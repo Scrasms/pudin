@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import passport from "passport";
-import { createUser, deleteUser } from "../models/userModel.js";
+import {
+    createUser,
+    deleteUser,
+    deleteUserSessions,
+} from "../models/userModel.js";
 import { validatePassword } from "../utils/password.js";
 import AuthError from "../errors/AuthError.js";
 import DBError from "../errors/DBError.js";
@@ -14,10 +18,10 @@ const userSignup = async (req, res, next) => {
     const { email, password, username } = req.body;
 
     // TODO: input validation (especially sending verification email)
-    const err = validatePassword(password);
-    if (err) {
-        throw new InputError(err);
-    }
+    // const err = validatePassword(password);
+    // if (err) {
+    //     throw new InputError(err);
+    // }
 
     // Bcrypt automatically generates the salt
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -73,9 +77,11 @@ const userLogout = (req, res) => {
 // TODO: email verification before delete
 const userDelete = async (req, res) => {
     const username = req.user.username;
+    const uid = req.user.uid;
 
     try {
         await deleteUser(username);
+        await deleteUserSessions(uid);
         return res.json({ success: true });
     } catch (err) {
         throw new DBError(err);

@@ -50,4 +50,20 @@ const deleteUser = async (username) => {
     await pool.query("DELETE FROM users WHERE username = $1", [username]);
 };
 
-export { createUser, getUserById, getUserByUsername, deleteUser };
+/**
+ * Deletes all sessions belonging to provided user
+ * @param {uuid} uid - uid of user
+ */
+const deleteUserSessions = async (uid) => {
+    await pool.query("DELETE FROM session WHERE (sess->'passport'->>'user')::uuid = $1", [
+        uid,
+    ]);
+};
+
+export {
+    createUser,
+    getUserById,
+    getUserByUsername,
+    deleteUser,
+    deleteUserSessions,
+};
