@@ -10,7 +10,7 @@ userRouter.post("/login", userLogin);
 
 userRouter.post("/logout", isAuth, userLogout);
 
-userRouter.post("/delete", isAuth, userDelete);
+userRouter.delete("/delete", isAuth, userDelete);
 
 userRouter.get("/", isAuth, userTest);
 
