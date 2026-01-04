@@ -1,3 +1,4 @@
+// Errors to do with authentication
 class AuthError extends Error {
     constructor(message) {
         super(message);

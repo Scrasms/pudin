@@ -75,6 +75,43 @@ const createUserResetCodes = async (uid, codes) => {
     }
 };
 
+/**
+ * Finds and returns the user's hashed password reset codes
+ * @param {uuid} uid - the user's uid
+ * @returns the user's hashed codes
+ */
+const getUserResetCodes = async (uid) => {
+    const { rows } = await pool.query(
+        "SELECT code FROM UserResetCodes WHERE uid = $1",
+        [uid]
+    );
+    return rows;
+};
+
+/**
+ * Deletes the user's reset code from the DB
+ * @param {uuid} uid - the user's uid
+ * @param {string} code - the (hashed) reset code to be deleted
+ */
+const deleteUserResetCode = async (uid, code) => {
+    await pool.query(
+        "DELETE FROM UserResetCodes WHERE uid = $1 AND code = $2",
+        [uid, code]
+    );
+};
+
+/**
+ * Updates the user's password
+ * @param {uuid} uid - the user's uid
+ * @param {string} newPassword - the user's new password
+ */
+const updateUserPassword = async (uid, newPassword) => {
+    await pool.query("UPDATE Users SET password = $1 WHERE uid = $2", [
+        newPassword,
+        uid,
+    ]);
+};
+
 export {
     createUser,
     getUserById,
@@ -82,4 +119,7 @@ export {
     deleteUser,
     deleteUserSessions,
     createUserResetCodes,
+    getUserResetCodes,
+    deleteUserResetCode,
+    updateUserPassword,
 };

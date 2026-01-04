@@ -33,4 +33,19 @@ const hashResetCodes = async (codes) => {
     return hashedCodes;
 };
 
-export { generateResetCodes, hashResetCodes};
+/**
+ * Finds the hashed code on the DB that matches with the user's provided code
+ * @param {string[]} hashedCodes - the codes stored on the DB
+ * @param {string} userCode - the user's provided code
+ * @returns the matching hashed code if found or undefined otherwise
+ */
+const getMatchingResetCode = async (hashedCodes, userCode) => {
+    for (const obj of hashedCodes) {
+        const match = await bcrypt.compare(userCode, obj.code);
+        if (match) {
+            return obj.code;
+        }
+    }
+};
+
+export { generateResetCodes, hashResetCodes, getMatchingResetCode };

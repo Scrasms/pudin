@@ -1,3 +1,4 @@
+// Errors to do with incorrectly formatted input
 class InputError extends Error {
     constructor(message) {
         super(message);
