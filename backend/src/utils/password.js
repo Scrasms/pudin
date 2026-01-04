@@ -1,6 +1,6 @@
 /**
  * Validates the given password
- * @param {*} password - password to be validated
+ * @param {string} password - password to be validated
  * @returns error string if invalid and undefined if valid
  */
 const validatePassword = (password) => {

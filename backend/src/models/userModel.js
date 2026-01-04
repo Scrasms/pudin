@@ -6,7 +6,7 @@ import pool from "../../config/db.js";
  * @returns the user if found or undefined otherwise
  */
 const getUserById = async (uid) => {
-    const { rows } = await pool.query("SELECT * FROM users WHERE uid = $1", [
+    const { rows } = await pool.query("SELECT * FROM Users WHERE uid = $1", [
         uid,
     ]);
 
@@ -20,7 +20,7 @@ const getUserById = async (uid) => {
  */
 const getUserByUsername = async (username) => {
     const { rows } = await pool.query(
-        "SELECT * FROM users WHERE username = $1",
+        "SELECT * FROM Users WHERE username = $1",
         [username]
     );
     return rows[0];
@@ -35,7 +35,7 @@ const getUserByUsername = async (username) => {
  */
 const createUser = async (email, password, username) => {
     const { rows } = await pool.query(
-        "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING uid",
+        "INSERT INTO Users (email, password, username) VALUES ($1, $2, $3) RETURNING uid",
         [email, password, username]
     );
 
@@ -47,7 +47,7 @@ const createUser = async (email, password, username) => {
  * @param {string} username - user's unqiue username
  */
 const deleteUser = async (username) => {
-    await pool.query("DELETE FROM users WHERE username = $1", [username]);
+    await pool.query("DELETE FROM Users WHERE username = $1", [username]);
 };
 
 /**
@@ -55,9 +55,24 @@ const deleteUser = async (username) => {
  * @param {uuid} uid - uid of user
  */
 const deleteUserSessions = async (uid) => {
-    await pool.query("DELETE FROM session WHERE (sess->'passport'->>'user')::uuid = $1", [
-        uid,
-    ]);
+    await pool.query(
+        "DELETE FROM Session WHERE (sess->'passport'->>'user')::uuid = $1",
+        [uid]
+    );
+};
+
+/**
+ * Adds the user's password reset codes to the DB
+ * @param {uuid} uid - the user
+ * @param {string[]} codes - the hashed codes
+ */
+const createUserResetCodes = async (uid, codes) => {
+    for (const code of codes) {
+        await pool.query(
+            "INSERT INTO UserResetCodes (uid, code) VALUES ($1, $2)",
+            [uid, code]
+        );
+    }
 };
 
 export {
@@ -66,4 +81,5 @@ export {
     getUserByUsername,
     deleteUser,
     deleteUserSessions,
+    createUserResetCodes,
 };

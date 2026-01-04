@@ -3,7 +3,10 @@ const errorHandler = (err, req, res, next) => {
 
     res.status(err.status || 500).json({
         success: false,
-        message: err.message,
+        error: {
+            code: err.name,
+            message: err.message,
+        }
     });
 };
 

@@ -4,20 +4,27 @@ import {
     createUser,
     deleteUser,
     deleteUserSessions,
+    createUserResetCodes,
 } from "../models/userModel.js";
 import { validatePassword } from "../utils/password.js";
+import { generateResetCodes, hashResetCodes } from "../utils/reset.js";
 import AuthError from "../errors/AuthError.js";
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 
 const userTest = (req, res) => {
-    return res.json({ success: true, message: `Hello ${req.user.username}!` });
+    return res.json({
+        success: true,
+        data: {
+            message: `Hello ${req.user.username}!`,
+        },
+    });
 };
 
 const userSignup = async (req, res, next) => {
     const { email, password, username } = req.body;
 
-    // TODO: input validation (especially sending verification email)
+    //TODO: input validation (especially sending verification email)
     const err = validatePassword(password);
     if (err) {
         throw new InputError(err);
@@ -35,11 +42,21 @@ const userSignup = async (req, res, next) => {
             password: password,
         };
 
+        // Generate and store hashed password reset codes
+        const codes = generateResetCodes(6);
+        const hashedCodes = await hashResetCodes(codes);
+        await createUserResetCodes(uid, hashedCodes);
+
         // Login after signup
         req.login(user, (err) => {
             if (err) return next(err);
 
-            return res.json({ success: true });
+            return res.json({
+                success: true,
+                data: {
+                    codes: codes,
+                },
+            });
         });
     } catch (err) {
         throw new DBError(err);
@@ -56,11 +73,13 @@ const userLogin = (req, res, next) => {
 
             return res.json({
                 success: true,
-                user: {
-                    uid: user.uid,
-                    email: user.email,
-                    username: user.username,
-                    image: user.profile_image,
+                data: {
+                    user: {
+                        uid: user.uid,
+                        email: user.email,
+                        username: user.username,
+                        image: user.profile_image,
+                    },
                 },
             });
         });

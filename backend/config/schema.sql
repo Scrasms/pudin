@@ -16,6 +16,13 @@ CREATE TABLE IF NOT EXISTS Users (
     PRIMARY KEY (uid)
 );
 
+CREATE TABLE IF NOT EXISTS UserResetCodes(
+    uid uuid,
+    code text,
+    PRIMARY KEY (uid, code),
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS Book (
     bid uuid DEFAULT gen_random_uuid(),
     title text NOT NULL,
