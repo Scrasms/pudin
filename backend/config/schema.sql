@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Users (
     email text NOT NULL UNIQUE,
     password text NOT NULL,
     username text NOT NULL UNIQUE,
-    profile_image text, -- set DEFAULT to a link to the default image
+    profile_image text,
     joined_at timestamp with time zone DEFAULT now(),
     PRIMARY KEY (uid)
 );

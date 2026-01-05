@@ -112,6 +112,18 @@ const updateUserPassword = async (uid, newPassword) => {
     ]);
 };
 
+/**
+ * Updates the user's profile image
+ * @param {uuid} uid - the user's uid
+ * @param {text} profileLink - link to the user's new profile image
+ */
+const updateUserProfile = async (uid, profileLink) => {
+    await pool.query("UPDATE Users SET profile_image = $1 WHERE uid = $2", [
+        profileLink,
+        uid,
+    ]);
+};
+
 export {
     createUser,
     getUserById,
@@ -122,4 +134,5 @@ export {
     getUserResetCodes,
     deleteUserResetCode,
     updateUserPassword,
+    updateUserProfile
 };

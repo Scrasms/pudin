@@ -4,6 +4,7 @@ import AuthError from "../errors/AuthError.js";
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import { validatePassword } from "../utils/password.js";
+import { uploadProfile } from "../utils/profile.js";
 import {
     generateResetCodes,
     hashResetCodes,
@@ -17,6 +18,7 @@ import {
     getUserResetCodes,
     deleteUserResetCode,
     updateUserPassword,
+    updateUserProfile,
 } from "../models/userModel.js";
 
 const userTest = (req, res) => {
@@ -152,6 +154,26 @@ const userPassword = async (req, res) => {
     }
 };
 
+const userProfile = async (req, res) => {
+    const { newProfile } = req.body;
+    const uid = req.user.uid;
+
+    // Upload new image
+    const data = await uploadProfile(uid, newProfile);
+    if (!data.success) {
+        throw new InputError(data.error.message);
+    }
+
+    // Store new image link in DB
+    try {
+        await updateUserProfile(uid, data.data.url);
+    } catch (err) {
+        throw new DBError(err);
+    }
+
+    res.json({ success: true });
+};
+
 export {
     userTest,
     userSignup,
@@ -159,4 +181,5 @@ export {
     userLogout,
     userDelete,
     userPassword,
+    userProfile,
 };
