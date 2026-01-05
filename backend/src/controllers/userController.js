@@ -173,12 +173,18 @@ const userProfile = async (req, res) => {
 
     // Store new image link in DB
     try {
-        await updateUserProfile(uid, data.data.url);
+        const newLink = data.data.url;
+        await updateUserProfile(uid, newLink);
     } catch (err) {
         throw new DBError(err);
     }
 
-    res.json({ success: true });
+    res.json({
+        success: true,
+        data: {
+            image: newLink,
+        },
+    });
 };
 
 const userInfo = async (req, res) => {
