@@ -8,6 +8,7 @@ import {
     userDelete,
     userPassword,
     userProfile,
+    userInfo,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -23,6 +24,8 @@ userRouter.delete("/delete", isAuth, userDelete);
 userRouter.put("/password", isAuth, userPassword);
 
 userRouter.put("/profile", isAuth, userProfile);
+
+userRouter.get("/:username", userInfo);
 
 userRouter.get("/", isAuth, userTest);
 

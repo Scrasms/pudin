@@ -11,6 +11,7 @@ import {
     getMatchingResetCode,
 } from "../utils/reset.js";
 import {
+    getUserByUsername,
     createUser,
     deleteUser,
     deleteUserSessions,
@@ -31,9 +32,12 @@ const userTest = (req, res) => {
 };
 
 const userSignup = async (req, res, next) => {
-    const { email, password, username } = req.body;
+    let { email, password, username } = req.body;
 
     //TODO: input validation (especially sending verification email)
+    username = username.trim();
+    email = email.trim();
+
     const err = validatePassword(password);
     if (err) {
         throw new InputError(err);
@@ -80,15 +84,18 @@ const userLogin = (req, res, next) => {
         req.login(user, (err) => {
             if (err) return next(err);
 
+            const userData = {
+                uid: user.uid,
+                email: user.email,
+                username: user.username,
+                image: user.profile_image,
+                joined_at: user.joined_at,
+            };
+
             return res.json({
                 success: true,
                 data: {
-                    user: {
-                        uid: user.uid,
-                        email: user.email,
-                        username: user.username,
-                        image: user.profile_image,
-                    },
+                    user: userData,
                 },
             });
         });
@@ -174,6 +181,30 @@ const userProfile = async (req, res) => {
     res.json({ success: true });
 };
 
+const userInfo = async (req, res) => {
+    const username = req.params.username.trim();
+
+    const user = await getUserByUsername(username);
+    if (!user) {
+        throw new InputError("Username not found");
+    }
+
+    const userData = {
+        uid: user.uid,
+        email: user.email,
+        username: user.username,
+        image: user.profile_image,
+        joined_at: user.joined_at,
+    };
+
+    res.json({
+        success: true,
+        data: {
+            user: userData,
+        },
+    });
+};
+
 export {
     userTest,
     userSignup,
@@ -182,4 +213,5 @@ export {
     userDelete,
     userPassword,
     userProfile,
+    userInfo,
 };

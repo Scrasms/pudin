@@ -1,5 +1,4 @@
 import pool from "../../config/db.js";
-
 /**
  * Finds and returns user with matching uid
  * @param {uuid} uid - uid of user
@@ -9,7 +8,6 @@ const getUserById = async (uid) => {
     const { rows } = await pool.query("SELECT * FROM Users WHERE uid = $1", [
         uid,
     ]);
-
     return rows[0];
 };
 
@@ -134,5 +132,5 @@ export {
     getUserResetCodes,
     deleteUserResetCode,
     updateUserPassword,
-    updateUserProfile
+    updateUserProfile,
 };
