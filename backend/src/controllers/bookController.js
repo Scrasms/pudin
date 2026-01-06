@@ -38,6 +38,16 @@ const bookCreate = async (req, res) => {
     }
 };
 
+// TODO: get all info about the book AND info about its chapters
+const bookInfo = async (req, res) => {
+
+}
+
+// TODO: get all books (main dashboard)
+const bookInfoAll = async (req, res) => {
+
+}
+
 const bookDelete = async (req, res) => {
     const bid = req.params.bid.trim();
     const uid = req.user.uid;
@@ -53,4 +63,4 @@ const bookDelete = async (req, res) => {
     }
 };
 
-export { bookCreate, bookDelete };
+export { bookCreate, bookInfo, bookInfoAll, bookDelete };
