@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS Book (
     created_at timestamp with time zone DEFAULT now(),
     published_at timestamp with time zone,
     PRIMARY KEY (bid),
-    FOREIGN KEY (written_by) REFERENCES Users(uid) ON DELETE CASCADE
+    FOREIGN KEY (written_by) REFERENCES Users(uid) ON DELETE CASCADE,
+    UNIQUE (title, written_by)
 );
 
 CREATE TABLE IF NOT EXISTS Tag (

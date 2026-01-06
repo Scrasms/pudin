@@ -1,4 +1,5 @@
 import pool from "../../config/db.js";
+
 /**
  * Finds and returns user with matching uid
  * @param {uuid} uid - uid of user
@@ -113,7 +114,7 @@ const updateUserPassword = async (uid, newPassword) => {
 /**
  * Updates the user's profile image
  * @param {uuid} uid - the user's uid
- * @param {text} profileLink - link to the user's new profile image
+ * @param {string} profileLink - link to the user's new profile image
  */
 const updateUserProfile = async (uid, profileLink) => {
     await pool.query("UPDATE Users SET profile_image = $1 WHERE uid = $2", [

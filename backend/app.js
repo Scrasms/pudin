@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import sessionMiddleware from "./config/session.js";
 import userRouter from "./src/routes/userRoutes.js";
+import bookRouter from "./src/routes/bookRoutes.js";
 import passport from "passport";
 import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
@@ -35,6 +36,7 @@ app.use(passport.session());
 
 // Routers
 app.use("/user", userRouter);
+app.use("/book", bookRouter);
 
 // Error handler
 app.use(errorHandler);

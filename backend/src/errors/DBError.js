@@ -22,9 +22,16 @@ class DBError extends Error {
                 ) {
                     this.message =
                         "A user with this username or email already exists";
+                } else if (
+                    err.detail.includes("title") &&
+                    err.detail.includes("written_by")
+                ) {
+                    this.message =
+                        "User already has a book with the same title";
                 } else {
-                    const key = this.#getKey(err.detail);
-                    this.message = `A ${err.table} with this ${key} already exists`;
+                    let keys = this.#getKeys(err.detail);
+                    keys = keys.join(" and ");
+                    this.message = `A ${err.table} with the same ${keys} already exists`;
                 }
                 break;
             case NOT_NULL_VIOLATION:
@@ -36,11 +43,11 @@ class DBError extends Error {
         }
     }
 
-    // Extract key from error detail message
-    #getKey(detail) {
-        let key = detail.split(" ")[1].split("=")[0];
-        key = key.slice(1, key.length - 1);
-        return key;
+    // Extract keys from error detail message
+    #getKeys(detail) {
+        let keys = detail.split("=")[0];
+        keys = keys.slice(5, keys.length - 1);
+        return keys.split(", ");
     }
 }
 

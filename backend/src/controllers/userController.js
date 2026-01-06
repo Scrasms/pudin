@@ -4,7 +4,7 @@ import AuthError from "../errors/AuthError.js";
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import { validatePassword } from "../utils/password.js";
-import { uploadProfile } from "../utils/profile.js";
+import { uploadImage } from "../utils/image.js";
 import {
     generateResetCodes,
     hashResetCodes,
@@ -64,9 +64,12 @@ const userSignup = async (req, res, next) => {
         req.login(user, (err) => {
             if (err) return next(err);
 
-            return res.json({
+            const userData = { uid: user.uid };
+
+            return res.status(201).json({
                 success: true,
                 data: {
+                    user: userData,
                     codes: codes,
                 },
             });
@@ -84,13 +87,7 @@ const userLogin = (req, res, next) => {
         req.login(user, (err) => {
             if (err) return next(err);
 
-            const userData = {
-                uid: user.uid,
-                email: user.email,
-                username: user.username,
-                image: user.profile_image,
-                joined_at: user.joined_at,
-            };
+            const userData = { uid: user.uid };
 
             return res.json({
                 success: true,
@@ -166,7 +163,7 @@ const userProfile = async (req, res) => {
     const uid = req.user.uid;
 
     // Upload new image
-    const data = await uploadProfile(uid, newProfile);
+    const data = await uploadImage(uid, newProfile);
     if (!data.success) {
         throw new InputError(data.error.message);
     }
@@ -175,16 +172,17 @@ const userProfile = async (req, res) => {
     try {
         const newLink = data.data.url;
         await updateUserProfile(uid, newLink);
+
+        const userData = { image: newLink };
+        res.json({
+            success: true,
+            data: {
+                user: userData,
+            },
+        });
     } catch (err) {
         throw new DBError(err);
     }
-
-    res.json({
-        success: true,
-        data: {
-            image: newLink,
-        },
-    });
 };
 
 const userInfo = async (req, res) => {
