@@ -1,6 +1,10 @@
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
-import { createBook, updateBookCover } from "../models/bookModel.js";
+import {
+    createBook,
+    updateBookCover,
+    deleteBook,
+} from "../models/bookModel.js";
 import { uploadImage } from "../utils/image.js";
 
 const bookCreate = async (req, res) => {
@@ -34,4 +38,19 @@ const bookCreate = async (req, res) => {
     }
 };
 
-export { bookCreate };
+const bookDelete = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    try {
+        const success = await deleteBook(bid, uid);
+        if (!success) {
+            throw new InputError("No such book was written by the user");
+        }
+        res.json({ status: true });
+    } catch (err) {
+        throw new DBError(err);
+    }
+};
+
+export { bookCreate, bookDelete };

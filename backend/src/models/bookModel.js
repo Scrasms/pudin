@@ -28,4 +28,19 @@ const updateBookCover = async (bid, coverLink) => {
     ]);
 };
 
-export { createBook, updateBookCover };
+/**
+ * Deletes a book belonging to the user
+ * @param {uuid} bid - the book's bid
+ * @param {uuid} uid - the user's uid
+ */
+const deleteBook = async (bid, uid) => {
+    // WHERE clause is false if user doesn't own the book
+    const { rowCount } = await pool.query(
+        "DELETE FROM Book WHERE bid = $1 AND written_by = $2",
+        [bid, uid]
+    );
+
+    return rowCount > 0;
+};
+
+export { createBook, updateBookCover, deleteBook };
