@@ -2,11 +2,12 @@
 -- add indexes to tables for faster queries
 
 -- Types
-DROP TYPE IF EXISTS SavedStatus;
+DROP TYPE IF EXISTS SavedStatus CASCADE;
 CREATE TYPE SavedStatus AS ENUM ('unread', 'reading', 'read');
 
 -- Tables
-CREATE TABLE IF NOT EXISTS Users (
+DROP TABLE IF EXISTS Users CASCADE;
+CREATE TABLE Users (
     uid uuid DEFAULT gen_random_uuid(),
     email text NOT NULL UNIQUE,
     password text NOT NULL,
@@ -16,14 +17,16 @@ CREATE TABLE IF NOT EXISTS Users (
     PRIMARY KEY (uid)
 );
 
-CREATE TABLE IF NOT EXISTS UserResetCodes(
+DROP TABLE IF EXISTS UserResetCodes CASCADE;
+CREATE TABLE UserResetCodes(
     uid uuid,
     code text,
     PRIMARY KEY (uid, code),
     FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Book (
+DROP TABLE IF EXISTS Book CASCADE;
+CREATE TABLE Book (
     bid uuid DEFAULT gen_random_uuid(),
     title text NOT NULL,
     blurb text,
@@ -36,12 +39,14 @@ CREATE TABLE IF NOT EXISTS Book (
     UNIQUE (title, written_by)
 );
 
-CREATE TABLE IF NOT EXISTS Tag (
+DROP TABLE IF EXISTS Tag CASCADE;
+CREATE TABLE Tag (
     tag_name text,
     PRIMARY KEY (tag_name)
 );
 
-CREATE TABLE IF NOT EXISTS BookTags (
+DROP TABLE IF EXISTS BookTags CASCADE;
+CREATE TABLE BookTags (
     bid uuid,
     tag_name text,
     PRIMARY KEY (bid, tag_name),
@@ -49,7 +54,8 @@ CREATE TABLE IF NOT EXISTS BookTags (
     FOREIGN KEY (tag_name) REFERENCES Tag(tag_name) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS BookSaves (
+DROP TABLE IF EXISTS BookSaves CASCADE;
+CREATE TABLE BookSaves (
     uid uuid,
     bid uuid,
     saved_at timestamp with time zone DEFAULT now(),
@@ -59,7 +65,8 @@ CREATE TABLE IF NOT EXISTS BookSaves (
     FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Chapter (
+DROP TABLE IF EXISTS Chapter CASCADE;
+CREATE TABLE Chapter (
     bid uuid,
     number integer,
     title text NOT NULL,
@@ -72,7 +79,8 @@ CREATE TABLE IF NOT EXISTS Chapter (
     FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ChapterLikes (
+DROP TABLE IF EXISTS ChapterLikes CASCADE;
+CREATE TABLE ChapterLikes (
     uid uuid,
     bid uuid,
     number integer,
@@ -81,7 +89,8 @@ CREATE TABLE IF NOT EXISTS ChapterLikes (
     FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS ChapterReads (
+DROP TABLE IF EXISTS ChapterReads CASCADE;
+CREATE TABLE ChapterReads (
     uid uuid,
     bid uuid,
     number integer,
@@ -91,7 +100,8 @@ CREATE TABLE IF NOT EXISTS ChapterReads (
     FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Comment (
+DROP TABLE IF EXISTS Comment CASCADE;
+CREATE TABLE Comment (
     cid uuid DEFAULT gen_random_uuid(),
     message text,
     bid uuid NOT NULL,
@@ -106,7 +116,8 @@ CREATE TABLE IF NOT EXISTS Comment (
     FOREIGN KEY (replies_to) REFERENCES Comment(cid) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS CommentLikes (
+DROP TABLE IF EXISTS CommentLikes CASCADE;
+CREATE TABLE CommentLikes (
     cid uuid NOT NULL,
     uid uuid NOT NULL,
     PRIMARY KEY (cid, uid),

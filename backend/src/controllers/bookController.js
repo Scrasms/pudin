@@ -16,12 +16,15 @@ const bookCreate = async (req, res) => {
 
         // Store cover AFTER creating book to avoid uploading to imgbb
         // when new book is invalid
-        const data = await uploadImage(bid, bookCover);
-        if (!data.success) {
-            throw new InputError(data.error.message);
+        let newLink = "";
+        if (bookCover) {
+            const data = await uploadImage(bid, bookCover);
+            if (!data.success) {
+                throw new InputError(data.error.message);
+            }
+            newLink = data.data.url;
+            await updateBookCover(bid, newLink);
         }
-        const newLink = data.data.url;
-        await updateBookCover(bid, newLink);
 
         const bookData = {
             bid: bid,
@@ -38,15 +41,11 @@ const bookCreate = async (req, res) => {
     }
 };
 
-// TODO: get all info about the book AND info about its chapters
-const bookInfo = async (req, res) => {
+// TODO: get all info about the book AND info about its chapters, likes and reads (both per-chapter and total)
+const bookInfo = async (req, res) => {};
 
-}
-
-// TODO: get all books (main dashboard)
-const bookInfoAll = async (req, res) => {
-
-}
+// TODO: get all books (main dashboard) and their total likes + reads
+const bookInfoAll = async (req, res) => {};
 
 const bookDelete = async (req, res) => {
     const bid = req.params.bid.trim();
