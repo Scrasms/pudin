@@ -47,7 +47,7 @@ const bookDelete = async (req, res) => {
         if (!success) {
             throw new InputError("No such book was written by the user");
         }
-        res.json({ status: true });
+        res.json({ success: true });
     } catch (err) {
         throw new DBError(err);
     }
