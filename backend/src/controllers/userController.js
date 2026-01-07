@@ -116,8 +116,14 @@ const userDelete = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        await deleteUser(username);
-        await deleteUserSessions(uid);
+        let success = await deleteUser(username);
+        if (!success) {
+            throw new InputError("User not found");
+        }
+        success = await deleteUserSessions(uid);
+        if (!success) {
+            throw new InputError("No sessions found belonging to user");
+        }
         return res.json({ success: true });
     } catch (err) {
         throw new DBError(err);
@@ -132,7 +138,13 @@ const userPassword = async (req, res) => {
     const hashedCodes = await getUserResetCodes(uid);
     const hashedCode = await getMatchingResetCode(hashedCodes, code);
     if (!hashedCode) {
-        throw new AuthError("Password reset code is incorrect");
+        throw new AuthError("Password reset code is incorrect or has already been used");
+    }
+
+    // Ensure it is a valid password
+    const err = validatePassword(newPassword);
+    if (err) {
+        throw new InputError(err);
     }
 
     // Ensure new password is not the same as the old password
@@ -147,10 +159,16 @@ const userPassword = async (req, res) => {
         // Update user's password and invalidate the used reset code
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await updateUserPassword(uid, hashedPassword);
-        await deleteUserResetCode(uid, hashedCode);
+        let success = await deleteUserResetCode(uid, hashedCode);
+        if (!success) {
+            throw new InputError("No such reset code found belonging to user");
+        }
 
         // Logout the user on all devices (delete all sessions)
-        await deleteUserSessions(uid);
+        success = await deleteUserSessions(uid);
+        if (!success) {
+            throw new InputError("No sessions found belonging to user");
+        }
 
         return res.json({ success: true });
     } catch (err) {

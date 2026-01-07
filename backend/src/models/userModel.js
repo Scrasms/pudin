@@ -44,20 +44,29 @@ const createUser = async (email, password, username) => {
 /**
  * Deletes user from User table
  * @param {string} username - user's unqiue username
+ * @returns true if user was deleted and false otherwise
  */
 const deleteUser = async (username) => {
-    await pool.query("DELETE FROM Users WHERE username = $1", [username]);
+    const { rowCount } = await pool.query(
+        "DELETE FROM Users WHERE username = $1",
+        [username]
+    );
+
+    return rowCount > 0;
 };
 
 /**
  * Deletes all sessions belonging to provided user
  * @param {uuid} uid - uid of user
+ * @returns true if sessions were deleted and false otherwise
  */
 const deleteUserSessions = async (uid) => {
-    await pool.query(
+    const { rowCount } = await pool.query(
         "DELETE FROM Session WHERE (sess->'passport'->>'user')::uuid = $1",
         [uid]
     );
+
+    return rowCount > 0;
 };
 
 /**
@@ -84,6 +93,7 @@ const getUserResetCodes = async (uid) => {
         "SELECT code FROM UserResetCodes WHERE uid = $1",
         [uid]
     );
+
     return rows;
 };
 
@@ -91,12 +101,15 @@ const getUserResetCodes = async (uid) => {
  * Deletes the user's reset code from the DB
  * @param {uuid} uid - the user's uid
  * @param {string} code - the (hashed) reset code to be deleted
+ * @returns true if reset code was deleted and false otherwise
  */
 const deleteUserResetCode = async (uid, code) => {
-    await pool.query(
+    const { rowCount } = await pool.query(
         "DELETE FROM UserResetCodes WHERE uid = $1 AND code = $2",
         [uid, code]
     );
+
+    return rowCount > 0;
 };
 
 /**

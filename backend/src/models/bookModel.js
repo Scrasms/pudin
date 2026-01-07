@@ -80,6 +80,7 @@ const updateBookCover = async (bid, coverLink) => {
  * Deletes a book belonging to the user
  * @param {uuid} bid - the book's bid
  * @param {uuid} uid - the user's uid
+ * @returns true if book was deleted and false otherwise
  */
 const deleteBook = async (bid, uid) => {
     // WHERE clause is false if user doesn't own the book
