@@ -1,6 +1,31 @@
 import pool from "../../config/db.js";
 
 /**
+ * Finds and returns book with matching bid
+ * @param {uuid} bid - book's bid
+ * @returns the book if found or undefined otherwise
+ */
+const getBookById = async (bid) => {
+    const { rows } = await pool.query("SELECT * FROM BookInfo WHERE bid = $1", [
+        bid,
+    ]);
+    return rows[0];
+};
+
+/**
+ * Finds and returns the tags associated with the book
+ * @param {uuid} bid - book's bid
+ * @returns the tags of the book in an array
+ */
+const getBookTags = async (bid) => {
+    const { rows } = await pool.query(
+        "SELECT * FROM BookTagsList WHERE bid = $1",
+        [bid]
+    );
+    return rows[0].tags;
+};
+
+/**
  * Adds book to the Book table
  * @param {string} title - book's title
  * @param {string} blurb - book's blurb
@@ -43,4 +68,4 @@ const deleteBook = async (bid, uid) => {
     return rowCount > 0;
 };
 
-export { createBook, updateBookCover, deleteBook };
+export { getBookById, getBookTags, createBook, updateBookCover, deleteBook };

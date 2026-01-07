@@ -68,13 +68,13 @@ CREATE TABLE BookSaves (
 DROP TABLE IF EXISTS Chapter CASCADE;
 CREATE TABLE Chapter (
     bid uuid,
-    number integer,
+    number integer DEFAULT 1,
     title text NOT NULL,
     content text,
     created_at timestamp with time zone DEFAULT now(),
     published_at timestamp with time zone,
-    likes bigint DEFAULT 0,
-    reads bigint DEFAULT 0,
+    likes integer DEFAULT 0,
+    reads integer DEFAULT 0,
     PRIMARY KEY (bid, number),
     FOREIGN KEY (bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
@@ -109,7 +109,7 @@ CREATE TABLE Comment (
     posted_by uuid NOT NULL,
     number integer,
     replies_to uuid,
-    likes bigint DEFAULT 0,
+    likes integer DEFAULT 0,
     PRIMARY KEY (cid),
     FOREIGN KEY (posted_by) REFERENCES Users(uid) ON DELETE CASCADE,
     FOREIGN KEY (bid, number) REFERENCES Chapter(bid, number) ON DELETE CASCADE,

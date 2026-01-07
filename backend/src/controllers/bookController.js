@@ -1,9 +1,11 @@
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import {
+    getBookById,
     createBook,
     updateBookCover,
     deleteBook,
+    getBookTags,
 } from "../models/bookModel.js";
 import { uploadImage } from "../utils/image.js";
 
@@ -41,10 +43,26 @@ const bookCreate = async (req, res) => {
     }
 };
 
-// TODO: get all info about the book AND info about its chapters, likes and reads (both per-chapter and total)
-const bookInfo = async (req, res) => {};
+// TODO: also get all info about the book's chapters
+const bookInfo = async (req, res) => {
+    const bid = req.params.bid.trim();
 
-// TODO: get all books (main dashboard) and their total likes + reads
+    const bookData = await getBookById(bid);
+    if (!bookData) {
+        throw new InputError("Book not found");
+    }
+
+    bookData.tags = await getBookTags(bid);
+
+    res.json({
+        success: true,
+        data: {
+            book: bookData,
+        },
+    });
+};
+
+// TODO: get all books (main dashboard) and their total likes + reads AND implement filters/pagination
 const bookInfoAll = async (req, res) => {};
 
 const bookDelete = async (req, res) => {
