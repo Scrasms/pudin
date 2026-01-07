@@ -13,6 +13,29 @@ const getBookById = async (bid) => {
 };
 
 /**
+ * Finds and returns basic information about the chapters of a book
+ * @param {uuid} bid - book's bid
+ * @returns array of chapter objects
+ */
+const getBookChapters = async (bid) => {
+    const queryStr = `
+        SELECT
+            number,
+            title,
+            created_at,
+            published_at,
+            likes,
+            reads
+        FROM Chapter
+        WHERE bid = $1
+        ORDER BY number
+    `;
+
+    const { rows } = await pool.query(queryStr, [bid]);
+    return rows;
+};
+
+/**
  * Finds and returns the tags associated with the book
  * @param {uuid} bid - book's bid
  * @returns the tags of the book in an array
@@ -68,4 +91,11 @@ const deleteBook = async (bid, uid) => {
     return rowCount > 0;
 };
 
-export { getBookById, getBookTags, createBook, updateBookCover, deleteBook };
+export {
+    getBookById,
+    getBookChapters,
+    getBookTags,
+    createBook,
+    updateBookCover,
+    deleteBook,
+};

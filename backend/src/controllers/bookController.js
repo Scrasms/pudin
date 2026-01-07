@@ -6,7 +6,9 @@ import {
     updateBookCover,
     deleteBook,
     getBookTags,
+    getBookChapters,
 } from "../models/bookModel.js";
+import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
 
 const bookCreate = async (req, res) => {
@@ -43,7 +45,6 @@ const bookCreate = async (req, res) => {
     }
 };
 
-// TODO: also get all info about the book's chapters
 const bookInfo = async (req, res) => {
     const bid = req.params.bid.trim();
 
@@ -52,17 +53,33 @@ const bookInfo = async (req, res) => {
         throw new InputError("Book not found");
     }
 
-    bookData.tags = await getBookTags(bid);
+    const uid = bookData.written_by;
+    const user = await getUserById(uid);
+    if (!user) {
+        throw new InputError("User not found");
+    }
+
+    const userData = {
+        uid: user.uid,
+        email: user.email,
+        username: user.username,
+        image: user.profile_image,
+        joined_at: user.joined_at,
+    }
+
+    bookData.chapter = await getBookChapters(bid);
+    bookData.tag = await getBookTags(bid);
 
     res.json({
         success: true,
         data: {
+            user: userData,
             book: bookData,
         },
     });
 };
 
-// TODO: get all books (main dashboard) and their total likes + reads AND implement filters/pagination
+// TODO: get all books (main dashboard), their total likes + reads and no. of chapters AND implement filters/pagination
 const bookInfoAll = async (req, res) => {};
 
 const bookDelete = async (req, res) => {
