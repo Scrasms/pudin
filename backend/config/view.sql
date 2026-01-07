@@ -2,8 +2,9 @@
 CREATE OR REPLACE VIEW BookInfo AS
 SELECT
     b.*,
-    COALESCE(SUM(c.likes), 0) AS total_likes,
-    COALESCE(SUM(c.reads), 0) AS total_reads
+    COALESCE(SUM(c.likes), 0)::integer AS total_likes,
+    COALESCE(SUM(c.reads), 0)::integer AS total_reads,
+    COUNT(c.*)::integer AS total_chapters
 FROM Book b
 LEFT JOIN Chapter c ON c.bid = b.bid
 GROUP BY b.bid

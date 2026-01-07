@@ -2,11 +2,12 @@ import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import {
     getBookById,
+    getBookTags,
+    getBookChapters,
+    getAllBooks,
     createBook,
     updateBookCover,
     deleteBook,
-    getBookTags,
-    getBookChapters,
 } from "../models/bookModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
@@ -53,6 +54,40 @@ const bookInfo = async (req, res) => {
         throw new InputError("Book not found");
     }
 
+    const wrappedBookData = await wrapBookData(bookData);
+
+    res.json({
+        success: true,
+        data: wrappedBookData,
+    });
+};
+
+const bookInfoAll = async (req, res) => {
+    const order = req.query.order;
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+
+    const allBooksData = [];
+    const data = await getAllBooks(order, limit, offset);
+    for (const bookData of data) {
+        const wrappedBookData = await wrapBookData(bookData);
+        allBooksData.push(wrappedBookData);
+    }
+
+    res.json({
+        success: true,
+        data: {
+            books: allBooksData,
+        },
+    });
+};
+
+/**
+ * Given a book data object, adds fields containing user, chapter and tag information
+ * @param {Object} bookData - object containing book information
+ * @returns object described above
+ */
+const wrapBookData = async (bookData) => {
     const uid = bookData.written_by;
     const user = await getUserById(uid);
     if (!user) {
@@ -65,22 +100,17 @@ const bookInfo = async (req, res) => {
         username: user.username,
         image: user.profile_image,
         joined_at: user.joined_at,
-    }
+    };
 
+    const bid = bookData.bid;
     bookData.chapter = await getBookChapters(bid);
     bookData.tag = await getBookTags(bid);
 
-    res.json({
-        success: true,
-        data: {
-            user: userData,
-            book: bookData,
-        },
-    });
+    return {
+        user: userData,
+        book: bookData,
+    };
 };
-
-// TODO: get all books (main dashboard), their total likes + reads and no. of chapters AND implement filters/pagination
-const bookInfoAll = async (req, res) => {};
 
 const bookDelete = async (req, res) => {
     const bid = req.params.bid.trim();

@@ -49,6 +49,51 @@ const getBookTags = async (bid) => {
 };
 
 /**
+ * Gets all books from the database, applying pagination and sorting
+ * @param {string} order - sorting order, format: +/-FIELD, + means ASC, - means DESC
+ * @param {number} limit - how many books to display in one page
+ * @param {number} offset - the offset from the beginning of the books (a.k.a the page)
+ * @returns books in the desired order and page
+ */
+const getAllBooks = async (order, limit, offset) => {
+    // Protect against SQL injection
+    const allowedOrders = new Set([
+        "title",
+        "published_at",
+        "total_likes",
+        "total_reads"
+    ]);
+
+    // Set default values when orderDir or orderBy are unprovided or invalid
+    let orderDir = order && order[0] === "-" ? "DESC" : "ASC";
+    let orderBy = order ? order.slice(1, order.length) : "title";
+    orderBy = allowedOrders.has(orderBy) ? orderBy : "title";
+
+    let queryStr = `
+        SELECT *
+        FROM BookInfo
+        ORDER BY ${orderBy} ${orderDir}
+    `;
+    let params = [];
+    let paramIdx = 1;
+
+    if (limit || limit === 0) {
+        queryStr += ` LIMIT $${paramIdx++}`;
+        params.push(limit);
+    }
+
+    // Don't set if offset === 0 since it's 0 by default
+    if (offset) {
+        queryStr += ` OFFSET $${paramIdx++}`;
+        params.push(offset);
+    }
+
+    const { rows } = await pool.query(queryStr, params);
+
+    return rows;
+};
+
+/**
  * Adds book to the Book table
  * @param {string} title - book's title
  * @param {string} blurb - book's blurb
@@ -83,7 +128,6 @@ const updateBookCover = async (bid, coverLink) => {
  * @returns true if book was deleted and false otherwise
  */
 const deleteBook = async (bid, uid) => {
-    // WHERE clause is false if user doesn't own the book
     const { rowCount } = await pool.query(
         "DELETE FROM Book WHERE bid = $1 AND written_by = $2",
         [bid, uid]
@@ -96,6 +140,7 @@ export {
     getBookById,
     getBookChapters,
     getBookTags,
+    getAllBooks,
     createBook,
     updateBookCover,
     deleteBook,
