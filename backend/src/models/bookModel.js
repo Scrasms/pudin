@@ -146,6 +146,26 @@ const deleteBook = async (bid, uid) => {
     return rowCount > 0;
 };
 
+/**
+ * Tags a book that the user owns
+ * @param {uuid} bid - the book
+ * @param {uuid} uid - the user
+ * @param {string} tagName - the tag
+ * @returns true if book was tagged and false otherwise
+ */
+const tagBook = async (bid, uid, tagName) => {
+    // Only tag books the user owns
+    const queryStr = `
+        INSERT INTO BookTags (bid, tag_name)
+        SELECT $1, $2
+        WHERE EXISTS (
+            SELECT 1 FROM Book WHERE bid = $3 AND written_by = $4
+        )
+    `;
+    const { rowCount } = await pool.query(queryStr, [bid, tagName, bid, uid]);
+    return rowCount > 0;
+};
+
 export {
     getBookById,
     getBookChapters,
@@ -154,4 +174,5 @@ export {
     createBook,
     updateBookCover,
     deleteBook,
+    tagBook,
 };

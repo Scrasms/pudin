@@ -8,6 +8,7 @@ import bookRouter from "./src/routes/bookRoutes.js";
 import passport from "passport";
 import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
+import tagRouter from "./src/routes/tagRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(passport.session());
 // Routers
 app.use("/user", userRouter);
 app.use("/book", bookRouter);
+app.use("/book/tag", tagRouter);
 
 // Error handler
 app.use(errorHandler);

@@ -25,8 +25,8 @@ userRouter.post("/password", isAuth, userPassword);
 
 userRouter.put("/profile", isAuth, userProfile);
 
-userRouter.get("/:username", userInfo);
-
 userRouter.get("/", isAuth, userTest);
+
+userRouter.get("/:username", userInfo);
 
 export default userRouter;

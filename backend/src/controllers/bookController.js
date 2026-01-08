@@ -8,6 +8,7 @@ import {
     createBook,
     updateBookCover,
     deleteBook,
+    tagBook,
 } from "../models/bookModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
@@ -130,4 +131,17 @@ const bookDelete = async (req, res) => {
     }
 };
 
-export { bookCreate, bookInfo, bookInfoAll, bookDelete };
+const bookTag = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const tagName = req.body.tagName.trim();
+    const uid = req.user.uid;
+
+    const success = await tagBook(bid, uid, tagName);
+    if (!success) {
+        throw new InputError("User did not write book");
+    }
+
+    res.json({ success: true });
+};
+
+export { bookCreate, bookInfo, bookInfoAll, bookDelete, bookTag };
