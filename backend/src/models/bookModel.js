@@ -42,26 +42,27 @@ const getBookChapters = async (bid) => {
  */
 const getBookTags = async (bid) => {
     const { rows } = await pool.query(
-        "SELECT * FROM BookTagsList WHERE bid = $1",
+        "SELECT tags FROM BookTagsList WHERE bid = $1",
         [bid]
     );
     return rows[0].tags;
 };
 
 /**
- * Gets all books from the database, applying pagination and sorting
+ * Gets all books from the database, applying pagination, sorting and filters
  * @param {string} order - sorting order, format: +/-FIELD, + means ASC, - means DESC
  * @param {number} limit - how many books to display in one page
  * @param {number} offset - the offset from the beginning of the books (a.k.a the page)
+ * @param {string} tag - the tag to filter by
  * @returns books in the desired order and page
  */
-const getAllBooks = async (order, limit, offset) => {
+const getAllBooks = async (order, limit, offset, tag) => {
     // Protect against SQL injection
     const allowedOrders = new Set([
         "title",
         "published_at",
         "total_likes",
-        "total_reads"
+        "total_reads",
     ]);
 
     // Set default values when orderDir or orderBy are unprovided or invalid
@@ -71,11 +72,20 @@ const getAllBooks = async (order, limit, offset) => {
 
     let queryStr = `
         SELECT *
-        FROM BookInfo
-        ORDER BY ${orderBy} ${orderDir}
+        FROM BookInfo bi
     `;
     let params = [];
     let paramIdx = 1;
+
+    if (tag) {
+        queryStr += `
+            JOIN BookTagsList btl ON bi.bid = btl.bid
+            WHERE $${paramIdx++} = ANY(btl.tags)
+        `;
+        params.push(tag);
+    }
+
+    queryStr += ` ORDER BY ${orderBy} ${orderDir}`;
 
     if (limit || limit === 0) {
         queryStr += ` LIMIT $${paramIdx++}`;

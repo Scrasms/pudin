@@ -66,9 +66,10 @@ const bookInfoAll = async (req, res) => {
     const order = req.query.order;
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
+    const tag = req.query.tag;
 
     const allBooksData = [];
-    const data = await getAllBooks(order, limit, offset);
+    const data = await getAllBooks(order, limit, offset, tag);
     for (const bookData of data) {
         const wrappedBookData = await wrapBookData(bookData);
         allBooksData.push(wrappedBookData);
@@ -103,8 +104,10 @@ const wrapBookData = async (bookData) => {
     };
 
     const bid = bookData.bid;
-    bookData.chapter = await getBookChapters(bid);
-    bookData.tag = await getBookTags(bid);
+    bookData.chapters = await getBookChapters(bid);
+    if (!bookData.tags) {
+        bookData.tags = await getBookTags(bid);
+    }
 
     return {
         user: userData,
