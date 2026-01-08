@@ -9,6 +9,7 @@ import {
     updateBookCover,
     deleteBook,
     tagBook,
+    unTagBook,
 } from "../models/bookModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
@@ -136,12 +137,32 @@ const bookTag = async (req, res) => {
     const tagName = req.body.tagName.trim();
     const uid = req.user.uid;
 
-    const success = await tagBook(bid, uid, tagName);
+    try {
+        const success = await tagBook(bid, uid, tagName);
+        if (!success) {
+            throw new InputError("Book not found or user didn't write it");
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+const bookUntag = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const tagName = req.body.tagName.trim();
+    const uid = req.user.uid;
+
+    const success = await unTagBook(bid, uid, tagName);
     if (!success) {
-        throw new InputError("User did not write book");
+        throw new InputError(
+            "User did not write book, book not found or book did not have such a tag"
+        );
     }
 
     res.json({ success: true });
 };
 
-export { bookCreate, bookInfo, bookInfoAll, bookDelete, bookTag };
+export { bookCreate, bookInfo, bookInfoAll, bookDelete, bookTag, bookUntag };

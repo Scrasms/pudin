@@ -15,32 +15,43 @@ class DBError extends Error {
         // TODO: extend to more errors
         switch (errCode) {
             case UNIQUE_VIOLATION:
-                this.status = 409;
-                if (
-                    err.detail.includes("username") ||
-                    err.detail.includes("email")
-                ) {
-                    this.message =
-                        "A user with this username or email already exists";
-                } else if (
-                    err.detail.includes("title") &&
-                    err.detail.includes("written_by")
-                ) {
-                    this.message =
-                        "User already has a book with the same title";
-                } else {
-                    let keys = this.#getKeys(err.detail);
-                    keys = keys.join(" and ");
-                    this.message = `A ${err.table} with the same ${keys} already exists`;
-                }
+                this.#handleUnique(err);
                 break;
             case NOT_NULL_VIOLATION:
                 this.status = 400;
                 break;
             case FOREIGN_KEY_VIOLATION:
-                this.status = 400;
+                this.#handleFk(err);
                 break;
         }
+    }
+
+    #handleUnique(err) {
+        this.status = 409;
+        if (
+            err.detail.includes("username") ||
+            err.detail.includes("email")
+        ) {
+            this.message =
+                "A user with this username or email already exists";
+        } else if (
+            err.detail.includes("title") &&
+            err.detail.includes("written_by")
+        ) {
+            this.message =
+                "User already has a book with the same title";
+        } else {
+            let keys = this.#getKeys(err.detail);
+            keys = keys.join(" and ");
+            this.message = `A ${err.table} with the same ${keys} already exists`;
+        }
+    }
+
+    #handleFk(err) {
+        this.status = 404;
+        let keys = this.#getKeys(err.detail);
+        keys.join(" and ");
+        this.message = `No such ${keys} found in ${err.table}`;
     }
 
     // Extract keys from error detail message

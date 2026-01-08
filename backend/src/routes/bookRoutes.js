@@ -5,7 +5,8 @@ import {
     bookInfo,
     bookInfoAll,
     bookDelete,
-    bookTag
+    bookTag,
+    bookUntag
 } from "../controllers/bookController.js";
 
 const bookRouter = Router();
@@ -19,5 +20,7 @@ bookRouter.get("/:bid", bookInfo);
 bookRouter.delete("/:bid", isAuth, bookDelete);
 
 bookRouter.post("/:bid/tag", isAuth, bookTag);
+
+bookRouter.delete("/:bid/tag", isAuth, bookUntag);
 
 export default bookRouter;
