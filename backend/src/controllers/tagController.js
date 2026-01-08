@@ -1,5 +1,4 @@
 import DBError from "../errors/DBError.js";
-import InputError from "../errors/InputError.js";
 import { createTag } from "../models/tagModel.js";
 
 const tagCreate = async (req, res) => {
@@ -13,7 +12,5 @@ const tagCreate = async (req, res) => {
         throw new DBError(err);
     }
 };
-
-
 
 export { tagCreate };
