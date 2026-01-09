@@ -5,13 +5,14 @@ import {
     getBookById,
     getBookTags,
     getBookChapters,
-    getAllBooks,
+    getAllPublishedBooks,
     createBook,
+    updateBookText,
     updateBookCover,
+    updateBookPublish,
     deleteBook,
     tagBook,
     unTagBook,
-    updateBookText,
 } from "../models/bookModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
@@ -66,12 +67,17 @@ const storeBookCover = async (bid, bookCover) => {
 const bookInfo = async (req, res) => {
     const bid = req.params.bid.trim();
 
-    const bookData = await getBookById(bid);
+    // If user doesn't own the book, restrict search to published books
+    let publishedOnly = true;
+    if (req.user) {
+        publishedOnly = !(await userOwnsBook(bid, req.user.uid));
+    }
+    const bookData = await getBookById(bid, publishedOnly);
     if (!bookData) {
         throw new InputError("Book not found");
     }
 
-    const wrappedBookData = await wrapBookData(bookData);
+    const wrappedBookData = await wrapBookData(bookData, publishedOnly);
 
     res.json({
         success: true,
@@ -86,9 +92,11 @@ const bookInfoAll = async (req, res) => {
     const tag = req.query.tag;
 
     const allBooksData = [];
-    const data = await getAllBooks(order, limit, offset, tag);
+
+    // Always restrict search to published books when getting all books for dashboard
+    const data = await getAllPublishedBooks(order, limit, offset, tag);
     for (const bookData of data) {
-        const wrappedBookData = await wrapBookData(bookData);
+        const wrappedBookData = await wrapBookData(bookData, true);
         allBooksData.push(wrappedBookData);
     }
 
@@ -103,9 +111,10 @@ const bookInfoAll = async (req, res) => {
 /**
  * Given a book data object, adds fields containing user, chapter and tag information
  * @param {Object} bookData - object containing book information
+ * @param {boolean} publishedOnly - restrict search to published chapters only or not
  * @returns object described above
  */
-const wrapBookData = async (bookData) => {
+const wrapBookData = async (bookData, publishedOnly) => {
     const uid = bookData.written_by;
     const user = await getUserById(uid);
     if (!user) {
@@ -121,7 +130,8 @@ const wrapBookData = async (bookData) => {
     };
 
     const bid = bookData.bid;
-    bookData.chapters = await getBookChapters(bid);
+    bookData.chapters = await getBookChapters(bid, publishedOnly);
+    // Tags might already exist (getAllBooks creates it if a tag filter is applied)
     if (!bookData.tags) {
         bookData.tags = await getBookTags(bid);
     }
@@ -134,7 +144,7 @@ const wrapBookData = async (bookData) => {
 
 const bookUpdate = async (req, res) => {
     const bid = req.params.bid.trim();
-    let { newTitle, newBlurb, newBookCover } = req.body;
+    let { newTitle, newBlurb, newBookCover, publish } = req.body;
     const uid = req.user.uid;
 
     if (newTitle) {
@@ -147,7 +157,7 @@ const bookUpdate = async (req, res) => {
 
     try {
         // Only update books the user owns
-        const success = await userOwnsBook(bid, uid);
+        let success = await userOwnsBook(bid, uid);
         if (!success) {
             throw new InputError("Book not found or user didn't write it");
         }
@@ -155,6 +165,13 @@ const bookUpdate = async (req, res) => {
 
         if (newBookCover) {
             await storeBookCover(bid, newBookCover);
+        }
+
+        success = await updateBookPublish(bid, publish);
+        if (!success && publish) {
+            throw new InputError("Book is already published");
+        } else if (!success) {
+            throw new InputError("Book is already unpublished");
         }
 
         res.json({ success: true });

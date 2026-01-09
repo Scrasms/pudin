@@ -1,5 +1,4 @@
 import pool from "../../config/db.js";
-import InputError from "../errors/InputError.js";
 
 /**
  * Check if a user owns the book
@@ -17,42 +16,50 @@ const userOwnsBook = async (bid, uid) => {
 };
 
 /**
- * Finds and returns book with matching bid
+ * Finds and returns the book with matching bid
  * @param {uuid} bid - book's bid
+ * @param {boolean} publishedOnly - restrict search to published books only or not
  * @returns the book if found or undefined otherwise
  */
-const getBookById = async (bid) => {
-    const { rows } = await pool.query("SELECT * FROM BookInfo WHERE bid = $1", [
-        bid,
-    ]);
+const getBookById = async (bid, publishedOnly) => {
+    const table = publishedOnly ? "BookInfoPublished" : "BookInfoAll"
+    let queryStr = `SELECT * FROM ${table} WHERE bid = $1`;
+
+    const { rows } = await pool.query(queryStr, [bid]);
     return rows[0];
 };
 
 /**
  * Finds and returns basic information about the chapters of a book
  * @param {uuid} bid - book's bid
+ * @param {boolean} publishedOnly - restrict search to published chapters only or not
  * @returns array of chapter objects
  */
-const getBookChapters = async (bid) => {
-    const queryStr = `
+const getBookChapters = async (bid, publishedOnly) => {
+    // Only show created_at when publishedOnly is false (when user owns the chapter)
+    let queryStr = `
         SELECT
             number,
             title,
-            created_at,
+            ${publishedOnly ? "" : "created_at,"}
             published_at,
             likes,
             reads
         FROM Chapter
         WHERE bid = $1
-        ORDER BY number
     `;
+
+    if (publishedOnly) {
+        queryStr += " AND published_at IS NOT NULL";
+    }
+    queryStr += " ORDER BY number";
 
     const { rows } = await pool.query(queryStr, [bid]);
     return rows;
 };
 
 /**
- * Finds and returns the tags associated with the book
+ * Finds and returns the tags associated with a book
  * @param {uuid} bid - book's bid
  * @returns the tags of the book in an array
  */
@@ -65,14 +72,14 @@ const getBookTags = async (bid) => {
 };
 
 /**
- * Gets all books from the database, applying pagination, sorting and filters
+ * Gets all published books from the database, applying pagination, sorting and filters
  * @param {string} order - sorting order, format: +/-FIELD, + means ASC, - means DESC
  * @param {number} limit - how many books to display in one page
  * @param {number} offset - the offset from the beginning of the books (a.k.a the page)
  * @param {string} tag - the tag to filter by
- * @returns books in the desired order and page
+ * @returns books in the desired page, order and filter
  */
-const getAllBooks = async (order, limit, offset, tag) => {
+const getAllPublishedBooks = async (order, limit, offset, tag) => {
     // Protect against SQL injection
     const allowedOrders = new Set([
         "title",
@@ -86,10 +93,7 @@ const getAllBooks = async (order, limit, offset, tag) => {
     let orderBy = order ? order.slice(1, order.length) : "title";
     orderBy = allowedOrders.has(orderBy) ? orderBy : "title";
 
-    let queryStr = `
-        SELECT *
-        FROM BookInfo bi
-    `;
+    let queryStr = "SELECT * FROM BookInfoPublished bi"
     let params = [];
     let paramIdx = 1;
 
@@ -100,7 +104,6 @@ const getAllBooks = async (order, limit, offset, tag) => {
         `;
         params.push(tag);
     }
-
     queryStr += ` ORDER BY ${orderBy} ${orderDir}`;
 
     if (limit || limit === 0) {
@@ -142,11 +145,28 @@ const createBook = async (title, blurb, uid) => {
  * @param {string} newBlurb - new blurb
  */
 const updateBookText = async (bid, newTitle, newBlurb) => {
-    await pool.query("UPDATE Book SET title = $1, blurb = $2 WHERE bid = $3", [
-        newTitle,
-        newBlurb,
-        bid,
-    ]);
+    if (!newTitle && !newBlurb) {
+        return;
+    }
+
+    let queryStr = "UPDATE Book SET";
+    const params = [];
+    let paramIdx = 1;
+
+    if (newTitle) {
+        queryStr += ` title = $${paramIdx++}`;
+        params.push(newTitle);
+    }
+
+    if (newBlurb) {
+        queryStr += ` blurb = $${paramIdx++}`;
+        params.push(newBlurb);
+    }
+
+    queryStr += ` WHERE bid = $${paramIdx++}`;
+    params.push(bid);
+
+    await pool.query(queryStr, params);
 };
 
 /**
@@ -159,6 +179,28 @@ const updateBookCover = async (bid, coverLink) => {
         coverLink,
         bid,
     ]);
+};
+
+/**
+ * Updates the publish status of a book (whether it's visible to everyone or just the owner)
+ * @param {uuid} bid - book's bid
+ * @param {boolean} publish - true if we want to publish the book and false if we want to unpublish it
+ * @returns - true if book was published/unpublished and false otherwise
+ */
+const updateBookPublish = async (bid, publish) => {
+    // If we want to publish, the book has to be unpublished
+    // If we want to unpublish, the book has to be published
+    const publishVal = publish ? "NOW()" : null;
+    const publishCond = publish
+        ? "published_at IS NULL"
+        : "published_at IS NOT NULL";
+
+    const { rowCount } = await pool.query(
+        `UPDATE Book SET published_at = $1 WHERE bid = $2 AND ${publishCond}`,
+        [publishVal, bid]
+    );
+
+    return rowCount > 0;
 };
 
 /**
@@ -207,10 +249,11 @@ export {
     getBookById,
     getBookChapters,
     getBookTags,
-    getAllBooks,
+    getAllPublishedBooks,
     createBook,
     updateBookText,
     updateBookCover,
+    updateBookPublish,
     deleteBook,
     tagBook,
     unTagBook,
