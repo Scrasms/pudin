@@ -136,6 +136,20 @@ const createBook = async (title, blurb, uid) => {
 };
 
 /**
+ * Updates the text fields (title and blurb) of a book
+ * @param {uuid} bid - book's bid
+ * @param {string} newTitle - new title
+ * @param {string} newBlurb - new blurb
+ */
+const updateBookText = async (bid, newTitle, newBlurb) => {
+    await pool.query("UPDATE Book SET title = $1, blurb = $2 WHERE bid = $3", [
+        newTitle,
+        newBlurb,
+        bid,
+    ]);
+};
+
+/**
  * Updates the cover of a book, assumes the user owns the book
  * @param {uuid} bid - book's bid
  * @param {string} coverLink - link to the book's cover image
@@ -195,6 +209,7 @@ export {
     getBookTags,
     getAllBooks,
     createBook,
+    updateBookText,
     updateBookCover,
     deleteBook,
     tagBook,

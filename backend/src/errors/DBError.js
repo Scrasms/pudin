@@ -18,7 +18,7 @@ class DBError extends Error {
                 this.#handleUnique(err);
                 break;
             case NOT_NULL_VIOLATION:
-                this.status = 400;
+                this.#handleNotNull(err);
                 break;
             case FOREIGN_KEY_VIOLATION:
                 this.#handleFk(err);
@@ -40,6 +40,11 @@ class DBError extends Error {
             keys = keys.join(" and ");
             this.message = `A ${err.table} with the same ${keys} already exists`;
         }
+    }
+
+    #handleNotNull(err) {
+        this.status = 400;
+        this.message = `A ${err.column} must be provided`;
     }
 
     #handleFk(err) {

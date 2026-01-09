@@ -11,6 +11,7 @@ import {
     deleteBook,
     tagBook,
     unTagBook,
+    updateBookText,
 } from "../models/bookModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
@@ -26,12 +27,7 @@ const bookCreate = async (req, res) => {
         // when new book is invalid
         let newLink = "";
         if (bookCover) {
-            const data = await uploadImage(bid, bookCover);
-            if (!data.success) {
-                throw new InputError(data.error.message);
-            }
-            newLink = data.data.url;
-            await updateBookCover(bid, newLink);
+            newLink = storeBookCover(bid, bookCover);
         }
 
         const bookData = {
@@ -48,6 +44,23 @@ const bookCreate = async (req, res) => {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
+};
+
+/**
+ * Uploads then stores the provided book cover
+ * @param {uuid} bid - book's bid
+ * @param {*} bookCover - book cover image
+ * @returns the link to the new book cover
+ */
+const storeBookCover = async (bid, bookCover) => {
+    const data = await uploadImage(bid, bookCover);
+    if (!data.success) {
+        throw new InputError(data.error.message);
+    }
+    const newLink = data.data.url;
+    await updateBookCover(bid, newLink);
+
+    return newLink;
 };
 
 const bookInfo = async (req, res) => {
@@ -119,7 +132,37 @@ const wrapBookData = async (bookData) => {
     };
 };
 
-const bookUpdate = async (req, res) => {};
+const bookUpdate = async (req, res) => {
+    const bid = req.params.bid.trim();
+    let { newTitle, newBlurb, newBookCover } = req.body;
+    const uid = req.user.uid;
+
+    if (newTitle) {
+        newTitle = newTitle.trim();
+    }
+
+    if (newBlurb) {
+        newBlurb = newBlurb.trim();
+    }
+
+    try {
+        // Only update books the user owns
+        const success = await userOwnsBook(bid, uid);
+        if (!success) {
+            throw new InputError("Book not found or user didn't write it");
+        }
+        await updateBookText(bid, newTitle, newBlurb);
+
+        if (newBookCover) {
+            await storeBookCover(bid, newBookCover);
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
 
 const bookDelete = async (req, res) => {
     const bid = req.params.bid.trim();
