@@ -7,7 +7,7 @@ import {
     bookUpdate,
     bookDelete,
     bookTag,
-    bookUntag
+    bookUntag,
 } from "../controllers/bookController.js";
 
 const bookRouter = Router();

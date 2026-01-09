@@ -22,7 +22,7 @@ const userOwnsBook = async (bid, uid) => {
  * @returns the book if found or undefined otherwise
  */
 const getBookById = async (bid, publishedOnly) => {
-    const table = publishedOnly ? "BookInfoPublished" : "BookInfoAll"
+    const table = publishedOnly ? "BookInfoPublished" : "BookInfoAll";
     let queryStr = `SELECT * FROM ${table} WHERE bid = $1`;
 
     const { rows } = await pool.query(queryStr, [bid]);
@@ -93,7 +93,7 @@ const getAllPublishedBooks = async (order, limit, offset, tag) => {
     let orderBy = order ? order.slice(1, order.length) : "title";
     orderBy = allowedOrders.has(orderBy) ? orderBy : "title";
 
-    let queryStr = "SELECT * FROM BookInfoPublished bi"
+    let queryStr = "SELECT * FROM BookInfoPublished bi";
     let params = [];
     let paramIdx = 1;
 
