@@ -155,14 +155,16 @@ const bookUntag = async (req, res) => {
     const tagName = req.body.tagName.trim();
     const uid = req.user.uid;
 
-    const success = await unTagBook(bid, uid, tagName);
-    if (!success) {
-        throw new InputError(
-            "User did not write book, book not found or book did not have such a tag"
-        );
+    try {
+        const success = await unTagBook(bid, uid, tagName);
+        if (!success) {
+            throw new InputError("Book does not have such a tag");
+        }
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
     }
-
-    res.json({ success: true });
 };
 
 export { bookCreate, bookInfo, bookInfoAll, bookDelete, bookTag, bookUntag };

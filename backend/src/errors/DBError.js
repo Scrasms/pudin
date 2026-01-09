@@ -8,8 +8,8 @@ import {
 class DBError extends Error {
     constructor(err) {
         super(err.message);
-        this.name = "DBError";
 
+        this.name = "DBError";
         const errCode = Number(err.code);
 
         // TODO: extend to more errors
@@ -28,18 +28,13 @@ class DBError extends Error {
 
     #handleUnique(err) {
         this.status = 409;
-        if (
-            err.detail.includes("username") ||
-            err.detail.includes("email")
-        ) {
-            this.message =
-                "A user with this username or email already exists";
+        if (err.detail.includes("username") || err.detail.includes("email")) {
+            this.message = "A user with this username or email already exists";
         } else if (
             err.detail.includes("title") &&
             err.detail.includes("written_by")
         ) {
-            this.message =
-                "User already has a book with the same title";
+            this.message = "User already has a book with the same title";
         } else {
             let keys = this.#getKeys(err.detail);
             keys = keys.join(" and ");

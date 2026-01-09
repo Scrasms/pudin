@@ -1,4 +1,5 @@
 import pool from "../../config/db.js";
+import InputError from "../errors/InputError.js";
 
 /**
  * Finds and returns book with matching bid
@@ -174,14 +175,20 @@ const tagBook = async (bid, uid, tagName) => {
  * @returns true if tag was removed and false otherwise
  */
 const unTagBook = async (bid, uid, tagName) => {
-    // Only untag books the user owns
+    // Ensure user owns the book (keep this a separate query for better error handling)
+    let { rowCount } = await pool.query(
+        "SELECT 1 FROM Book WHERE bid = $1 AND written_by = $2",
+        [bid, uid]
+    );
+    if (!rowCount) {
+        throw new InputError("Book not found or user didn't write it");
+    }
+
     const queryStr = `
         DELETE FROM BookTags
-        WHERE bid = $1 AND tag_name = $2 AND EXISTS (
-            SELECT 1 FROM Book WHERE bid = $3 AND written_by = $4
-        )
+        WHERE bid = $1 AND tag_name = $2
     `;
-    const { rowCount } = await pool.query(queryStr, [bid, tagName, bid, uid]);
+    ({ rowCount } = await pool.query(queryStr, [bid, tagName]));
     return rowCount > 0;
 };
 
