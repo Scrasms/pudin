@@ -44,9 +44,13 @@ class DBError extends Error {
 
     #handleFk(err) {
         this.status = 404;
-        let keys = this.#getKeys(err.detail);
-        keys.join(" and ");
-        this.message = `No such ${keys} found in ${err.table}`;
+        if (err.detail.includes("tag_name")) {
+            this.message = "No such tag found";
+        } else {
+            let keys = this.#getKeys(err.detail);
+            keys.join(" and ");
+            this.message = `No such ${keys} found in ${err.table}`;
+        }
     }
 
     // Extract keys from error detail message

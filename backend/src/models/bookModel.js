@@ -2,6 +2,21 @@ import pool from "../../config/db.js";
 import InputError from "../errors/InputError.js";
 
 /**
+ * Check if a user owns the book
+ * @param {uuid} bid - book's bid
+ * @param {uuid} uid - user's uid
+ * @returns - true if the user owns the book and false otherwise
+ */
+const userOwnsBook = async (bid, uid) => {
+    const { rowCount } = await pool.query(
+        "SELECT 1 FROM Book WHERE bid = $1 AND written_by = $2",
+        [bid, uid]
+    );
+
+    return rowCount > 0;
+};
+
+/**
  * Finds and returns book with matching bid
  * @param {uuid} bid - book's bid
  * @returns the book if found or undefined otherwise
@@ -121,7 +136,7 @@ const createBook = async (title, blurb, uid) => {
 };
 
 /**
- * Updates the cover of a book
+ * Updates the cover of a book, assumes the user owns the book
  * @param {uuid} bid - book's bid
  * @param {string} coverLink - link to the book's cover image
  */
@@ -148,51 +163,33 @@ const deleteBook = async (bid, uid) => {
 };
 
 /**
- * Tags a book that the user owns
+ * Tags a book
  * @param {uuid} bid - the book
- * @param {uuid} uid - the user
  * @param {string} tagName - the tag
- * @returns true if book was tagged and false otherwise
  */
-const tagBook = async (bid, uid, tagName) => {
-    // Only tag books the user owns
-    const queryStr = `
-        INSERT INTO BookTags (bid, tag_name)
-        SELECT $1, $2
-        WHERE EXISTS (
-            SELECT 1 FROM Book WHERE bid = $3 AND written_by = $4
-        )
-    `;
-    const { rowCount } = await pool.query(queryStr, [bid, tagName, bid, uid]);
-    return rowCount > 0;
+const tagBook = async (bid, tagName) => {
+    await pool.query("INSERT INTO BookTags (bid, tag_name) VALUES ($1, $2)", [
+        bid,
+        tagName,
+    ]);
 };
 
 /**
- * Remove a tag from a book that the user owns
+ * Remove a tag from a book
  * @param {uuid} bid - the book
- * @param {uuid} uid - the user
  * @param {string} tagName - the tag
- * @returns true if tag was removed and false otherwise
+ * @returns true if tag was removed and false otherwise (when tag does not exist)
  */
-const unTagBook = async (bid, uid, tagName) => {
-    // Ensure user owns the book (keep this a separate query for better error handling)
-    let { rowCount } = await pool.query(
-        "SELECT 1 FROM Book WHERE bid = $1 AND written_by = $2",
-        [bid, uid]
+const unTagBook = async (bid, tagName) => {
+    const { rowCount } = await pool.query(
+        "DELETE FROM BookTags WHERE bid = $1 AND tag_name = $2",
+        [bid, tagName]
     );
-    if (!rowCount) {
-        throw new InputError("Book not found or user didn't write it");
-    }
-
-    const queryStr = `
-        DELETE FROM BookTags
-        WHERE bid = $1 AND tag_name = $2
-    `;
-    ({ rowCount } = await pool.query(queryStr, [bid, tagName]));
     return rowCount > 0;
 };
 
 export {
+    userOwnsBook,
     getBookById,
     getBookChapters,
     getBookTags,

@@ -1,6 +1,7 @@
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import {
+    userOwnsBook,
     getBookById,
     getBookTags,
     getBookChapters,
@@ -44,6 +45,7 @@ const bookCreate = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
 };
@@ -117,6 +119,8 @@ const wrapBookData = async (bookData) => {
     };
 };
 
+const bookUpdate = async (req, res) => {};
+
 const bookDelete = async (req, res) => {
     const bid = req.params.bid.trim();
     const uid = req.user.uid;
@@ -138,12 +142,14 @@ const bookTag = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        const success = await tagBook(bid, uid, tagName);
+        // Only tag books the user owns
+        const success = await userOwnsBook(bid, uid);
         if (!success) {
             throw new InputError("Book not found or user didn't write it");
         }
 
-        res.json({ success: true });
+        await tagBook(bid, tagName);
+        res.status(201).json({ success: true });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -156,7 +162,13 @@ const bookUntag = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        const success = await unTagBook(bid, uid, tagName);
+        // Only remove tags from books the user owns
+        let success = await userOwnsBook(bid, uid);
+        if (!success) {
+            throw new InputError("Book not found or user didn't write it");
+        }
+
+        success = await unTagBook(bid, tagName);
         if (!success) {
             throw new InputError("Book does not have such a tag");
         }
@@ -167,4 +179,12 @@ const bookUntag = async (req, res) => {
     }
 };
 
-export { bookCreate, bookInfo, bookInfoAll, bookDelete, bookTag, bookUntag };
+export {
+    bookCreate,
+    bookInfo,
+    bookInfoAll,
+    bookUpdate,
+    bookDelete,
+    bookTag,
+    bookUntag,
+};

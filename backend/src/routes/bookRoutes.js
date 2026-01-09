@@ -4,6 +4,7 @@ import {
     bookCreate,
     bookInfo,
     bookInfoAll,
+    bookUpdate,
     bookDelete,
     bookTag,
     bookUntag
@@ -16,6 +17,8 @@ bookRouter.get("/", bookInfoAll);
 bookRouter.post("/", isAuth, bookCreate);
 
 bookRouter.get("/:bid", bookInfo);
+
+bookRouter.put("/:bid", isAuth, bookUpdate);
 
 bookRouter.delete("/:bid", isAuth, bookDelete);
 
