@@ -16,6 +16,21 @@ const userOwnsBook = async (bid, uid) => {
 };
 
 /**
+ * Finds and returns all books written by the given uid
+ * @param {uuid} uid - user's uid
+ * @param {boolean} publishedOnly - restrict search to published books only or not
+ * @returns books written by the user
+ */
+const getBooksByUser = async (uid, publishedOnly) => {
+    const table = publishedOnly ? "BookInfoPublished" : "BookInfoAll";
+    let queryStr = `SELECT * FROM ${table} WHERE written_by = $1`;
+
+    const { rows } = await pool.query(queryStr, [uid]);
+
+    return rows;
+};
+
+/**
  * Finds and returns the book with matching bid
  * @param {uuid} bid - book's bid
  * @param {boolean} publishedOnly - restrict search to published books only or not
@@ -246,6 +261,7 @@ const unTagBook = async (bid, tagName) => {
 
 export {
     userOwnsBook,
+    getBooksByUser,
     getBookById,
     getBookChapters,
     getBookTags,

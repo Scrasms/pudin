@@ -21,6 +21,8 @@ import {
     updateUserPassword,
     updateUserProfile,
 } from "../models/userModel.js";
+import { getBooksByUser } from "../models/bookModel.js";
+import { wrapBookData } from "./bookController.js";
 
 const userTest = (req, res) => {
     return res.json({
@@ -138,7 +140,9 @@ const userPassword = async (req, res) => {
     const hashedCodes = await getUserResetCodes(uid);
     const hashedCode = await getMatchingResetCode(hashedCodes, code);
     if (!hashedCode) {
-        throw new AuthError("Password reset code is incorrect or has already been used");
+        throw new AuthError(
+            "Password reset code is incorrect or has already been used"
+        );
     }
 
     // Ensure it is a valid password
@@ -227,6 +231,36 @@ const userInfo = async (req, res) => {
     });
 };
 
+const userBookInfo = async (req, res) => {
+    const username = req.params.username.trim();
+
+    const user = await getUserByUsername(username);
+    if (!user) {
+        throw new InputError("Username not found");
+    }
+
+    // Restrict search to published books if user is not searching for their own books
+    let publishedOnly = true;
+    if (req.user) {
+        publishedOnly = username !== req.user.username;
+    }
+    const userBooksData = [];
+
+    // Wrap bookData with user, chapter and tag information
+    const data = await getBooksByUser(user.uid, publishedOnly);
+    for (const bookData of data) {
+        const wrappedBookData = await wrapBookData(bookData, publishedOnly);
+        userBooksData.push(wrappedBookData);
+    }
+
+    res.json({
+        success: true,
+        data: {
+            books: userBooksData,
+        },
+    });
+};
+
 export {
     userTest,
     userSignup,
@@ -236,4 +270,5 @@ export {
     userPassword,
     userProfile,
     userInfo,
+    userBookInfo,
 };

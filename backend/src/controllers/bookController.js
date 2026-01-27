@@ -247,4 +247,5 @@ export {
     bookDelete,
     bookTag,
     bookUntag,
+    wrapBookData,
 };

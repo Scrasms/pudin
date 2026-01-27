@@ -9,6 +9,7 @@ import {
     userPassword,
     userProfile,
     userInfo,
+    userBookInfo,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -32,5 +33,8 @@ userRouter.get("/", isAuth, userTest);
 
 // Get public information about the given user
 userRouter.get("/:username", userInfo);
+
+// Get information about the books owned by the given user
+userRouter.get("/:username/book", userBookInfo);
 
 export default userRouter;
