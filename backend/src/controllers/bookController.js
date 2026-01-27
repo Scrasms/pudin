@@ -77,7 +77,11 @@ const bookInfo = async (req, res) => {
         throw new InputError("Book not found");
     }
 
-    const wrappedBookData = await wrapBookData(bookData, publishedOnly);
+    const wrappedBookData = await wrapBookData(
+        req.user,
+        bookData,
+        publishedOnly
+    );
 
     res.json({
         success: true,
@@ -96,7 +100,7 @@ const bookInfoAll = async (req, res) => {
     // Always restrict search to published books when getting all books for dashboard
     const data = await getAllPublishedBooks(order, limit, offset, tag);
     for (const bookData of data) {
-        const wrappedBookData = await wrapBookData(bookData, true);
+        const wrappedBookData = await wrapBookData(null, bookData, true);
         allBooksData.push(wrappedBookData);
     }
 
@@ -110,15 +114,19 @@ const bookInfoAll = async (req, res) => {
 
 /**
  * Given a book data object, adds fields containing user, chapter and tag information
+ * @param {Object} [user] - optional object containing ALL user information (will be filtered to remove sensitive info)
  * @param {Object} bookData - object containing book information
  * @param {boolean} publishedOnly - restrict search to published chapters only or not
  * @returns object described above
  */
-const wrapBookData = async (bookData, publishedOnly) => {
-    const uid = bookData.written_by;
-    const user = await getUserById(uid);
+const wrapBookData = async (user, bookData, publishedOnly) => {
+    // Get user if not provided
     if (!user) {
-        throw new InputError("User not found");
+        const uid = bookData.written_by;
+        user = await getUserById(uid);
+        if (!user) {
+            throw new InputError("User not found");
+        }
     }
 
     const userData = {

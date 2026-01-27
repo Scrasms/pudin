@@ -249,7 +249,7 @@ const userBookInfo = async (req, res) => {
     // Wrap bookData with user, chapter and tag information
     const data = await getBooksByUser(user.uid, publishedOnly);
     for (const bookData of data) {
-        const wrappedBookData = await wrapBookData(bookData, publishedOnly);
+        const wrappedBookData = await wrapBookData(req.user, bookData, publishedOnly);
         userBooksData.push(wrappedBookData);
     }
 

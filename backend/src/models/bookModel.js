@@ -88,10 +88,10 @@ const getBookTags = async (bid) => {
 
 /**
  * Gets all published books from the database, applying pagination, sorting and filters
- * @param {string} order - sorting order, format: +/-FIELD, + means ASC, - means DESC
- * @param {number} limit - how many books to display in one page
- * @param {number} offset - the offset from the beginning of the books (a.k.a the page)
- * @param {string} tag - the tag to filter by
+ * @param {string} [order] - sorting order, format: +/-FIELD, + means ASC, - means DESC
+ * @param {number} [limit] - how many books to display in one page
+ * @param {number} [offset] - the offset from the beginning of the books (a.k.a the page)
+ * @param {string} [tag] - the tag to filter by
  * @returns books in the desired page, order and filter
  */
 const getAllPublishedBooks = async (order, limit, offset, tag) => {
@@ -156,8 +156,8 @@ const createBook = async (title, blurb, uid) => {
 /**
  * Updates the text fields (title and blurb) of a book
  * @param {uuid} bid - book's bid
- * @param {string} newTitle - new title
- * @param {string} newBlurb - new blurb
+ * @param {string} [newTitle] - new title
+ * @param {string} [newBlurb] - new blurb
  */
 const updateBookText = async (bid, newTitle, newBlurb) => {
     if (!newTitle && !newBlurb) {
