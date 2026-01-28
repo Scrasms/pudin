@@ -9,7 +9,7 @@ import pool from "../../config/db.js";
 const userOwnsBook = async (bid, uid) => {
     const { rowCount } = await pool.query(
         "SELECT 1 FROM Book WHERE bid = $1 AND written_by = $2",
-        [bid, uid]
+        [bid, uid],
     );
 
     return rowCount > 0;
@@ -81,7 +81,7 @@ const getBookChapters = async (bid, publishedOnly) => {
 const getBookTags = async (bid) => {
     const { rows } = await pool.query(
         "SELECT tags FROM BookTagsList WHERE bid = $1",
-        [bid]
+        [bid],
     );
     return rows[0].tags;
 };
@@ -92,9 +92,10 @@ const getBookTags = async (bid) => {
  * @param {number} [limit] - how many books to display in one page
  * @param {number} [offset] - the offset from the beginning of the books (a.k.a the page)
  * @param {string} [tag] - the tag to filter by
+ * @param {string} [searchQuery] - only display books with titles that start with the searchQuery
  * @returns books in the desired page, order and filter
  */
-const getAllPublishedBooks = async (order, limit, offset, tag) => {
+const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
     // Protect against SQL injection
     const allowedOrders = new Set([
         "title",
@@ -119,6 +120,18 @@ const getAllPublishedBooks = async (order, limit, offset, tag) => {
         `;
         params.push(tag);
     }
+
+    if (searchQuery) {
+        if (tag) {
+            queryStr += ` AND`;
+        } else {
+            queryStr += ` WHERE`;
+        }
+        searchQuery += "%";
+        queryStr += ` bi.title ILIKE $${paramIdx++}`;
+        params.push(searchQuery);
+    }
+
     queryStr += ` ORDER BY ${orderBy} ${orderDir}`;
 
     if (limit || limit === 0) {
@@ -147,7 +160,7 @@ const getAllPublishedBooks = async (order, limit, offset, tag) => {
 const createBook = async (title, blurb, uid) => {
     const { rows } = await pool.query(
         "INSERT INTO Book (title, blurb, written_by) VALUES ($1, $2, $3) RETURNING bid",
-        [title, blurb, uid]
+        [title, blurb, uid],
     );
 
     return rows[0].bid;
@@ -212,7 +225,7 @@ const updateBookPublish = async (bid, publish) => {
 
     const { rowCount } = await pool.query(
         `UPDATE Book SET published_at = $1 WHERE bid = $2 AND ${publishCond}`,
-        [publishVal, bid]
+        [publishVal, bid],
     );
 
     return rowCount > 0;
@@ -227,7 +240,7 @@ const updateBookPublish = async (bid, publish) => {
 const deleteBook = async (bid, uid) => {
     const { rowCount } = await pool.query(
         "DELETE FROM Book WHERE bid = $1 AND written_by = $2",
-        [bid, uid]
+        [bid, uid],
     );
 
     return rowCount > 0;
@@ -254,7 +267,7 @@ const tagBook = async (bid, tagName) => {
 const unTagBook = async (bid, tagName) => {
     const { rowCount } = await pool.query(
         "DELETE FROM BookTags WHERE bid = $1 AND tag_name = $2",
-        [bid, tagName]
+        [bid, tagName],
     );
     return rowCount > 0;
 };
