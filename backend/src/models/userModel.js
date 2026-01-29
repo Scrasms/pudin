@@ -20,9 +20,54 @@ const getUserById = async (uid) => {
 const getUserByUsername = async (username) => {
     const { rows } = await pool.query(
         "SELECT * FROM Users WHERE username = $1",
-        [username]
+        [username],
     );
     return rows[0];
+};
+
+/**
+ *  Gets all users from the database, applying pagination, sorting and filters
+ * @param {number} [limit] - how many users to display in one page
+ * @param {number} [offset] - the offset from the beginning of the users (a.k.a the page)
+ * @param {string} [searchQuery] - only display users with usernames that start with the searchQuery
+ * @returns users in the desired page, order and filter
+ */
+const getAllUsers = async (limit, offset, searchQuery) => {
+    let queryStr = `
+        SELECT
+            uid,
+            email,
+            username,
+            profile_image,
+            joined_at
+        FROM Users
+    `;
+
+    const params = [];
+    let paramIdx = 1;
+
+    if (searchQuery) {
+        searchQuery += "%";
+        queryStr += ` WHERE username ILIKE $${paramIdx++}`;
+        params.push(searchQuery);
+    }
+
+    // Alphabetical order by username
+    queryStr += ` ORDER BY username ASC`;
+
+    if (limit || limit === 0) {
+        queryStr += ` LIMIT $${paramIdx++}`;
+        params.push(limit);
+    }
+
+    if (offset) {
+        queryStr += ` OFFSET $${paramIdx++}`;
+        params.push(offset);
+    }
+
+    const { rows } = await pool.query(queryStr, params);
+
+    return rows;
 };
 
 /**
@@ -35,7 +80,7 @@ const getUserByUsername = async (username) => {
 const createUser = async (email, password, username) => {
     const { rows } = await pool.query(
         "INSERT INTO Users (email, password, username) VALUES ($1, $2, $3) RETURNING uid",
-        [email, password, username]
+        [email, password, username],
     );
 
     return rows[0].uid;
@@ -49,7 +94,7 @@ const createUser = async (email, password, username) => {
 const deleteUser = async (username) => {
     const { rowCount } = await pool.query(
         "DELETE FROM Users WHERE username = $1",
-        [username]
+        [username],
     );
 
     return rowCount > 0;
@@ -63,7 +108,7 @@ const deleteUser = async (username) => {
 const deleteUserSessions = async (uid) => {
     const { rowCount } = await pool.query(
         "DELETE FROM Session WHERE (sess->'passport'->>'user')::uuid = $1",
-        [uid]
+        [uid],
     );
 
     return rowCount > 0;
@@ -78,7 +123,7 @@ const createUserResetCodes = async (uid, codes) => {
     for (const code of codes) {
         await pool.query(
             "INSERT INTO UserResetCodes (uid, code) VALUES ($1, $2)",
-            [uid, code]
+            [uid, code],
         );
     }
 };
@@ -91,7 +136,7 @@ const createUserResetCodes = async (uid, codes) => {
 const getUserResetCodes = async (uid) => {
     const { rows } = await pool.query(
         "SELECT code FROM UserResetCodes WHERE uid = $1",
-        [uid]
+        [uid],
     );
 
     return rows;
@@ -106,7 +151,7 @@ const getUserResetCodes = async (uid) => {
 const deleteUserResetCode = async (uid, code) => {
     const { rowCount } = await pool.query(
         "DELETE FROM UserResetCodes WHERE uid = $1 AND code = $2",
-        [uid, code]
+        [uid, code],
     );
 
     return rowCount > 0;
@@ -140,6 +185,7 @@ export {
     createUser,
     getUserById,
     getUserByUsername,
+    getAllUsers,
     deleteUser,
     deleteUserSessions,
     createUserResetCodes,

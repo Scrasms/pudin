@@ -10,9 +10,13 @@ import {
     userProfile,
     userInfo,
     userBookInfo,
+    userInfoAll,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
+
+// Test route that only works if user is authenticated
+userRouter.get("/test", isAuth, userTest);
 
 userRouter.post("/signup", userSignup);
 
@@ -28,8 +32,8 @@ userRouter.post("/password", isAuth, userPassword);
 // Update user's profile picture
 userRouter.put("/profile", isAuth, userProfile);
 
-// Test route that only works if user is authenticated
-userRouter.get("/", isAuth, userTest);
+// Get public information about all users
+userRouter.get("/", userInfoAll);
 
 // Get public information about the given user
 userRouter.get("/:username", userInfo);

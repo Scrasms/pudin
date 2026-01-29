@@ -110,7 +110,7 @@ const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
     orderBy = allowedOrders.has(orderBy) ? orderBy : "title";
 
     let queryStr = "SELECT * FROM BookInfoPublished bi";
-    let params = [];
+    const params = [];
     let paramIdx = 1;
 
     if (tag) {

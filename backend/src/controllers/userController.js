@@ -20,6 +20,7 @@ import {
     deleteUserResetCode,
     updateUserPassword,
     updateUserProfile,
+    getAllUsers,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -141,7 +142,7 @@ const userPassword = async (req, res) => {
     const hashedCode = await getMatchingResetCode(hashedCodes, code);
     if (!hashedCode) {
         throw new AuthError(
-            "Password reset code is incorrect or has already been used"
+            "Password reset code is incorrect or has already been used",
         );
     }
 
@@ -155,7 +156,7 @@ const userPassword = async (req, res) => {
     const match = await bcrypt.compare(newPassword, req.user.password);
     if (match) {
         throw new InputError(
-            "New password cannot be the same as the old password"
+            "New password cannot be the same as the old password",
         );
     }
 
@@ -231,6 +232,21 @@ const userInfo = async (req, res) => {
     });
 };
 
+const userInfoAll = async (req, res) => {
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
+    const searchQuery = req.query.searchQuery;
+
+    const allUsersData = await getAllUsers(limit, offset, searchQuery);
+
+    res.json({
+        success: true,
+        data: {
+            users: allUsersData,
+        },
+    });
+};
+
 const userBookInfo = async (req, res) => {
     const username = req.params.username.trim();
 
@@ -249,7 +265,11 @@ const userBookInfo = async (req, res) => {
     // Wrap bookData with user, chapter and tag information
     const data = await getBooksByUser(user.uid, publishedOnly);
     for (const bookData of data) {
-        const wrappedBookData = await wrapBookData(req.user, bookData, publishedOnly);
+        const wrappedBookData = await wrapBookData(
+            req.user,
+            bookData,
+            publishedOnly,
+        );
         userBooksData.push(wrappedBookData);
     }
 
@@ -270,5 +290,6 @@ export {
     userPassword,
     userProfile,
     userInfo,
+    userInfoAll,
     userBookInfo,
 };
