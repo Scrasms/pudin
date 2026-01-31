@@ -43,6 +43,6 @@ userRouter.get("/:username", userInfo);
 userRouter.get("/:username/book", userBookInfo);
 
 // Saves a book for the user with default status "unread"
-userRouter.post("/:bid", isAuth, userBookSave);
+userRouter.post("/save/:bid", isAuth, userBookSave);
 
 export default userRouter;
