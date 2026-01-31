@@ -181,6 +181,18 @@ const updateUserProfile = async (uid, profileLink) => {
     ]);
 };
 
+/**
+ * Saves a book for the user
+ * @param {uuid} uid - user's uid
+ * @param {uuid} bid - book's bid
+ */
+const createUserBookSave = async (uid, bid) => {
+    await pool.query("INSERT INTO BookSaves (uid, bid) VALUES ($1, $2)", [
+        uid,
+        bid,
+    ]);
+};
+
 export {
     createUser,
     getUserById,
@@ -193,4 +205,5 @@ export {
     deleteUserResetCode,
     updateUserPassword,
     updateUserProfile,
+    createUserBookSave,
 };

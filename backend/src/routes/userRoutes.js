@@ -11,6 +11,7 @@ import {
     userInfo,
     userBookInfo,
     userInfoAll,
+    userBookSave,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -40,5 +41,8 @@ userRouter.get("/:username", userInfo);
 
 // Get information about the books owned by the given user
 userRouter.get("/:username/book", userBookInfo);
+
+// Saves a book for the user with default status "unread"
+userRouter.post("/:bid", isAuth, userBookSave);
 
 export default userRouter;

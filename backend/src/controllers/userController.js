@@ -21,6 +21,7 @@ import {
     updateUserPassword,
     updateUserProfile,
     getAllUsers,
+    createUserBookSave,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -281,6 +282,19 @@ const userBookInfo = async (req, res) => {
     });
 };
 
+const userBookSave = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    try {
+        await createUserBookSave(uid, bid);
+
+        res.status(201).json({ success: true });
+    } catch (err) {
+        throw new DBError(err);
+    }
+};
+
 export {
     userTest,
     userSignup,
@@ -292,4 +306,5 @@ export {
     userInfo,
     userInfoAll,
     userBookInfo,
+    userBookSave,
 };
