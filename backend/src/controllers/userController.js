@@ -25,6 +25,7 @@ import {
     getUserBookSave,
     getAllUserBookSaves,
     updateUserBookSave,
+    deleteUserBookSave,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -352,6 +353,23 @@ const userBookSaveUpdate = async (req, res) => {
     }
 };
 
+const userBookSaveDelete = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    try {
+        const success = await deleteUserBookSave(uid, bid);
+        if (!success) {
+            throw new InputError("User did not save such a book");
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
 export {
     userTest,
     userSignup,
@@ -367,4 +385,5 @@ export {
     userBookSaveInfo,
     userBookSaveInfoAll,
     userBookSaveUpdate,
+    userBookSaveDelete,
 };

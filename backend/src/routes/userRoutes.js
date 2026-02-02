@@ -15,6 +15,7 @@ import {
     userBookSaveInfo,
     userBookSaveInfoAll,
     userBookSaveUpdate,
+    userBookSaveDelete,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -44,6 +45,9 @@ userRouter.get("/save/:bid", isAuth, userBookSaveInfo);
 
 // Updates the status of the user's saved book
 userRouter.put("/save/:bid", isAuth, userBookSaveUpdate);
+
+// Unsaves a book for the user
+userRouter.delete("/save/:bid", isAuth, userBookSaveDelete);
 
 // Get information about all of a user's saved books
 userRouter.get("/save", isAuth, userBookSaveInfoAll);
