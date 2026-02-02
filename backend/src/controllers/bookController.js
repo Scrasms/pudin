@@ -14,6 +14,7 @@ import {
     tagBook,
     unTagBook,
 } from "../models/bookModel.js";
+import { deleteAllUserBookSave } from "../models/saveModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
 
@@ -187,6 +188,11 @@ const bookUpdate = async (req, res) => {
             throw new InputError("Book is already published");
         } else if (!success) {
             throw new InputError("Book is already unpublished");
+        }
+
+        // Unsave the unpublished book for all users that had it saved
+        if (success && !publish) {
+            await deleteAllUserBookSave(bid);
         }
 
         res.json({ success: true });

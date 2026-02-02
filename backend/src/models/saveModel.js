@@ -61,7 +61,7 @@ const updateUserBookSave = async (uid, bid, newStatus) => {
 };
 
 /**
- * Unsaves a book
+ * Unsaves a book for the given user
  * @param {uuid} uid - the user's uid
  * @param {uuid} bid - the book's bid
  * @returns true if book was successfully unsaved and false otherwise
@@ -75,10 +75,19 @@ const deleteUserBookSave = async (uid, bid) => {
     return rowCount > 0;
 };
 
+/**
+ * Unsaves a book for all users that had it saved
+ * @param {uuid} bid - the book's bid
+ */
+const deleteAllUserBookSave = async (bid) => {
+    await pool.query("DELETE FROM BookSaves WHERE bid = $1", [bid]);
+};
+
 export {
     createUserBookSave,
     getUserBookSave,
     getAllUserBookSaves,
     updateUserBookSave,
     deleteUserBookSave,
+    deleteAllUserBookSave,
 };
