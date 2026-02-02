@@ -3,6 +3,7 @@ import passport from "passport";
 import AuthError from "../errors/AuthError.js";
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
+import { bannedNames } from "../constants/bannedNames.js";
 import { validatePassword } from "../utils/password.js";
 import { uploadImage } from "../utils/image.js";
 import {
@@ -21,11 +22,6 @@ import {
     updateUserPassword,
     updateUserProfile,
     getAllUsers,
-    createUserBookSave,
-    getUserBookSave,
-    getAllUserBookSaves,
-    updateUserBookSave,
-    deleteUserBookSave,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -44,6 +40,10 @@ const userSignup = async (req, res, next) => {
 
     //TODO: input validation (especially sending verification email)
     username = username.trim();
+    if (bannedNames.includes(username)) {
+        throw new InputError("Username is not allowed");
+    }
+
     email = email.trim();
 
     const err = validatePassword(password);
@@ -286,90 +286,6 @@ const userBookInfo = async (req, res) => {
     });
 };
 
-const userBookSave = async (req, res) => {
-    const bid = req.params.bid.trim();
-    const uid = req.user.uid;
-
-    try {
-        await createUserBookSave(uid, bid);
-
-        res.status(201).json({ success: true });
-    } catch (err) {
-        throw new DBError(err);
-    }
-};
-
-const userBookSaveInfo = async (req, res) => {
-    const bid = req.params.bid.trim();
-    const uid = req.user.uid;
-
-    try {
-        const saveData = await getUserBookSave(uid, bid);
-        if (saveData.length === 0) {
-            throw new InputError("User did not save such a book");
-        }
-
-        res.json({
-            success: true,
-            data: {
-                save: saveData,
-            },
-        });
-    } catch (err) {
-        if (err instanceof InputError) throw err;
-        throw new DBError(err);
-    }
-};
-
-const userBookSaveInfoAll = async (req, res) => {
-    const uid = req.user.uid;
-
-    const allSavesData = await getAllUserBookSaves(uid);
-
-    res.json({
-        success: true,
-        data: {
-            saves: allSavesData,
-        },
-    });
-};
-
-const userBookSaveUpdate = async (req, res) => {
-    const { newStatus } = req.body;
-    const bid = req.params.bid.trim();
-    const uid = req.user.uid;
-
-    try {
-        const success = await updateUserBookSave(uid, bid, newStatus);
-        if (!success) {
-            throw new InputError(
-                "New status is invalid or user did not save such a book",
-            );
-        }
-        res.json({ success: true });
-    } catch (err) {
-        if (err instanceof InputError) throw err;
-        throw new DBError(err);
-    }
-};
-
-const userBookSaveDelete = async (req, res) => {
-    const bid = req.params.bid.trim();
-    const uid = req.user.uid;
-
-    try {
-        const success = await deleteUserBookSave(uid, bid);
-        if (!success) {
-            throw new InputError("User did not save such a book");
-        }
-
-        res.json({ success: true });
-    } catch (err) {
-        if (err instanceof InputError) throw err;
-        throw new DBError(err);
-    }
-};
-
 export {
     userTest,
     userSignup,
@@ -381,9 +297,4 @@ export {
     userInfo,
     userInfoAll,
     userBookInfo,
-    userBookSave,
-    userBookSaveInfo,
-    userBookSaveInfoAll,
-    userBookSaveUpdate,
-    userBookSaveDelete,
 };

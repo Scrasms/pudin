@@ -99,7 +99,13 @@ const bookInfoAll = async (req, res) => {
     const allBooksData = [];
 
     // Always restrict search to published books when getting all books for dashboard
-    const data = await getAllPublishedBooks(order, limit, offset, tag, searchQuery);
+    const data = await getAllPublishedBooks(
+        order,
+        limit,
+        offset,
+        tag,
+        searchQuery,
+    );
     for (const bookData of data) {
         const wrappedBookData = await wrapBookData(null, bookData, true);
         allBooksData.push(wrappedBookData);

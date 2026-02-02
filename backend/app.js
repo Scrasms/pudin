@@ -9,6 +9,7 @@ import passport from "passport";
 import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
 import tagRouter from "./src/routes/tagRoutes.js";
+import saveRouter from "./src/routes/saveRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -36,9 +37,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routers
+app.use("/user/save", saveRouter);
 app.use("/user", userRouter);
-app.use("/book", bookRouter);
 app.use("/book/tag", tagRouter);
+app.use("/book", bookRouter);
 
 // Error handler
 app.use(errorHandler);
