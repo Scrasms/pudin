@@ -183,14 +183,43 @@ const updateUserProfile = async (uid, profileLink) => {
 
 /**
  * Saves a book for the user
- * @param {uuid} uid - user's uid
- * @param {uuid} bid - book's bid
+ * @param {uuid} uid - the user's uid
+ * @param {uuid} bid - the book's bid
  */
 const createUserBookSave = async (uid, bid) => {
     await pool.query("INSERT INTO BookSaves (uid, bid) VALUES ($1, $2)", [
         uid,
         bid,
     ]);
+};
+
+/**
+ * Gets info about a user's saved book
+ * @param {uuid} uid - the user's uid
+ * @param {uuid} bid - the book's bid
+ * @returns info about the user's saved book
+ */
+const getUserBookSave = async (uid, bid) => {
+    const { rows } = await pool.query(
+        "SELECT * FROM BookSaves WHERE uid = $1 AND bid = $2",
+        [uid, bid],
+    );
+
+    return rows;
+};
+
+/**
+ * Gets info about all of a user's saved books
+ * @param {uuid} uid - the user's uid
+ * @returns info about all of the user's saved books
+ */
+const getAllUserBookSaves = async (uid) => {
+    const { rows } = await pool.query(
+        "SELECT * FROM BookSaves WHERE uid = $1",
+        [uid],
+    );
+
+    return rows;
 };
 
 export {
@@ -206,4 +235,6 @@ export {
     updateUserPassword,
     updateUserProfile,
     createUserBookSave,
+    getUserBookSave,
+    getAllUserBookSaves
 };

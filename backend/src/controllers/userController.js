@@ -22,6 +22,8 @@ import {
     updateUserProfile,
     getAllUsers,
     createUserBookSave,
+    getUserBookSave,
+    getAllUserBookSaves,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -295,6 +297,41 @@ const userBookSave = async (req, res) => {
     }
 };
 
+const userBookSaveInfo = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    try {
+        const saveData = await getUserBookSave(uid, bid);
+        if (saveData.length === 0) {
+            throw new InputError("User did not save such a book");
+        }
+
+        res.json({
+            success: true,
+            data: {
+                save: saveData,
+            },
+        });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+const userBookSaveInfoAll = async (req, res) => {
+    const uid = req.user.uid;
+
+    const allSavesData = await getAllUserBookSaves(uid);
+
+    res.json({
+        success: true,
+        data: {
+            saves: allSavesData
+        }
+    });
+}
+
 export {
     userTest,
     userSignup,
@@ -307,4 +344,6 @@ export {
     userInfoAll,
     userBookInfo,
     userBookSave,
+    userBookSaveInfo,
+    userBookSaveInfoAll
 };
