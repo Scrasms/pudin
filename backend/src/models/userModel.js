@@ -222,6 +222,25 @@ const getAllUserBookSaves = async (uid) => {
     return rows;
 };
 
+/**
+ * Updates the status of a user's saved book
+ * @param {uuid} uid - the user's uid
+ * @param {uuid} bid - the book's bid
+ * @param {string} newStatus - the new status
+ * @returns true if book was updated and false otherwise
+ */
+const updateUserBookSave = async (uid, bid, newStatus) => {
+    const allowedStatuses = ["unread", "reading", "read"];
+    if (!allowedStatuses.includes(newStatus)) return false;
+
+    const { rowCount } = await pool.query(
+        "UPDATE BookSaves SET status = $1 WHERE uid = $2 AND bid = $3",
+        [newStatus, uid, bid],
+    );
+
+    return rowCount > 0;
+};
+
 export {
     createUser,
     getUserById,
@@ -236,5 +255,6 @@ export {
     updateUserProfile,
     createUserBookSave,
     getUserBookSave,
-    getAllUserBookSaves
+    getAllUserBookSaves,
+    updateUserBookSave,
 };

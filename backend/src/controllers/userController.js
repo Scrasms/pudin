@@ -24,6 +24,7 @@ import {
     createUserBookSave,
     getUserBookSave,
     getAllUserBookSaves,
+    updateUserBookSave,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
 import { wrapBookData } from "./bookController.js";
@@ -327,10 +328,29 @@ const userBookSaveInfoAll = async (req, res) => {
     res.json({
         success: true,
         data: {
-            saves: allSavesData
-        }
+            saves: allSavesData,
+        },
     });
-}
+};
+
+const userBookSaveUpdate = async (req, res) => {
+    const { newStatus } = req.body;
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    try {
+        const success = await updateUserBookSave(uid, bid, newStatus);
+        if (!success) {
+            throw new InputError(
+                "New status is invalid or user did not save such a book",
+            );
+        }
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
 
 export {
     userTest,
@@ -345,5 +365,6 @@ export {
     userBookInfo,
     userBookSave,
     userBookSaveInfo,
-    userBookSaveInfoAll
+    userBookSaveInfoAll,
+    userBookSaveUpdate,
 };
