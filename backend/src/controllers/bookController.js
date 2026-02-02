@@ -3,8 +3,6 @@ import InputError from "../errors/InputError.js";
 import {
     userOwnsBook,
     getBookById,
-    getBookTags,
-    getBookChapters,
     getAllPublishedBooks,
     createBook,
     updateBookText,
@@ -14,8 +12,8 @@ import {
 } from "../models/bookModel.js";
 import { deleteAllUserBookSave } from "../models/saveModel.js";
 import { tagBook, untagBook } from "../models/tagModel.js";
-import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
+import { wrapBookData } from "../utils/wrapBook.js";
 
 const bookCreate = async (req, res) => {
     const { title, blurb, bookCover } = req.body;
@@ -117,44 +115,6 @@ const bookInfoAll = async (req, res) => {
             books: allBooksData,
         },
     });
-};
-
-/**
- * Given a book data object, adds fields containing user, chapter and tag information
- * @param {Object} [user] - optional object containing ALL user information (will be filtered to remove sensitive info)
- * @param {Object} bookData - object containing book information
- * @param {boolean} publishedOnly - restrict search to published chapters only or not
- * @returns object described above
- */
-const wrapBookData = async (user, bookData, publishedOnly) => {
-    // Get user if not provided
-    if (!user) {
-        const uid = bookData.written_by;
-        user = await getUserById(uid);
-        if (!user) {
-            throw new InputError("User not found");
-        }
-    }
-
-    const userData = {
-        uid: user.uid,
-        email: user.email,
-        username: user.username,
-        image: user.profile_image,
-        joined_at: user.joined_at,
-    };
-
-    const bid = bookData.bid;
-    bookData.chapters = await getBookChapters(bid, publishedOnly);
-    // Tags might already exist (getAllBooks creates it if a tag filter is applied)
-    if (!bookData.tags) {
-        bookData.tags = await getBookTags(bid);
-    }
-
-    return {
-        user: userData,
-        book: bookData,
-    };
 };
 
 const bookUpdate = async (req, res) => {
@@ -267,5 +227,4 @@ export {
     bookDelete,
     bookTag,
     bookUntag,
-    wrapBookData,
 };

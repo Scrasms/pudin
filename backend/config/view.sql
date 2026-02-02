@@ -20,9 +20,9 @@ SELECT
     b.image,
     b.written_by,
     b.published_at,
-    COALESCE(SUM(c.likes), 0)::integer AS published_likes,
-    COALESCE(SUM(c.reads), 0)::integer AS published_reads,
-    COUNT(c.*)::integer AS published_chapters
+    COALESCE(SUM(c.likes), 0)::integer AS total_likes,
+    COALESCE(SUM(c.reads), 0)::integer AS total_reads,
+    COUNT(c.*)::integer AS total_chapters
 FROM Book b
 LEFT JOIN Chapter c ON c.bid = b.bid AND c.published_at IS NOT NULL
 WHERE b.published_at IS NOT NULL

@@ -7,6 +7,7 @@ import {
     getUserBookSave,
     updateUserBookSave,
 } from "../models/saveModel.js";
+import { wrapBookData } from "../utils/wrapBook.js";
 
 const userBookSave = async (req, res) => {
     const bid = req.params.bid.trim();
@@ -46,12 +47,18 @@ const userBookSaveInfo = async (req, res) => {
 const userBookSaveInfoAll = async (req, res) => {
     const uid = req.user.uid;
 
+    const allBooksData = [];
+
     const allSavesData = await getAllUserBookSaves(uid);
+    for (const bookData of allSavesData) {
+        const wrappedBookData = await wrapBookData(null, bookData, true);
+        allBooksData.push(wrappedBookData);
+    }
 
     res.json({
         success: true,
         data: {
-            saves: allSavesData,
+            books: allBooksData,
         },
     });
 };

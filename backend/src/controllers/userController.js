@@ -24,7 +24,7 @@ import {
     getAllUsers,
 } from "../models/userModel.js";
 import { getBooksByUser } from "../models/bookModel.js";
-import { wrapBookData } from "./bookController.js";
+import { wrapBookData } from "../utils/wrapBook.js";
 
 const userTest = (req, res) => {
     return res.json({

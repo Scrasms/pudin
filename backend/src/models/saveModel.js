@@ -13,7 +13,7 @@ const createUserBookSave = async (uid, bid) => {
 };
 
 /**
- * Gets info about a user's saved book
+ * Gets save info about a user's saved book
  * @param {uuid} uid - the user's uid
  * @param {uuid} bid - the book's bid
  * @returns info about the user's saved book
@@ -28,15 +28,23 @@ const getUserBookSave = async (uid, bid) => {
 };
 
 /**
- * Gets info about all of a user's saved books
+ * Gets book and save info about all of a user's saved books
  * @param {uuid} uid - the user's uid
  * @returns info about all of the user's saved books
  */
 const getAllUserBookSaves = async (uid) => {
-    const { rows } = await pool.query(
-        "SELECT * FROM BookSaves WHERE uid = $1",
-        [uid],
-    );
+    const queryStr = `
+        SELECT
+            bi.*,
+            bs.saved_at,
+            bs.status
+        FROM BookSaves bs
+        JOIN BookInfoPublished bi ON bi.bid = bs.bid
+        WHERE bs.uid = $1
+        ORDER BY bi.title ASC
+    `;
+
+    const { rows } = await pool.query(queryStr, [uid]);
 
     return rows;
 };
