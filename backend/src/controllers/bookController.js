@@ -11,10 +11,9 @@ import {
     updateBookCover,
     updateBookPublish,
     deleteBook,
-    tagBook,
-    unTagBook,
 } from "../models/bookModel.js";
 import { deleteAllUserBookSave } from "../models/saveModel.js";
+import { tagBook, untagBook } from "../models/tagModel.js";
 import { getUserById } from "../models/userModel.js";
 import { uploadImage } from "../utils/image.js";
 
@@ -249,7 +248,7 @@ const bookUntag = async (req, res) => {
             throw new InputError("Book not found or user didn't write it");
         }
 
-        success = await unTagBook(bid, tagName);
+        success = await untagBook(bid, tagName);
         if (!success) {
             throw new InputError("Book does not have such a tag");
         }
