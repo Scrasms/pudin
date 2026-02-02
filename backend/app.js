@@ -10,6 +10,7 @@ import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
 import tagRouter from "./src/routes/tagRoutes.js";
 import saveRouter from "./src/routes/saveRoutes.js";
+import { chapterRouter } from "./src/routes/chapterRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -40,6 +41,7 @@ app.use(passport.session());
 app.use("/user/save", saveRouter);
 app.use("/user", userRouter);
 app.use("/book/tag", tagRouter);
+app.use("/book/:bid/chapter", chapterRouter);
 app.use("/book", bookRouter);
 
 // Error handler

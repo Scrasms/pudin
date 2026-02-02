@@ -26,7 +26,7 @@ const bookCreate = async (req, res) => {
         // when new book is invalid
         let newLink = "";
         if (bookCover) {
-            newLink = storeBookCover(bid, bookCover);
+            newLink = await storeBookCover(bid, bookCover);
         }
 
         const bookData = {
