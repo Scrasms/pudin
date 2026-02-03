@@ -5,6 +5,7 @@ import {
     createChapter,
     createChapterReads,
     getChapterById,
+    getLastReadChapter,
     updateChapterNumReads,
     updateChapterPublish,
     updateChapterText,
@@ -76,13 +77,18 @@ const chapterInfo = async (req, res) => {
         }
 
         const chapterData = await getChapterById(bid, number, publishedOnly);
+        if (!chapterData.length) {
+            throw new InputError("No such chapter exists");
+        }
 
-        // Update reads if its not the owner reading the book
+        // Update read number if its not the owner reading the book
         if (publishedOnly) {
             await updateChapterNumReads(bid, number);
-            if (req.user) {
-               await createChapterReads(bid, number, req.user.uid);
-            }
+        }
+
+        // Track last-read chapter regardless of ownership
+        if (req.user) {
+            await createChapterReads(bid, number, req.user.uid);
         }
 
         res.json({
@@ -96,4 +102,16 @@ const chapterInfo = async (req, res) => {
     }
 };
 
-export { chapterCreate, chapterUpdate, chapterInfo };
+const chapterLastRead = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const uid = req.user.uid;
+
+    const chapterData = await getLastReadChapter(bid, uid);
+
+    res.json({
+        success: true,
+        data: { chapter: chapterData },
+    });
+};
+
+export { chapterCreate, chapterUpdate, chapterInfo, chapterLastRead };

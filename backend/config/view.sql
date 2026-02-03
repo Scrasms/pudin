@@ -39,3 +39,11 @@ LEFT JOIN BookTags bt ON bt.bid = b.bid
 LEFT JOIN Tag t ON t.tag_name = bt.tag_name
 GROUP BY b.bid
 ;
+
+-- Filters out all ChapterReads entries of chapters that aren't published
+CREATE OR REPLACE VIEW ChapterReadsPublished AS
+SELECT cr.*
+FROM ChapterReads cr
+JOIN Chapter c ON c.bid = cr.bid AND c.number = cr.number
+WHERE c.published_at IS NOT NULL
+;

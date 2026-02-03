@@ -51,6 +51,8 @@ class DBError extends Error {
         this.status = 404;
         if (err.detail.includes("tag_name")) {
             this.message = "No such tag found";
+        } else if (err.detail.includes("bid") && err.detail.includes("number")) {
+            this.message = "No such chapter found";
         } else {
             let keys = this.#getKeys(err.detail);
             keys.join(" and ");

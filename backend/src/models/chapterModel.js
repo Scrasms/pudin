@@ -43,16 +43,14 @@ const updateChapterText = async (bid, number, title, content) => {
     const params = [];
     let paramIdx = 1;
 
-    if (title !== null) {
-        queryStr += ` title = $${paramIdx++}`;
-        params.push(title);
+    if (!title) {
+        title = `Chapter ${number}`;
     }
+    queryStr += ` title = $${paramIdx++}`;
+    params.push(title);
 
     if (content !== null) {
-        if (title !== null) {
-            queryStr += ",";
-        }
-        queryStr += ` content = $${paramIdx++}`;
+        queryStr += `, content = $${paramIdx++}`;
         params.push(content);
     }
 
@@ -61,8 +59,6 @@ const updateChapterText = async (bid, number, title, content) => {
 
     queryStr += ` AND number = $${paramIdx++}`;
     params.push(number);
-
-    console.log(queryStr);
 
     await pool.query(queryStr, params);
 };
@@ -162,6 +158,26 @@ const createChapterReads = async (bid, number, uid) => {
     await pool.query(queryStr, [uid, bid, number]);
 };
 
+/**
+ * Finds the user's last read chapter for the given book that is published
+ * @param {uuid} bid - book's bid
+ * @param {uuid} uid - user's uid
+ * @returns the last read chapter for the given book
+ */
+const getLastReadChapter = async (bid, uid) => {
+    const queryStr = `
+        SELECT *
+        FROM ChapterReadsPublished
+        WHERE uid = $1 AND bid = $2
+        ORDER BY read_at DESC
+        LIMIT 1
+    `;
+
+    const { rows } = await pool.query(queryStr, [uid, bid]);
+
+    return rows;
+};
+
 export {
     createChapter,
     updateChapterText,
@@ -169,4 +185,5 @@ export {
     getChapterById,
     updateChapterNumReads,
     createChapterReads,
+    getLastReadChapter,
 };
