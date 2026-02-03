@@ -169,11 +169,11 @@ const createBook = async (title, blurb, uid) => {
 /**
  * Updates the text fields (title and blurb) of a book
  * @param {uuid} bid - book's bid
- * @param {string} [newTitle] - new title
- * @param {string} [newBlurb] - new blurb
+ * @param {string} [title] - new title
+ * @param {string} [blurb] - new blurb
  */
-const updateBookText = async (bid, newTitle, newBlurb) => {
-    if (!newTitle && !newBlurb) {
+const updateBookText = async (bid, title, blurb) => {
+    if (!title && blurb === null) {
         return;
     }
 
@@ -181,14 +181,17 @@ const updateBookText = async (bid, newTitle, newBlurb) => {
     const params = [];
     let paramIdx = 1;
 
-    if (newTitle) {
+    if (title) {
         queryStr += ` title = $${paramIdx++}`;
-        params.push(newTitle);
+        params.push(title);
     }
 
-    if (newBlurb) {
+    if (blurb !== null) {
+        if (title) {
+            queryStr += ",";
+        }
         queryStr += ` blurb = $${paramIdx++}`;
-        params.push(newBlurb);
+        params.push(blurb);
     }
 
     queryStr += ` WHERE bid = $${paramIdx++}`;
@@ -212,7 +215,7 @@ const updateBookCover = async (bid, coverLink) => {
 /**
  * Updates the publish status of a book (whether it's visible to everyone or just the owner)
  * @param {uuid} bid - book's bid
- * @param {boolean} publish - true if we want to publish the book and false if we want to unpublish it
+ * @param {boolean} [publish] - true if we want to publish the book and false if we want to unpublish it
  * @returns - true if book was published/unpublished and false otherwise
  */
 const updateBookPublish = async (bid, publish) => {

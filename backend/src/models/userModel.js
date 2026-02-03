@@ -160,11 +160,11 @@ const deleteUserResetCode = async (uid, code) => {
 /**
  * Updates the user's password
  * @param {uuid} uid - the user's uid
- * @param {string} newPassword - the user's new password
+ * @param {string} password - the user's new password
  */
-const updateUserPassword = async (uid, newPassword) => {
+const updateUserPassword = async (uid, password) => {
     await pool.query("UPDATE Users SET password = $1 WHERE uid = $2", [
-        newPassword,
+        password,
         uid,
     ]);
 };

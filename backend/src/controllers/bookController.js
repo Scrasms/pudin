@@ -24,14 +24,14 @@ const bookCreate = async (req, res) => {
 
         // Store cover AFTER creating book to avoid uploading to imgbb
         // when new book is invalid
-        let newLink = "";
+        let link = "";
         if (bookCover) {
-            newLink = await storeBookCover(bid, bookCover);
+            link = await storeBookCover(bid, bookCover);
         }
 
         const bookData = {
             bid: bid,
-            image: newLink,
+            image: link,
         };
         res.status(201).json({
             success: true,
@@ -56,10 +56,10 @@ const storeBookCover = async (bid, bookCover) => {
     if (!data.success) {
         throw new InputError(data.error.message);
     }
-    const newLink = data.data.url;
-    await updateBookCover(bid, newLink);
+    const link = data.data.url;
+    await updateBookCover(bid, link);
 
-    return newLink;
+    return link;
 };
 
 const bookInfo = async (req, res) => {
@@ -119,15 +119,15 @@ const bookInfoAll = async (req, res) => {
 
 const bookUpdate = async (req, res) => {
     const bid = req.params.bid.trim();
-    let { newTitle, newBlurb, newBookCover, publish } = req.body;
+    let { title, blurb, bookCover, publish } = req.body;
     const uid = req.user.uid;
 
-    if (newTitle) {
-        newTitle = newTitle.trim();
+    if (title) {
+        title = title.trim();
     }
 
-    if (newBlurb) {
-        newBlurb = newBlurb.trim();
+    if (blurb) {
+        blurb = blurb.trim();
     }
 
     try {
@@ -136,10 +136,10 @@ const bookUpdate = async (req, res) => {
         if (!success) {
             throw new InputError("Book not found or user didn't write it");
         }
-        await updateBookText(bid, newTitle, newBlurb);
+        await updateBookText(bid, title, blurb);
 
-        if (newBookCover) {
-            await storeBookCover(bid, newBookCover);
+        if (bookCover) {
+            await storeBookCover(bid, bookCover);
         }
 
         success = await updateBookPublish(bid, publish);

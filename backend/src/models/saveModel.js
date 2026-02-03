@@ -53,16 +53,16 @@ const getAllUserBookSaves = async (uid) => {
  * Updates the status of a user's saved book
  * @param {uuid} uid - the user's uid
  * @param {uuid} bid - the book's bid
- * @param {string} newStatus - the new status
+ * @param {string} status - the new status
  * @returns true if book was updated and false otherwise
  */
-const updateUserBookSave = async (uid, bid, newStatus) => {
+const updateUserBookSave = async (uid, bid, status) => {
     const allowedStatuses = ["unread", "reading", "read"];
-    if (!allowedStatuses.includes(newStatus)) return false;
+    if (!allowedStatuses.includes(status)) return false;
 
     const { rowCount } = await pool.query(
         "UPDATE BookSaves SET status = $1 WHERE uid = $2 AND bid = $3",
-        [newStatus, uid, bid],
+        [status, uid, bid],
     );
 
     return rowCount > 0;

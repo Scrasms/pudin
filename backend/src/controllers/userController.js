@@ -139,8 +139,9 @@ const userDelete = async (req, res) => {
 };
 
 const userPassword = async (req, res) => {
-    const { newPassword, code } = req.body;
+    const { password, code } = req.body;
     const uid = req.user.uid;
+    const oldPassword = req.user.password;
 
     // Validate user's reset code
     const hashedCodes = await getUserResetCodes(uid);
@@ -151,14 +152,14 @@ const userPassword = async (req, res) => {
         );
     }
 
-    // Ensure it is a valid password
-    const err = validatePassword(newPassword);
+    // Ensure new password is valid
+    const err = validatePassword(password);
     if (err) {
         throw new InputError(err);
     }
 
     // Ensure new password is not the same as the old password
-    const match = await bcrypt.compare(newPassword, req.user.password);
+    const match = await bcrypt.compare(password, oldPassword);
     if (match) {
         throw new InputError(
             "New password cannot be the same as the old password",
@@ -167,7 +168,7 @@ const userPassword = async (req, res) => {
 
     try {
         // Update user's password and invalidate the used reset code
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         await updateUserPassword(uid, hashedPassword);
         let success = await deleteUserResetCode(uid, hashedCode);
         if (!success) {
@@ -187,21 +188,21 @@ const userPassword = async (req, res) => {
 };
 
 const userProfile = async (req, res) => {
-    const { newProfile } = req.body;
+    const { profile } = req.body;
     const uid = req.user.uid;
 
     // Upload new image
-    const data = await uploadImage(uid, newProfile);
+    const data = await uploadImage(uid, profile);
     if (!data.success) {
         throw new InputError(data.error.message);
     }
 
     // Store new image link in DB
     try {
-        const newLink = data.data.url;
-        await updateUserProfile(uid, newLink);
+        const link = data.data.url;
+        await updateUserProfile(uid, link);
 
-        const userData = { image: newLink };
+        const userData = { image: link };
         res.json({
             success: true,
             data: {

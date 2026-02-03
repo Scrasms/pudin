@@ -64,12 +64,12 @@ const userBookSaveInfoAll = async (req, res) => {
 };
 
 const userBookSaveUpdate = async (req, res) => {
-    const { newStatus } = req.body;
+    const { status } = req.body;
     const bid = req.params.bid.trim();
     const uid = req.user.uid;
 
     try {
-        const success = await updateUserBookSave(uid, bid, newStatus);
+        const success = await updateUserBookSave(uid, bid, status);
         if (!success) {
             throw new InputError(
                 "New status is invalid or user did not save such a book",
