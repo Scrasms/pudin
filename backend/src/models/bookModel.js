@@ -1,4 +1,5 @@
 import pool from "../../config/db.js";
+import { getChapterById } from "./chapterModel.js";
 
 /**
  * Check if a user owns the book
@@ -51,25 +52,7 @@ const getBookById = async (bid, publishedOnly) => {
  * @returns array of chapter objects
  */
 const getBookChapters = async (bid, publishedOnly) => {
-    // Only show created_at when publishedOnly is false (when user owns the chapter)
-    let queryStr = `
-        SELECT
-            number,
-            title,
-            ${publishedOnly ? "" : "created_at,"}
-            published_at,
-            likes,
-            reads
-        FROM Chapter
-        WHERE bid = $1
-    `;
-
-    if (publishedOnly) {
-        queryStr += " AND published_at IS NOT NULL";
-    }
-    queryStr += " ORDER BY number";
-
-    const { rows } = await pool.query(queryStr, [bid]);
+    const rows = await getChapterById(bid, null, publishedOnly);
     return rows;
 };
 

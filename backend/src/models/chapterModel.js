@@ -90,4 +90,83 @@ const updateChapterPublish = async (bid, number, publish) => {
     return rowCount > 0;
 };
 
-export { createChapter, updateChapterText, updateChapterPublish };
+/**
+ * Finds information about a single chapter
+ * @param {uuid} bid - book's bid
+ * @param {number} [number] - chapter number, only returns that chapter if provided, otherwise returns all chapters in the book
+ * @param {boolean} publishedOnly - restrict search to published chapters only or not
+ * @returns info about the chapter
+ */
+const getChapterById = async (bid, number, publishedOnly) => {
+    // Only show created_at when publishedOnly is false (when user owns the chapter)
+    // If number is provided, display info about that one chapter rather than all chapters of the book
+    let queryStr = `
+        SELECT
+            ${number ? "bid," : ""}
+            number,
+            title,
+            ${number ? "content," : ""}
+            ${publishedOnly ? "" : "created_at,"}
+            published_at,
+            likes,
+            reads
+        FROM Chapter
+        WHERE bid = $1 ${number ? "AND number = $2" : ""}
+    `;
+
+    const params = [];
+    params.push(bid);
+
+    if (number) {
+        params.push(number);
+    }
+
+    if (publishedOnly) {
+        queryStr += " AND published_at IS NOT NULL";
+    }
+    queryStr += " ORDER BY number";
+
+    const { rows } = await pool.query(queryStr, params);
+    return rows;
+};
+
+/**
+ * Increments the number of reads of the chapter by one
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ */
+const updateChapterNumReads = async (bid, number) => {
+    await pool.query(
+        "UPDATE Chapter SET reads = reads + 1 WHERE bid = $1 AND number = $2",
+        [bid, number],
+    );
+};
+
+/**
+ * Creates a new entry in ChapterReads tracking the last-read chapter of each book for each user
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @param {uuid} uid - user's uid
+ */
+const createChapterReads = async (bid, number, uid) => {
+    // Only keep one entry for each chapter that the user has read
+    const queryStr = `
+        INSERT INTO
+        ChapterReads (uid, bid, number)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (uid, bid, number)
+        DO UPDATE SET
+            read_at = now()
+    `;
+
+    await pool.query(queryStr, [uid, bid, number]);
+};
+
+export {
+    createChapter,
+    updateChapterText,
+    updateChapterPublish,
+    getChapterById,
+    updateChapterNumReads,
+    createChapterReads,
+};

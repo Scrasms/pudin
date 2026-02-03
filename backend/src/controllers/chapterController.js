@@ -3,6 +3,9 @@ import InputError from "../errors/InputError.js";
 import { userOwnsBook } from "../models/bookModel.js";
 import {
     createChapter,
+    createChapterReads,
+    getChapterById,
+    updateChapterNumReads,
     updateChapterPublish,
     updateChapterText,
 } from "../models/chapterModel.js";
@@ -61,4 +64,36 @@ const chapterUpdate = async (req, res) => {
     }
 };
 
-export { chapterCreate, chapterUpdate };
+const chapterInfo = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+
+    try {
+        // If user doesn't own the book, restrict search to published chapters
+        let publishedOnly = true;
+        if (req.user) {
+            publishedOnly = !(await userOwnsBook(bid, req.user.uid));
+        }
+
+        const chapterData = await getChapterById(bid, number, publishedOnly);
+
+        // Update reads if its not the owner reading the book
+        if (publishedOnly) {
+            await updateChapterNumReads(bid, number);
+            if (req.user) {
+               await createChapterReads(bid, number, req.user.uid);
+            }
+        }
+
+        res.json({
+            success: true,
+            data: {
+                chapter: chapterData,
+            },
+        });
+    } catch (err) {
+        throw new DBError(err);
+    }
+};
+
+export { chapterCreate, chapterUpdate, chapterInfo };
