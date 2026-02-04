@@ -178,6 +178,32 @@ const getLastReadChapter = async (bid, uid) => {
     return rows;
 };
 
+/**
+ * Deletes the given chapter
+ * @param {uuid} bid - the book's bid
+ * @param {number} number - chapter number
+ * @returns true if successfully deleted and false otherwise
+ */
+const deleteChapter = async (bid, number) => {
+    const { rowCount } = await pool.query(
+        "DELETE FROM Chapter WHERE bid = $1 AND number = $2",
+        [bid, number],
+    );
+    return rowCount > 0;
+};
+
+/**
+ * Deletes all entries from ChapterReads for the given user and book pair
+ * @param {uuid} bid - book's bid
+ * @param {uuid} uid - user's uid
+ */
+const deleteChapterReads = async (bid, uid) => {
+    await pool.query("DELETE FROM ChapterReads WHERE uid = $1 AND bid = $2", [
+        uid,
+        bid,
+    ]);
+};
+
 export {
     createChapter,
     updateChapterText,
@@ -186,4 +212,6 @@ export {
     updateChapterNumReads,
     createChapterReads,
     getLastReadChapter,
+    deleteChapter,
+    deleteChapterReads,
 };

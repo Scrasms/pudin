@@ -4,6 +4,8 @@ import { userOwnsBook } from "../models/bookModel.js";
 import {
     createChapter,
     createChapterReads,
+    deleteChapter,
+    deleteChapterReads,
     getChapterById,
     getLastReadChapter,
     updateChapterNumReads,
@@ -114,4 +116,35 @@ const chapterLastRead = async (req, res) => {
     });
 };
 
-export { chapterCreate, chapterUpdate, chapterInfo, chapterLastRead };
+const chapterDelete = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const uid = req.user.uid;
+
+    try {
+        let success = await userOwnsBook(bid, uid);
+        if (!success) {
+            throw new InputError("No such book was written by the user");
+        }
+
+        success = await deleteChapter(bid, number);
+        if (!success) {
+            throw new InputError("No such chapter was written by the user");
+        }
+
+        await deleteChapterReads(bid, uid);
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+export {
+    chapterCreate,
+    chapterUpdate,
+    chapterInfo,
+    chapterLastRead,
+    chapterDelete,
+};

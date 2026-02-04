@@ -2,6 +2,7 @@ import { Router } from "express";
 import isAuth from "../middleware/isAuth.js";
 import {
     chapterCreate,
+    chapterDelete,
     chapterInfo,
     chapterLastRead,
     chapterUpdate,
@@ -16,5 +17,7 @@ chapterRouter.post("/", isAuth, chapterCreate);
 chapterRouter.put("/:number", isAuth, chapterUpdate);
 
 chapterRouter.get("/:number", chapterInfo);
+
+chapterRouter.delete("/:number", isAuth, chapterDelete);
 
 export { chapterRouter };
