@@ -211,15 +211,16 @@ const deleteChapter = async (bid, number) => {
 };
 
 /**
- * Deletes all entries from ChapterReads for the given user and book pair
+ * Deletes the ChapterReads entry for the given user and chapter pair
  * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
  * @param {uuid} uid - user's uid
  */
-const deleteChapterReads = async (bid, uid) => {
-    await pool.query("DELETE FROM ChapterReads WHERE uid = $1 AND bid = $2", [
-        uid,
-        bid,
-    ]);
+const deleteChapterReads = async (bid, number, uid) => {
+    await pool.query(
+        "DELETE FROM ChapterReads WHERE uid = $1 AND bid = $2 AND number = $3",
+        [uid, bid, number],
+    );
 };
 
 /**

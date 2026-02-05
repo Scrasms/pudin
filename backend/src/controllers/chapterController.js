@@ -151,7 +151,7 @@ const chapterDelete = async (req, res) => {
             throw new InputError("Chapter not found");
         }
 
-        await deleteChapterReads(bid, uid);
+        await deleteChapterReads(bid, number, uid);
 
         res.json({ success: true });
     } catch (err) {
