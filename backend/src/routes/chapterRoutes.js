@@ -5,6 +5,8 @@ import {
     chapterDelete,
     chapterInfo,
     chapterLastRead,
+    chapterLike,
+    chapterUnlike,
     chapterUpdate,
 } from "../controllers/chapterController.js";
 
@@ -13,6 +15,10 @@ const chapterRouter = Router({ mergeParams: true });
 chapterRouter.get("/last", isAuth, chapterLastRead);
 
 chapterRouter.post("/", isAuth, chapterCreate);
+
+chapterRouter.post("/:number/like", isAuth, chapterLike);
+
+chapterRouter.delete("/:number/like", isAuth, chapterUnlike);
 
 chapterRouter.put("/:number", isAuth, chapterUpdate);
 

@@ -1,6 +1,24 @@
 import pool from "../../config/db.js";
 
 /**
+ * Checks if a chapter exists
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @param {boolean} publishedOnly - restrict search to published chapters only or not
+ * @returns true if the chapter exists and false otherwise
+ */
+const checkChapterExists = async (bid, number, publishedOnly) => {
+    let queryStr = "SELECT 1 FROM Chapter WHERE bid = $1 AND number = $2";
+    if (publishedOnly) {
+        queryStr += " AND published_at IS NOT NULL";
+    }
+
+    const { rowCount } = await pool.query(queryStr, [bid, number]);
+
+    return rowCount > 0;
+};
+
+/**
  * Creates a new chapter
  * @param {uuid} bid - the book's bid
  * @param {string} [title] - the chapter's optional title
@@ -131,7 +149,7 @@ const getChapterById = async (bid, number, publishedOnly) => {
  * @param {uuid} bid - book's bid
  * @param {number} number - chapter number
  */
-const updateChapterNumReads = async (bid, number) => {
+const addChapterNumReads = async (bid, number) => {
     await pool.query(
         "UPDATE Chapter SET reads = reads + 1 WHERE bid = $1 AND number = $2",
         [bid, number],
@@ -204,14 +222,72 @@ const deleteChapterReads = async (bid, uid) => {
     ]);
 };
 
+/**
+ * Likes a chapter by adding an entry to the ChapterLikes table
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @param {uuid} uid - user's uid
+ */
+const createChapterLikes = async (bid, number, uid) => {
+    await pool.query(
+        "INSERT INTO ChapterLikes (uid, bid, number) VALUES ($1, $2, $3)",
+        [uid, bid, number],
+    );
+};
+
+/**
+ * Unlikes a chapter by removing its entry from the ChapterLikes table
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @param {uuid} uid - user's uid
+ * @returns true if chapter is unliked and false otherwise
+ */
+const deleteChapterLikes = async (bid, number, uid) => {
+    const { rowCount } = await pool.query(
+        "DELETE FROM ChapterLikes WHERE uid = $1 AND bid = $2 AND number = $3",
+        [uid, bid, number],
+    );
+
+    return rowCount > 0;
+};
+
+/**
+ * Increments the number of likes of the chapter by one
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ */
+const addChapterNumLikes = async (bid, number) => {
+    await pool.query(
+        "UPDATE Chapter SET likes = likes + 1 WHERE bid = $1 AND number = $2",
+        [bid, number],
+    );
+};
+
+/**
+ * Decrements the number of likes of the chapter by one
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ */
+const subChapterNumLikes = async (bid, number) => {
+    await pool.query(
+        "UPDATE Chapter SET likes = likes - 1 WHERE bid = $1 AND number = $2",
+        [bid, number],
+    );
+};
+
 export {
+    checkChapterExists,
     createChapter,
     updateChapterText,
     updateChapterPublish,
     getChapterById,
-    updateChapterNumReads,
+    addChapterNumReads,
     createChapterReads,
     getLastReadChapter,
     deleteChapter,
     deleteChapterReads,
+    createChapterLikes,
+    deleteChapterLikes,
+    addChapterNumLikes,
+    subChapterNumLikes,
 };

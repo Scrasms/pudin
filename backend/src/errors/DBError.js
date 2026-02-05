@@ -35,6 +35,8 @@ class DBError extends Error {
             err.detail.includes("written_by")
         ) {
             this.message = "User already has a book with the same title";
+        } else if (err.table === "chapterlikes") {
+            this.message = "User has already liked the chapter";
         } else {
             let keys = this.#getKeys(err.detail);
             keys = keys.join(" and ");

@@ -10,6 +10,9 @@ import {
 
 const saveRouter = Router();
 
+// Get general book information about all of a user's saved books
+saveRouter.get("/", isAuth, userBookSaveInfoAll);
+
 // Saves a book for the user with default status "unread"
 saveRouter.post("/:bid", isAuth, userBookSave);
 
@@ -21,8 +24,5 @@ saveRouter.put("/:bid", isAuth, userBookSaveUpdate);
 
 // Unsaves a book for the user
 saveRouter.delete("/:bid", isAuth, userBookSaveDelete);
-
-// Get general book information about all of a user's saved books
-saveRouter.get("/", isAuth, userBookSaveInfoAll);
 
 export default saveRouter;

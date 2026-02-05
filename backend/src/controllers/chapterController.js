@@ -3,24 +3,35 @@ import InputError from "../errors/InputError.js";
 import { userOwnsBook } from "../models/bookModel.js";
 import {
     createChapter,
+    createChapterLikes,
     createChapterReads,
     deleteChapter,
+    deleteChapterLikes,
     deleteChapterReads,
     getChapterById,
     getLastReadChapter,
-    updateChapterNumReads,
+    addChapterNumReads,
     updateChapterPublish,
     updateChapterText,
+    addChapterNumLikes,
+    subChapterNumLikes,
+    checkChapterExists,
 } from "../models/chapterModel.js";
 
 const chapterCreate = async (req, res) => {
     const bid = req.params.bid.trim();
     const { title } = req.body;
+    const uid = req.user.uid;
 
     try {
+        const success = await userOwnsBook(bid, uid);
+        if (!success) {
+            throw new InputError("Book not found or user didn't write it");
+        }
+
         const chapterNum = await createChapter(bid, title);
         if (!chapterNum) {
-            throw new InputError("Chapter was not created, please try again");
+            throw new InputError("Book not found");
         }
 
         const chapterData = {
@@ -51,6 +62,13 @@ const chapterUpdate = async (req, res) => {
         if (!success) {
             throw new InputError("Book not found or user didn't write it");
         }
+
+        // User must be owner to update, so publishedOnly is always false
+        success = await checkChapterExists(bid, number, false);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
         await updateChapterText(bid, number, title, content);
 
         success = await updateChapterPublish(bid, number, publish);
@@ -80,12 +98,12 @@ const chapterInfo = async (req, res) => {
 
         const chapterData = await getChapterById(bid, number, publishedOnly);
         if (!chapterData.length) {
-            throw new InputError("No such chapter exists");
+            throw new InputError("Chapter not found");
         }
 
         // Update read number if its not the owner reading the book
         if (publishedOnly) {
-            await updateChapterNumReads(bid, number);
+            await addChapterNumReads(bid, number);
         }
 
         // Track last-read chapter regardless of ownership
@@ -100,6 +118,7 @@ const chapterInfo = async (req, res) => {
             },
         });
     } catch (err) {
+        if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
 };
@@ -124,12 +143,12 @@ const chapterDelete = async (req, res) => {
     try {
         let success = await userOwnsBook(bid, uid);
         if (!success) {
-            throw new InputError("No such book was written by the user");
+            throw new InputError("Book not found or user didn't write it");
         }
 
         success = await deleteChapter(bid, number);
         if (!success) {
-            throw new InputError("No such chapter was written by the user");
+            throw new InputError("Chapter not found");
         }
 
         await deleteChapterReads(bid, uid);
@@ -141,10 +160,55 @@ const chapterDelete = async (req, res) => {
     }
 };
 
+const chapterLike = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const uid = req.user.uid;
+
+    try {
+        // Nobody can like an unpublished chapter
+        let success = await checkChapterExists(bid, number, true);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        await createChapterLikes(bid, number, uid);
+        await addChapterNumLikes(bid, number);
+        res.status(201).json({ success: true });
+    } catch (err) {
+        throw new DBError(err);
+    }
+};
+
+const chapterUnlike = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const uid = req.user.uid;
+
+    try {
+        // Nobody can unlike an unpublished chapter
+        let success = await checkChapterExists(bid, number, true);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        success = await deleteChapterLikes(bid, number, uid);
+        if (!success) {
+            throw new InputError("User has already unliked the chapter");
+        }
+        await subChapterNumLikes(bid, number);
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
 export {
     chapterCreate,
     chapterUpdate,
     chapterInfo,
     chapterLastRead,
     chapterDelete,
+    chapterLike,
+    chapterUnlike,
 };
