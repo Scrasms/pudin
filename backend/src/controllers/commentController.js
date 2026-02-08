@@ -1,7 +1,11 @@
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import { checkChapterExists } from "../models/chapterModel.js";
-import { createComment, updateComment } from "../models/commentModel.js";
+import {
+    createComment,
+    deleteComment,
+    updateComment,
+} from "../models/commentModel.js";
 
 const commentCreate = async (req, res) => {
     const bid = req.params.bid.trim();
@@ -55,8 +59,34 @@ const commentUpdate = async (req, res) => {
 
         res.json({ success: true });
     } catch (err) {
+        if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
 };
 
-export { commentCreate, commentUpdate };
+const commentDelete = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const cid = req.params.cid.trim();
+    const uid = req.user.uid;
+
+    try {
+        // Can only update comment on published chapter
+        let success = await checkChapterExists(bid, number, true);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        success = await deleteComment(cid, uid);
+        if (!success) {
+            throw new InputError("Comment not found or user did not write it");
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+export { commentCreate, commentUpdate, commentDelete };

@@ -39,4 +39,18 @@ const updateComment = async (cid, uid, message) => {
     return rowCount > 0;
 };
 
-export { createComment, updateComment };
+/**
+ * Deletes a user's comment
+ * @param {uuid} cid - comment's cid
+ * @param {uuid} uid - user's uid
+ * @returns true if comment was deleted and false otherwise
+ */
+const deleteComment = async (cid, uid) => {
+    const { rowCount } = await pool.query(
+        "DELETE FROM Comment WHERE cid = $1 AND posted_by = $2",
+        [cid, uid],
+    );
+    return rowCount > 0;
+}
+
+export { createComment, updateComment, deleteComment };
