@@ -128,10 +128,7 @@ const userDelete = async (req, res) => {
         if (!success) {
             throw new InputError("User not found");
         }
-        success = await deleteUserSessions(uid);
-        if (!success) {
-            throw new InputError("No sessions found belonging to user");
-        }
+        await deleteUserSessions(uid);
         return res.json({ success: true });
     } catch (err) {
         throw new DBError(err);
@@ -170,16 +167,10 @@ const userPassword = async (req, res) => {
         // Update user's password and invalidate the used reset code
         const hashedPassword = await bcrypt.hash(password, 10);
         await updateUserPassword(uid, hashedPassword);
-        let success = await deleteUserResetCode(uid, hashedCode);
-        if (!success) {
-            throw new InputError("No such reset code found belonging to user");
-        }
+        await deleteUserResetCode(uid, hashedCode);
 
         // Logout the user on all devices (delete all sessions)
-        success = await deleteUserSessions(uid);
-        if (!success) {
-            throw new InputError("No sessions found belonging to user");
-        }
+        await deleteUserSessions(uid);
 
         return res.json({ success: true });
     } catch (err) {

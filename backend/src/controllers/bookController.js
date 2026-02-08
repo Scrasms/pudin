@@ -172,6 +172,7 @@ const bookDelete = async (req, res) => {
         }
         res.json({ success: true });
     } catch (err) {
+        if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
 };
