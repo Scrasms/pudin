@@ -103,11 +103,11 @@ CREATE TABLE ChapterReads (
 DROP TABLE IF EXISTS Comment CASCADE;
 CREATE TABLE Comment (
     cid uuid DEFAULT gen_random_uuid(),
-    message text,
+    message text NOT NULL,
     bid uuid NOT NULL,
+    number integer,
     posted_at timestamp with time zone DEFAULT now(),
     posted_by uuid NOT NULL,
-    number integer,
     replies_to uuid,
     likes integer DEFAULT 0,
     PRIMARY KEY (cid),
