@@ -13,6 +13,7 @@ import {
 import { deleteAllUserBookSave } from "../models/saveModel.js";
 import { tagBook, untagBook } from "../models/tagModel.js";
 import { uploadImage } from "../utils/image.js";
+import { getPublishedOnly } from "../utils/publish.js";
 import { wrapBookData } from "../utils/wrapBook.js";
 
 const bookCreate = async (req, res) => {
@@ -65,11 +66,7 @@ const storeBookCover = async (bid, bookCover) => {
 const bookInfo = async (req, res) => {
     const bid = req.params.bid.trim();
 
-    // If user doesn't own the book, restrict search to published books
-    let publishedOnly = true;
-    if (req.user) {
-        publishedOnly = !(await userOwnsBook(bid, req.user.uid));
-    }
+    const publishedOnly = await getPublishedOnly(req.user, bid);
     const bookData = await getBookById(bid, publishedOnly);
     if (!bookData) {
         throw new InputError("Book not found");
