@@ -4,6 +4,7 @@ import {
     commentCreate,
     commentDelete,
     commentInfo,
+    commentReplyInfo,
     commentUpdate,
 } from "../controllers/commentController.js";
 
@@ -13,6 +14,9 @@ commentRouter.post("/", isAuth, commentCreate);
 
 // Gets all top-level comments of the chapter
 commentRouter.get("/", commentInfo);
+
+// Gets all replies to a comment
+commentRouter.get("/:cid", commentReplyInfo);
 
 // Updates the message body of a comment that the user wrote
 commentRouter.put("/:cid", isAuth, commentUpdate);

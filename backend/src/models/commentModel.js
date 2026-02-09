@@ -70,4 +70,29 @@ const getCommentByChapter = async (bid, number) => {
     return rows;
 };
 
-export { createComment, updateComment, deleteComment, getCommentByChapter };
+/**
+ * Gets all the replies to a comment
+ * @param {uuid} cid - comment's cid
+ * @param {uuid} bid - book's bid
+ * @param {uuid} number - chapter number
+ * @returns comment's replies
+ */
+const getCommentReplies = async (cid, bid, number) => {
+    const queryStr = `
+        SELECT *
+        FROM Comment
+        WHERE bid = $1 AND number = $2 AND replies_to = $3
+        ORDER BY posted_at ASC
+    `;
+
+    const { rows } = await pool.query(queryStr, [bid, number, cid]);
+    return rows;
+};
+
+export {
+    createComment,
+    updateComment,
+    deleteComment,
+    getCommentByChapter,
+    getCommentReplies,
+};

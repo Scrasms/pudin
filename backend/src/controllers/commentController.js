@@ -1,14 +1,27 @@
 import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
-import { userOwnsBook } from "../models/bookModel.js";
 import { checkChapterExists } from "../models/chapterModel.js";
 import {
     createComment,
     deleteComment,
     getCommentByChapter,
+    getCommentReplies,
     updateComment,
 } from "../models/commentModel.js";
 import { getPublishedOnly } from "../utils/publish.js";
+
+/**
+ * Checks that a comment's chapter exists
+ * @param {Object} user - user object
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @returns true if it exists and false otherwise
+ */
+const validateCommentChapter = async (user, bid, number) => {
+    // Can only operate on published chapter unless user is the owner
+    const publishedOnly = await getPublishedOnly(user, bid);
+    return await checkChapterExists(bid, number, publishedOnly);
+};
 
 const commentCreate = async (req, res) => {
     const bid = req.params.bid.trim();
@@ -17,9 +30,7 @@ const commentCreate = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        // Can only comment on published chapter unless user is the owner
-        const publishedOnly = await getPublishedOnly(req.user, bid);
-        const success = await checkChapterExists(bid, number, publishedOnly);
+        const success = await validateCommentChapter(req.user, bid, number);
         if (!success) {
             throw new InputError("Chapter not found");
         }
@@ -50,9 +61,7 @@ const commentUpdate = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        // Can only update comment on published chapter unless user is the owner
-        const publishedOnly = await getPublishedOnly(req.user, bid);
-        let success = await checkChapterExists(bid, number, publishedOnly);
+        let success = await validateCommentChapter(req.user, bid, number);
         if (!success) {
             throw new InputError("Chapter not found");
         }
@@ -76,9 +85,7 @@ const commentDelete = async (req, res) => {
     const uid = req.user.uid;
 
     try {
-        // Can only delete comment on published chapter unless user is the owner
-        const publishedOnly = await getPublishedOnly(req.user, bid);
-        let success = await checkChapterExists(bid, number, publishedOnly);
+        let success = await validateCommentChapter(req.user, bid, number);
         if (!success) {
             throw new InputError("Chapter not found");
         }
@@ -100,9 +107,7 @@ const commentInfo = async (req, res) => {
     const number = req.params.number.trim();
 
     try {
-        // Can only get comments on published chapter unless user is the owner
-        const publishedOnly = await getPublishedOnly(req.user, bid);
-        const success = await checkChapterExists(bid, number, publishedOnly);
+        const success = await validateCommentChapter(req.user, bid, number);
         if (!success) {
             throw new InputError("Chapter not found");
         }
@@ -119,4 +124,33 @@ const commentInfo = async (req, res) => {
     }
 };
 
-export { commentCreate, commentUpdate, commentDelete, commentInfo };
+const commentReplyInfo = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const cid = req.params.cid.trim();
+
+    try {
+        const success = await validateCommentChapter(req.user, bid, number);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        const allRepliesData = await getCommentReplies(cid, bid, number);
+
+        res.json({
+            success: true,
+            data: allRepliesData,
+        });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+export {
+    commentCreate,
+    commentUpdate,
+    commentDelete,
+    commentInfo,
+    commentReplyInfo,
+};
