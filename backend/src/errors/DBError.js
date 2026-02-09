@@ -28,6 +28,7 @@ class DBError extends Error {
 
     #handleUnique(err) {
         this.status = 409;
+
         if (err.detail.includes("username") || err.detail.includes("email")) {
             this.message = "A user with this username or email already exists";
         } else if (
@@ -37,6 +38,8 @@ class DBError extends Error {
             this.message = "User already has a book with the same title";
         } else if (err.table === "chapterlikes") {
             this.message = "User has already liked the chapter";
+        } else if (err.table === "commentlikes") {
+            this.message = "User has already liked the comment";
         } else {
             let keys = this.#getKeys(err.detail);
             keys = keys.join(" and ");
@@ -53,7 +56,10 @@ class DBError extends Error {
         this.status = 404;
         if (err.detail.includes("tag_name")) {
             this.message = "No such tag found";
-        } else if (err.detail.includes("bid") && err.detail.includes("number")) {
+        } else if (
+            err.detail.includes("bid") &&
+            err.detail.includes("number")
+        ) {
             this.message = "No such chapter found";
         } else {
             let keys = this.#getKeys(err.detail);

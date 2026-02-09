@@ -2,13 +2,18 @@ import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import { checkChapterExists } from "../models/chapterModel.js";
 import {
+    addCommentNumlikes,
+    checkCommentExists,
     createComment,
+    createCommentLikes,
     deleteComment,
+    deleteCommentLikes,
     getCommentByChapter,
     getCommentReplies,
+    subCommentNumLikes,
     updateComment,
 } from "../models/commentModel.js";
-import { getPublishedOnly } from "../utils/publish.js";
+import { checkPublishedOnly } from "../utils/publish.js";
 
 /**
  * Checks that a comment's chapter exists
@@ -19,7 +24,7 @@ import { getPublishedOnly } from "../utils/publish.js";
  */
 const validateCommentChapter = async (user, bid, number) => {
     // Can only operate on published chapter unless user is the owner
-    const publishedOnly = await getPublishedOnly(user, bid);
+    const publishedOnly = await checkPublishedOnly(user, bid);
     return await checkChapterExists(bid, number, publishedOnly);
 };
 
@@ -147,10 +152,69 @@ const commentReplyInfo = async (req, res) => {
     }
 };
 
+const commentLike = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const cid = req.params.cid.trim();
+    const uid = req.user.uid;
+
+    try {
+        let success = await validateCommentChapter(req.user, bid, number);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        success = await checkCommentExists(cid, bid, number);
+        if (!success) {
+            throw new InputError("Comment not found");
+        }
+
+        await createCommentLikes(cid, uid);
+        await addCommentNumlikes(cid);
+
+        res.status(201).json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
+const commentUnlike = async (req, res) => {
+    const bid = req.params.bid.trim();
+    const number = req.params.number.trim();
+    const cid = req.params.cid.trim();
+    const uid = req.user.uid;
+
+    try {
+        let success = await validateCommentChapter(req.user, bid, number);
+        if (!success) {
+            throw new InputError("Chapter not found");
+        }
+
+        success = await checkCommentExists(cid, bid, number);
+        if (!success) {
+            throw new InputError("Comment not found");
+        }
+
+        success = await deleteCommentLikes(cid, uid);
+        if (!success) {
+            throw new InputError("User has already unliked the comment");
+        }
+        await subCommentNumLikes(cid);
+
+        res.json({ success: true });
+    } catch (err) {
+        if (err instanceof InputError) throw err;
+        throw new DBError(err);
+    }
+};
+
 export {
     commentCreate,
     commentUpdate,
     commentDelete,
     commentInfo,
     commentReplyInfo,
+    commentLike,
+    commentUnlike,
 };

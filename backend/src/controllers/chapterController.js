@@ -17,6 +17,7 @@ import {
     subChapterNumLikes,
     checkChapterExists,
 } from "../models/chapterModel.js";
+import { checkPublishedOnly } from "../utils/publish.js";
 
 const chapterCreate = async (req, res) => {
     const bid = req.params.bid.trim();
@@ -90,12 +91,7 @@ const chapterInfo = async (req, res) => {
     const number = req.params.number.trim();
 
     try {
-        // If user doesn't own the book, restrict search to published chapters
-        let publishedOnly = true;
-        if (req.user) {
-            publishedOnly = !(await userOwnsBook(bid, req.user.uid));
-        }
-
+        const publishedOnly = checkPublishedOnly(req.user, bid);
         const chapterData = await getChapterById(bid, number, publishedOnly);
         if (!chapterData.length) {
             throw new InputError("Chapter not found");
