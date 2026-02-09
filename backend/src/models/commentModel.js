@@ -51,6 +51,23 @@ const deleteComment = async (cid, uid) => {
         [cid, uid],
     );
     return rowCount > 0;
-}
+};
 
-export { createComment, updateComment, deleteComment };
+/**
+ * Gets all top-level comments of a chapter
+ * @param {uuid} bid - book's bid
+ * @param {number} number - chapter number
+ * @returns the top-level comments of that chapter
+ */
+const getCommentByChapter = async (bid, number) => {
+    const queryStr = `
+        SELECT *
+        FROM Comment
+        WHERE bid = $1 AND number = $2 AND replies_to IS NULL
+        ORDER BY posted_at ASC
+    `;
+    const { rows } = await pool.query(queryStr, [bid, number]);
+    return rows;
+};
+
+export { createComment, updateComment, deleteComment, getCommentByChapter };
