@@ -1,7 +1,7 @@
-# Pudin
+# 🍮Pudin
 It's where I write
 
-### Stack
+### 🥞Stack
 - Backend: Node, Express
 - DB: PostgreSQL
 - Auth: Passport.js
