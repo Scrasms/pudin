@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 640 640" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(17.6818,0,0,25.1786,30.5909,-85.7143)">
+        <path d="M27,22L5,22L8.3,10L23.7,10L27,22Z" style="fill:rgb(249,247,195);stroke:rgb(244,242,177);stroke-width:1.65px;"/>
+    </g>
+    <g transform="matrix(17.6818,0,0,25.1786,30.5909,-90.7143)">
+        <clipPath id="_clip1">
+            <rect x="5.423" y="8.806" width="21.052" height="4.885"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <path d="M27,22L5,22L8.3,10L23.7,10L27,22Z" style="fill:rgb(131,71,57);stroke:rgb(114,59,46);stroke-width:1.65px;"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,-571.193,-186.608)">
+        <g transform="matrix(266.645,0,0,266.645,968.787,601)">
+        </g>
+        <text x="804px" y="601px" style="font-family:'UniSansHeavy';font-size:266.645px;fill:rgb(212,170,140);">P</text>
+    </g>
+</svg>
