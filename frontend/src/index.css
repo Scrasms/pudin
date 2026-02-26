@@ -3,10 +3,47 @@
   font-optical-sizing: auto;
   font-weight: normal;
   font-style: normal;
+  --primary-colour: #f9f7c3;
+  --primary-colour-dark: #f4f2b1;
+  --secondary-colour: #a97e71;
+  --secondary-colour-dark: #834739;
+  --secondary-colour-darker: #723b2e;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.align-centre {
+  align-items: center;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.width-full {
+  width: 100%;
 }
