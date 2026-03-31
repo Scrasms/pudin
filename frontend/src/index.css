@@ -1,3 +1,15 @@
+:root {
+  font-family: Inter, Roboto, Arial, Helvetica, sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  --primary-colour: hsl(58, 82%, 87%);
+  --primary-colour-dark: hsl(58, 75%, 83%);
+  --secondary-colour: hsl(14, 25%, 55%);
+  --secondary-colour-dark: hsl(11, 39%, 37%);
+  --secondary-colour-darker: hsl(11, 43%, 31%);
+}
+
 * {
   box-sizing: border-box;
   margin: 0px;
