@@ -1,6 +1,6 @@
 :root {
-  /*TODO: Remove */
-  font-family: Inter, Roboto, Arial, Helvetica, sans-serif;
+  /*TODO: Remove when happy with MUI theme*/
+  /* font-family: Inter, Roboto, Arial, Helvetica, sans-serif;
   font-optical-sizing: auto;
   font-weight: normal;
   font-style: normal;
@@ -8,7 +8,7 @@
   --primary-colour-dark: hsl(58, 75%, 83%);
   --secondary-colour: hsl(14, 25%, 55%);
   --secondary-colour-dark: hsl(11, 39%, 37%);
-  --secondary-colour-darker: hsl(11, 43%, 31%);
+  --secondary-colour-darker: hsl(11, 43%, 31%); */
 }
 
 * {
