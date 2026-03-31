@@ -3,47 +3,15 @@
   font-optical-sizing: auto;
   font-weight: normal;
   font-style: normal;
-  --primary-colour: #f9f7c3;
-  --primary-colour-dark: #f4f2b1;
-  --secondary-colour: #a97e71;
-  --secondary-colour-dark: #834739;
-  --secondary-colour-darker: #723b2e;
+  --primary-colour: hsl(58, 82%, 87%);
+  --primary-colour-dark: hsl(58, 75%, 83%);
+  --secondary-colour: hsl(14, 25%, 55%);
+  --secondary-colour-dark: hsl(11, 39%, 37%);
+  --secondary-colour-darker: hsl(11, 43%, 31%);
 }
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
-.justify-start {
-  justify-content: flex-start;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
-.align-centre {
-  align-items: center;
-}
-
-.flex-1 {
-  flex: 1;
-}
-
-.width-full {
-  width: 100%;
+  margin: 0px;
+  padding: 0px;
 }
