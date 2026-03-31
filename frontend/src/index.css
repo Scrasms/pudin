@@ -1,9 +1,8 @@
-:root {
-  /*TODO: Remove */
-  font-family: Inter, Roboto, Arial, Helvetica, sans-serif;
-  font-optical-sizing: auto;
-  font-weight: normal;
-  font-style: normal;
+@import "tailwindcss";
+
+@theme {
+  /*TODO: update to reflect tailwind utility classes */
+  --font-primary: Inter, Roboto, Arial, Helvetica, sans-serif;
   --primary-colour: hsl(58, 82%, 87%);
   --primary-colour-dark: hsl(58, 75%, 83%);
   --secondary-colour: hsl(14, 25%, 55%);
@@ -11,8 +10,3 @@
   --secondary-colour-darker: hsl(11, 43%, 31%);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0px;
-  padding: 0px;
-}
