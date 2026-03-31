@@ -1,13 +1,11 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Typography } from "@mui/material";
+import Header from "../components/Header";
 
 function Landing() {
   return (
     <>
-      <Container>
-        <Box sx={{ textAlign: 'center', color: 'secondary.dark' }}>
-          <Typography variant="h1">Hello!</Typography>
-        </Box>
-      </Container>
+      <Header />
+      <Typography variant="h1" color="secondary.dark">Hello!</Typography>
     </>
   );
 }
