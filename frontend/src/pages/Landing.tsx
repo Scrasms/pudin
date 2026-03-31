@@ -1,9 +1,12 @@
-function Landing() {
+import MainLayout from "../components/Layout/MainLayout";
+
+export default function Landing() {
   return (
     <>
-      <h1>Hello!</h1>
+      <MainLayout>
+        
+      </MainLayout>
     </>
   );
 }
 
-export default Landing;

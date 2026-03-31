@@ -2,11 +2,13 @@
 
 @theme {
   /*TODO: update to reflect tailwind utility classes */
-  --font-primary: Inter, Roboto, Arial, Helvetica, sans-serif;
-  --primary-colour: hsl(58, 82%, 87%);
-  --primary-colour-dark: hsl(58, 75%, 83%);
-  --secondary-colour: hsl(14, 25%, 55%);
-  --secondary-colour-dark: hsl(11, 39%, 37%);
-  --secondary-colour-darker: hsl(11, 43%, 31%);
+  --default-font-family: Inter, Roboto, Arial, Helvetica, sans-serif;
+
+  --color-primary-500: hsl(58, 82%, 87%);
+  --color-primary-600: hsl(58, 75%, 83%);
+
+  --color-secondary-500: hsl(14, 25%, 55%);
+  --color-secondary-600: hsl(11, 39%, 37%);
+  --color-secondary-700: hsl(11, 43%, 31%);
 }
 
