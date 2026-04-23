@@ -1,19 +1,20 @@
-import type { ReactNode } from 'react';
+import Box from '@mui/material/Box';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+
 import headerDrip from '../assets/header_drip.svg';
 
-interface HeaderProps {
-  leftChild?: ReactNode;
-  rightChild?: ReactNode;
-}
-
-export default function Header({ leftChild, rightChild }: HeaderProps) {
+function Header() {
   return (
     <>
-      <header className="h-10 bg-secondary-500 flex justify-between">
-        {leftChild}
-        {rightChild}
-      </header>
-      <img src={headerDrip} />
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="sticky" elevation={0}>
+          <Toolbar sx={{ backgroundColor: 'secondary.main' }}></Toolbar>
+        </AppBar>
+        <Box component="img" src={headerDrip}></Box>
+      </Box>
     </>
   );
 }
+
+export default Header;
