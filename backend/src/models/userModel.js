@@ -36,7 +36,6 @@ const getAllUsers = async (limit, offset, searchQuery) => {
     let queryStr = `
         SELECT
             uid,
-            email,
             username,
             profile_image,
             joined_at
