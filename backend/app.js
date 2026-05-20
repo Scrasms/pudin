@@ -6,12 +6,14 @@ import sessionMiddleware from "./config/session.js";
 import userRouter from "./src/routes/userRoutes.js";
 import bookRouter from "./src/routes/bookRoutes.js";
 import passport from "passport";
-import errorHandler from "./src/middleware/errorHandler.js";
 import "./config/passport.js";
+import errorHandler from "./src/middleware/errorHandler.js";
 import tagRouter from "./src/routes/tagRoutes.js";
 import saveRouter from "./src/routes/saveRoutes.js";
 import { chapterRouter } from "./src/routes/chapterRoutes.js";
 import { commentRouter } from "./src/routes/commentRoutes.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocs from "./swagger-output.json" with { type: "json" };
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +39,7 @@ app.use(express.static("public"));
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/api-docs', swaggerUi.serve);
 
 // Routers
 app.use("/user/save", saveRouter);
@@ -45,6 +48,7 @@ app.use("/book/:bid/chapter/:number/comment", commentRouter);
 app.use("/book/tag", tagRouter);
 app.use("/book/:bid/chapter", chapterRouter);
 app.use("/book", bookRouter);
+app.get('/api-docs', swaggerUi.setup(swaggerDocs));
 
 // Error handler
 app.use(errorHandler);
