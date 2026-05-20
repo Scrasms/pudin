@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import Box from '@mui/material/Box';
 import Header from '../Header';
+import Box from '@mui/material/Box';
 
-export default function MainLayout({ children }: { children?: ReactNode }) {
+export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <Box component="main">
+      <Box>
         <Header />
         {children}
       </Box>

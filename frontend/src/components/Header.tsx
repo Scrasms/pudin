@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-
 import headerDrip from '../assets/header_drip.svg';
 
 function Header() {
