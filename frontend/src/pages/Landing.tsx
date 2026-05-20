@@ -1,15 +1,14 @@
-import { Button } from "@mui/material";
-import MainLayout from "../components/Layout/MainLayout";
+import { Button } from '@mui/material';
+import MainLayout from '../components/Layout/MainLayout';
 
-export default function Landing() {
+const Landing = () => {
   return (
     <>
       <MainLayout>
-        <Button>
-          Hi
-        </Button>
+        <Button>Hi</Button>
       </MainLayout>
     </>
   );
-}
+};
 
+export default Landing;

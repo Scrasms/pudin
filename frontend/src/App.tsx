@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router';
 import Landing from './pages/Landing';
 
-function App() {
+const App = () => {
   return (
     <>
       <BrowserRouter>
