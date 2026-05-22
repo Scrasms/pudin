@@ -212,9 +212,7 @@ const userInfoAll = async (req, res) => {
 
     const allUsersData = await getAllUsers(limit, offset, searchQuery);
 
-    res.json({
-        users: allUsersData,
-    });
+    res.json(allUsersData);
 };
 
 const userBookInfo = async (req, res) => {
@@ -244,9 +242,7 @@ const userBookInfo = async (req, res) => {
         userBooksData.push(wrappedBookData.book);
     }
 
-    res.json({
-        ...userBooksData,
-    });
+    res.json(userBooksData);
 };
 
 export {

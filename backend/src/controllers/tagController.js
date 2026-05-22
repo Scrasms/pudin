@@ -7,7 +7,7 @@ const tagCreate = async (req, res) => {
     try {
         await createTag(tagName);
 
-        res.status(201).json({ success: true });
+        res.status(201).json({ message: "Tag successfully created" });
     } catch (err) {
         throw new DBError(err);
     }

@@ -35,16 +35,9 @@ const chapterCreate = async (req, res) => {
             throw new InputError("Book not found");
         }
 
-        const chapterData = {
+        res.status(201).json({
             bid: bid,
             number: chapterNum,
-        };
-
-        res.status(201).json({
-            success: true,
-            data: {
-                chapter: chapterData,
-            },
         });
     } catch (err) {
         if (err instanceof InputError) throw err;
@@ -79,7 +72,7 @@ const chapterUpdate = async (req, res) => {
             throw new InputError("Chapter is already unpublished");
         }
 
-        res.json({ success: true });
+        res.json({ message: "Chapter successfully updated" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -107,12 +100,7 @@ const chapterInfo = async (req, res) => {
             await createChapterReads(bid, number, req.user.uid);
         }
 
-        res.json({
-            success: true,
-            data: {
-                chapter: chapterData,
-            },
-        });
+        res.json(chapterData);
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -125,10 +113,7 @@ const chapterLastRead = async (req, res) => {
 
     const chapterData = await getLastReadChapter(bid, uid);
 
-    res.json({
-        success: true,
-        data: { chapter: chapterData },
-    });
+    res.json(chapterData);
 };
 
 const chapterDelete = async (req, res) => {
@@ -149,7 +134,7 @@ const chapterDelete = async (req, res) => {
 
         await deleteChapterReads(bid, number, uid);
 
-        res.json({ success: true });
+        res.json({ message: "Chapter successfully deleted" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -170,7 +155,7 @@ const chapterLike = async (req, res) => {
 
         await createChapterLikes(bid, number, uid);
         await addChapterNumLikes(bid, number);
-        res.status(201).json({ success: true });
+        res.status(201).json({ message: "Chapter successfully liked" });
     } catch (err) {
         throw new DBError(err);
     }
@@ -193,7 +178,7 @@ const chapterUnlike = async (req, res) => {
             throw new InputError("User has already unliked the chapter");
         }
         await subChapterNumLikes(bid, number);
-        res.json({ success: true });
+        res.json({ message: "Chapter successfully unliked" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
