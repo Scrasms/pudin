@@ -20,11 +20,8 @@ const wrapBookData = async (user, bookData, publishedOnly) => {
     }
 
     const userData = {
-        uid: user.uid,
-        email: user.email,
         username: user.username,
         image: user.profile_image,
-        joined_at: user.joined_at,
     };
 
     const bid = bookData.bid;

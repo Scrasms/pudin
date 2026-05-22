@@ -28,10 +28,7 @@ import { wrapBookData } from "../utils/wrapBook.js";
 
 const userTest = (req, res) => {
     return res.json({
-        success: true,
-        data: {
-            message: `Hello ${req.user.username}!`,
-        },
+        message: `Hello ${req.user.username}!`,
     });
 };
 
@@ -72,14 +69,9 @@ const userSignup = async (req, res, next) => {
         req.login(user, (err) => {
             if (err) return next(err);
 
-            const userData = { uid: user.uid };
-
             return res.status(201).json({
-                success: true,
-                data: {
-                    user: userData,
-                    codes: codes,
-                },
+                uid: user.uid,
+                codes: codes,
             });
         });
     } catch (err) {
@@ -95,13 +87,8 @@ const userLogin = (req, res, next) => {
         req.login(user, (err) => {
             if (err) return next(err);
 
-            const userData = { uid: user.uid };
-
             return res.json({
-                success: true,
-                data: {
-                    user: userData,
-                },
+                uid: user.uid,
             });
         });
     })(req, res, next);
@@ -113,7 +100,7 @@ const userLogout = (req, res) => {
         req.session.destroy((err) => {
             if (err) return next(err);
             res.clearCookie("connect.sid");
-            return res.json({ success: true });
+            return res.json({ message: "User logged out successfully" });
         });
     });
 };
@@ -129,7 +116,7 @@ const userDelete = async (req, res) => {
             throw new InputError("User not found");
         }
         await deleteUserSessions(uid);
-        return res.json({ success: true });
+        return res.json({ message: "User deleted successfully" });
     } catch (err) {
         throw new DBError(err);
     }
@@ -172,7 +159,7 @@ const userPassword = async (req, res) => {
         // Logout the user on all devices (delete all sessions)
         await deleteUserSessions(uid);
 
-        return res.json({ success: true });
+        return res.json({ message: "Password updated successfully" });
     } catch (err) {
         throw new DBError(err);
     }
@@ -193,12 +180,8 @@ const userProfile = async (req, res) => {
         const link = data.data.url;
         await updateUserProfile(uid, link);
 
-        const userData = { image: link };
         res.json({
-            success: true,
-            data: {
-                user: userData,
-            },
+            image: link,
         });
     } catch (err) {
         throw new DBError(err);
@@ -213,19 +196,12 @@ const userInfo = async (req, res) => {
         throw new InputError("Username not found");
     }
 
-    const userData = {
+    res.json({
         uid: user.uid,
         email: user.email,
         username: user.username,
         image: user.profile_image,
         joined_at: user.joined_at,
-    };
-
-    res.json({
-        success: true,
-        data: {
-            user: userData,
-        },
     });
 };
 
@@ -237,10 +213,7 @@ const userInfoAll = async (req, res) => {
     const allUsersData = await getAllUsers(limit, offset, searchQuery);
 
     res.json({
-        success: true,
-        data: {
-            users: allUsersData,
-        },
+        users: allUsersData,
     });
 };
 
@@ -259,7 +232,7 @@ const userBookInfo = async (req, res) => {
     }
     const userBooksData = [];
 
-    // Wrap bookData with user, chapter and tag information
+    // Wrap bookData with chapter and tag information
     const data = await getBooksByUser(user.uid, publishedOnly);
     for (const bookData of data) {
         const wrappedBookData = await wrapBookData(
@@ -267,14 +240,12 @@ const userBookInfo = async (req, res) => {
             bookData,
             publishedOnly,
         );
-        userBooksData.push(wrappedBookData);
+        // Ignore user info
+        userBooksData.push(wrappedBookData.book);
     }
 
     res.json({
-        success: true,
-        data: {
-            books: userBooksData,
-        },
+        ...userBooksData,
     });
 };
 
