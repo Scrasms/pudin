@@ -4,6 +4,7 @@ interface FetchObj {
   method: string;
   headers: Record<string, string>;
   body?: string;
+  credentials: 'include' | 'omit' | 'same-origin';
 }
 
 /**
@@ -12,7 +13,6 @@ interface FetchObj {
  * @param method - request's HTTP method
  * @param body - request's body
  * @param queryObj - object representing the query string of request
- * @param token - request's token
  * @returns promise resolving to response parsed as json or an error
  */
 const apiCall = async (
@@ -20,7 +20,6 @@ const apiCall = async (
   method: string,
   body?: object | null,
   queryObj?: Record<string | number | symbol, string | number | object>,
-  token?: string | null,
 ) => {
   let fetchURL = `http://${BACKEND_HOST}:${BACKEND_PORT}/${path}`;
   if (queryObj) {
@@ -33,13 +32,11 @@ const apiCall = async (
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const fetchObj: FetchObj = {
     method: method,
     headers: headers,
+    credentials: 'include',
   };
 
   if (body) {
@@ -50,7 +47,9 @@ const apiCall = async (
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error);
+    throw new Error(
+      data.error?.message || 'Something went wrong, please try again later',
+    );
   }
 
   return data;
