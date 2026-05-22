@@ -30,15 +30,9 @@ const bookCreate = async (req, res) => {
             link = await storeBookCover(bid, bookCover);
         }
 
-        const bookData = {
+        res.status(201).json({
             bid: bid,
             image: link,
-        };
-        res.status(201).json({
-            success: true,
-            data: {
-                book: bookData,
-            },
         });
     } catch (err) {
         if (err instanceof InputError) throw err;
@@ -78,10 +72,7 @@ const bookInfo = async (req, res) => {
         publishedOnly,
     );
 
-    res.json({
-        success: true,
-        data: wrappedBookData,
-    });
+    res.json(wrappedBookData);
 };
 
 const bookInfoAll = async (req, res) => {
@@ -106,12 +97,7 @@ const bookInfoAll = async (req, res) => {
         allBooksData.push(wrappedBookData);
     }
 
-    res.json({
-        success: true,
-        data: {
-            books: allBooksData,
-        },
-    });
+    res.json(allBooksData);
 };
 
 const bookUpdate = async (req, res) => {
@@ -151,7 +137,7 @@ const bookUpdate = async (req, res) => {
             await deleteAllUserBookSave(bid);
         }
 
-        res.json({ success: true });
+        res.json({ message: "Book succesfully updated" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -167,7 +153,7 @@ const bookDelete = async (req, res) => {
         if (!success) {
             throw new InputError("No such book was written by the user");
         }
-        res.json({ success: true });
+        res.json({ message: "Book successfully deleted" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -187,7 +173,7 @@ const bookTag = async (req, res) => {
         }
 
         await tagBook(bid, tagName);
-        res.status(201).json({ success: true });
+        res.status(201).json({ message: "Tag successfully added to book" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -210,7 +196,7 @@ const bookUntag = async (req, res) => {
         if (!success) {
             throw new InputError("Book does not have such a tag");
         }
-        res.json({ success: true });
+        res.json({ message: "Tag successfully removed from book" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);

@@ -42,15 +42,8 @@ const commentCreate = async (req, res) => {
 
         const cid = await createComment(bid, number, uid, message, repliesTo);
 
-        const commentData = {
-            cid: cid,
-        };
-
         res.status(201).json({
-            success: true,
-            data: {
-                comment: commentData,
-            },
+            cid: cid,
         });
     } catch (err) {
         if (err instanceof InputError) throw err;
@@ -76,7 +69,7 @@ const commentUpdate = async (req, res) => {
             throw new InputError("Comment not found or user did not write it");
         }
 
-        res.json({ success: true });
+        res.json({ message: "Comment successfully updated" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -100,7 +93,7 @@ const commentDelete = async (req, res) => {
             throw new InputError("Comment not found or user did not write it");
         }
 
-        res.json({ success: true });
+        res.json({ message: "Comment successfully deleted" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -119,10 +112,7 @@ const commentInfo = async (req, res) => {
 
         const allCommentsData = await getCommentByChapter(bid, number);
 
-        res.json({
-            success: true,
-            data: allCommentsData,
-        });
+        res.json(allCommentsData);
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -142,10 +132,7 @@ const commentReplyInfo = async (req, res) => {
 
         const allRepliesData = await getCommentReplies(cid, bid, number);
 
-        res.json({
-            success: true,
-            data: allRepliesData,
-        });
+        res.json(allRepliesData);
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -172,7 +159,7 @@ const commentLike = async (req, res) => {
         await createCommentLikes(cid, uid);
         await addCommentNumlikes(cid);
 
-        res.status(201).json({ success: true });
+        res.status(201).json({ message: "Comment successfully liked" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -202,7 +189,7 @@ const commentUnlike = async (req, res) => {
         }
         await subCommentNumLikes(cid);
 
-        res.json({ success: true });
+        res.json({ message: "Comment successfully unliked" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);

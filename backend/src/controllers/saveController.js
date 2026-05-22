@@ -16,7 +16,7 @@ const userBookSave = async (req, res) => {
     try {
         await createUserBookSave(uid, bid);
 
-        res.status(201).json({ success: true });
+        res.status(201).json({ message: "Book successfully saved" });
     } catch (err) {
         throw new DBError(err);
     }
@@ -32,12 +32,7 @@ const userBookSaveInfo = async (req, res) => {
             throw new InputError("User did not save such a book");
         }
 
-        res.json({
-            success: true,
-            data: {
-                save: saveData,
-            },
-        });
+        res.json(saveData);
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -55,12 +50,7 @@ const userBookSaveInfoAll = async (req, res) => {
         allBooksData.push(wrappedBookData);
     }
 
-    res.json({
-        success: true,
-        data: {
-            books: allBooksData,
-        },
-    });
+    res.json(allBooksData);
 };
 
 const userBookSaveUpdate = async (req, res) => {
@@ -75,7 +65,7 @@ const userBookSaveUpdate = async (req, res) => {
                 "New status is invalid or user did not save such a book",
             );
         }
-        res.json({ success: true });
+        res.json({ message: "Book status successfuly updated" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -92,7 +82,7 @@ const userBookSaveDelete = async (req, res) => {
             throw new InputError("User did not save such a book");
         }
 
-        res.json({ success: true });
+        res.json({ message: "Book successfuly unsaved" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
