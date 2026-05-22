@@ -1,19 +1,36 @@
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import type { ReactNode } from 'react';
 import headerDrip from '../assets/header_drip.svg';
 
-const Header = () => {
+// Header with toolbar on the right and option to display a drip style
+const Header = ({
+  showStyle,
+  children,
+}: {
+  showStyle?: boolean;
+  children?: ReactNode;
+}) => {
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="sticky" elevation={0}>
-          <Toolbar sx={{ backgroundColor: 'secondary.main' }}></Toolbar>
-        </AppBar>
-        <Box component="img" src={headerDrip}></Box>
-      </Box>
+      <AppBar position="fixed" elevation={0}>
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            bgcolor: 'secondary.main',
+            p: '15px',
+          }}
+        >
+          {children}
+        </Toolbar>
+        {showStyle && (
+          <Box component="img" src={headerDrip} sx={{ width: '100%' }} />
+        )}
+      </AppBar>
     </>
   );
-}
+};
 
 export default Header;
