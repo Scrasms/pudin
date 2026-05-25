@@ -1,13 +1,18 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import {
+  createTheme,
+  CssBaseline,
+  responsiveFontSizes,
+  ThemeProvider,
+} from '@mui/material';
 import App from './App.tsx';
 import '@fontsource/inter/300.css';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/700.css';
 
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     background: {
       default: '#f9f7c3',
@@ -18,7 +23,7 @@ const theme = createTheme({
     secondary: {
       main: '#a97d70',
       dark: '#83473a',
-    },
+    }
   },
   typography: {
     fontFamily: ['Inter', 'Roboto', 'Arial', 'Helvetica', 'sans-serif'].join(
@@ -26,6 +31,8 @@ const theme = createTheme({
     ),
   },
 });
+
+theme = responsiveFontSizes(theme);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
