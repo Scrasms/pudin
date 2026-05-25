@@ -14,6 +14,7 @@ export interface ErrorContextType {
   showError: (_error: unknown) => void;
 }
 
+// Context responsible for rendering errors
 export const ErrorContext = createContext<ErrorContextType>({
   error: '',
   openError: false,

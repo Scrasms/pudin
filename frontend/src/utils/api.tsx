@@ -48,7 +48,7 @@ const apiCall = async (
 
   if (!response.ok) {
     throw new Error(
-      data.error?.message || 'Something went wrong, please try again later',
+      data?.message || 'Something went wrong, please try again later',
     );
   }
 
