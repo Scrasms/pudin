@@ -5,6 +5,7 @@ import { apiCall } from '../utils/api';
 import { useContext } from 'react';
 import { ErrorContext } from '../contexts/ErrorContext';
 import MainLayout from '../components/Layouts/MainLayout';
+import { UserContext } from '../contexts/UserContext';
 
 interface LoginFormValues {
   username: string;
@@ -14,12 +15,13 @@ interface LoginFormValues {
 const Login = () => {
   const navigate = useNavigate();
   const { showError, openError, setOpenError } = useContext(ErrorContext);
+  const { setUid } = useContext(UserContext);
 
   const submitLogin = async (formData: LoginFormValues) => {
     try {
       const data = await apiCall('user/login', 'POST', formData);
-      const uid = data.uid;
       // TODO: Store returned uid somewhere, probs in a context
+      setUid(data.uid);
 
       if (openError) setOpenError(false);
       navigate('/dashboard', { replace: true });
