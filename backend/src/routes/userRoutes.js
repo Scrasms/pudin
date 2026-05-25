@@ -11,6 +11,7 @@ import {
     userInfo,
     userBookInfo,
     userInfoAll,
+    userId,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -31,6 +32,9 @@ userRouter.post("/password", isAuth, userPassword);
 
 // Update user's profile picture
 userRouter.put("/profile", isAuth, userProfile);
+
+// Get's the user's id if they are logged in
+userRouter.get("/id", isAuth, userId);
 
 // Get public information about all users
 userRouter.get("/", userInfoAll);

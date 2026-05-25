@@ -245,6 +245,11 @@ const userBookInfo = async (req, res) => {
     res.json(userBooksData);
 };
 
+const userId = async (req, res) => {
+    // Passed isAuth check
+    res.json({ uid: req.user.uid });
+};
+
 export {
     userTest,
     userSignup,
@@ -256,4 +261,5 @@ export {
     userInfo,
     userInfoAll,
     userBookInfo,
+    userId
 };
