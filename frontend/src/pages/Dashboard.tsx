@@ -1,15 +1,19 @@
-import { Typography } from '@mui/material';
-import { useContext } from 'react';
-import { UserContext } from '../contexts/UserContext';
+import { Container, Grid } from '@mui/material';
+import MainLayout from '../components/Layouts/MainLayout';
 
 const Dashboard = () => {
-  const { uid } = useContext(UserContext);
-
   return (
     <>
-      <Typography variant="h1" sx={{ color: 'secondary.main' }}>
-        Hi {uid}
-      </Typography>
+      <MainLayout>
+        <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Grid container spacing={2}>
+            <Grid size={8}>size=8</Grid>
+            <Grid size={4}>size=4</Grid>
+            <Grid size={4}>size=4</Grid>
+            <Grid size={8}>size=8</Grid>
+          </Grid>
+        </Container>
+      </MainLayout>
     </>
   );
 };

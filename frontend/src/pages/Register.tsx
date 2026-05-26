@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router';
 import { apiCall } from '../utils/api';
 import { useContext } from 'react';
 import { ErrorContext } from '../contexts/ErrorContext';
-import MainLayout from '../components/Layouts/MainLayout';
 import { UserContext } from '../contexts/UserContext';
+import LandingLayout from '../components/Layouts/LandingLayout';
 
 interface RegisterFormValues {
   username: string;
@@ -17,7 +17,7 @@ interface RegisterFormValues {
 const Register = () => {
   const navigate = useNavigate();
   const { showError, openError, setOpenError } = useContext(ErrorContext);
-  const { setUid } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   const submitRegister = async (formData: RegisterFormValues) => {
     try {
@@ -26,8 +26,7 @@ const Register = () => {
       }
 
       const data = await apiCall('user/signup', 'POST', formData);
-      // TODO: Store returned uid somewhere, probs in a context
-      setUid(data.uid);
+      setUser((user) => (user!.uid = data.uid));
 
       if (openError) setOpenError(false);
       navigate('/dashboard', { replace: true });
@@ -38,7 +37,7 @@ const Register = () => {
 
   return (
     <>
-      <MainLayout showStyle>
+      <LandingLayout>
         <Form title="Register" onSubmit={submitRegister}>
           <Input name="username" label="Username" required />
           <Input type="email" name="email" label="Email" required />
@@ -50,7 +49,7 @@ const Register = () => {
             required
           />
         </Form>
-      </MainLayout>
+      </LandingLayout>
     </>
   );
 };

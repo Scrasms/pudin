@@ -4,7 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import type { ReactNode } from 'react';
 import headerDrip from '../assets/header_drip.svg';
 
-// Header with toolbar on the right and option to display a drip style
+// Header with content spread on left and right and option to display a drip style
 const Header = ({
   showStyle,
   children,
@@ -14,16 +14,16 @@ const Header = ({
 }) => {
   return (
     <>
-      <AppBar position="fixed" elevation={0}>
+      <AppBar position="sticky" elevation={0}>
         <Toolbar
           sx={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             bgcolor: 'secondary.main',
             p: '15px',
           }}
         >
-          {children}
+          {!showStyle && children}
         </Toolbar>
         {showStyle && (
           <Box component="img" src={headerDrip} sx={{ width: '100%' }} />

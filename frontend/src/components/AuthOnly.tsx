@@ -7,11 +7,11 @@ import { UserContext } from '../contexts/UserContext';
  * or reroutes to landing page otherwise
  */
 const AuthOnly = () => {
-  const { uid, loading } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
 
   // Don't redirect while user info is still loading
-  if (loading) return null;
-  if (uid === '') return <Navigate to="/" replace />;
+  if (loading || !user) return null;
+  if (user.uid === '') return <Navigate to="/" replace />;
   return <Outlet />;
 };
 

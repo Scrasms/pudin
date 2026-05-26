@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router';
-import MainLayout from '../components/Layouts/MainLayout';
 import { Box, Button, ButtonGroup, Typography } from '@mui/material';
+import LandingLayout from '../components/Layouts/LandingLayout';
 
 const Landing = () => {
   const navigate = useNavigate();
 
   return (
     <>
-      <MainLayout showStyle>
-        <Box sx={{ mt: '15%' }}>
+      <LandingLayout showStyle>
+        <Box>
           <Typography
             variant="h1"
             sx={{
@@ -63,23 +63,26 @@ const Landing = () => {
             color="secondary"
             aria-label="login and register button group"
             disableElevation
-            sx={{ display: 'flex', justifyContent: 'center', mt: '5%' }}
+            sx={{ display: 'flex', justifyContent: 'center', mt: '8%' }}
           >
             <Button
               sx={{ fontSize: '1.2rem' }}
+              color="secondary"
               onClick={() => navigate('register')}
             >
               Get Started
             </Button>
             <Button
+              variant="outlined"
               sx={{ fontSize: '1.2rem' }}
+              color="secondary"
               onClick={() => navigate('login')}
             >
               Login
             </Button>
           </ButtonGroup>
         </Box>
-      </MainLayout>
+      </LandingLayout>
     </>
   );
 };

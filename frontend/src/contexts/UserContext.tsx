@@ -1,9 +1,10 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
+import type { User } from './UserProvider';
 
 export interface UserContextType {
-  // User's backend id stored as react state
-  uid: string;
-  setUid: Dispatch<SetStateAction<string>> | (() => void);
+  // User's info stored as object in react state
+  user: User | undefined;
+  setUser: Dispatch<SetStateAction<User | undefined>> | (() => void);
 
   // Whether the user info is still loading from backend or not
   loading: boolean;
@@ -11,7 +12,7 @@ export interface UserContextType {
 
 // Context storing user information
 export const UserContext = createContext<UserContextType>({
-  uid: '',
-  setUid: () => {},
+  user: undefined,
+  setUser: () => {},
   loading: true
 });

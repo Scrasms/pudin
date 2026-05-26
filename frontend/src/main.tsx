@@ -12,6 +12,15 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/700.css';
 
+declare module '@mui/material/styles' {
+  interface PaletteColor {
+    text?: string;
+  }
+  interface SimplePaletteColorOptions {
+    text?: string;
+  }
+}
+
 let theme = createTheme({
   palette: {
     background: {
@@ -23,7 +32,8 @@ let theme = createTheme({
     secondary: {
       main: '#a97d70',
       dark: '#83473a',
-    }
+      text: 'hsl(9, 32%, 20%)',
+    },
   },
   typography: {
     fontFamily: ['Inter', 'Roboto', 'Arial', 'Helvetica', 'sans-serif'].join(
