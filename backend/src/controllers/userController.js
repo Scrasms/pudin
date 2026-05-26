@@ -198,7 +198,6 @@ const userInfo = async (req, res) => {
 
     res.json({
         uid: user.uid,
-        email: user.email,
         username: user.username,
         image: user.profile_image,
         joined_at: user.joined_at,
@@ -245,9 +244,14 @@ const userBookInfo = async (req, res) => {
     res.json(userBooksData);
 };
 
-const userId = async (req, res) => {
+const userMe = async (req, res) => {
     // Passed isAuth check
-    res.json({ uid: req.user.uid });
+    res.json({
+        uid: req.user.uid,
+        username: req.user.username,
+        image: req.user.profile_image,
+        joined_at: req.user.joined_at,
+    });
 };
 
 export {
@@ -261,5 +265,5 @@ export {
     userInfo,
     userInfoAll,
     userBookInfo,
-    userId
+    userMe,
 };

@@ -11,7 +11,7 @@ import {
     userInfo,
     userBookInfo,
     userInfoAll,
-    userId,
+    userMe,
 } from "../controllers/userController.js";
 
 const userRouter = Router();
@@ -33,8 +33,8 @@ userRouter.post("/password", isAuth, userPassword);
 // Update user's profile picture
 userRouter.put("/profile", isAuth, userProfile);
 
-// Get's the user's id if they are logged in
-userRouter.get("/id", isAuth, userId);
+// Get the user's own info if they are logged in
+userRouter.get("/me", isAuth, userMe);
 
 // Get public information about all users
 userRouter.get("/", userInfoAll);
@@ -42,7 +42,7 @@ userRouter.get("/", userInfoAll);
 // Get information about the books owned by the given user
 userRouter.get("/:username/book", userBookInfo);
 
-// Get public information about the given user
+// Get public information about the given user by username
 userRouter.get("/:username", userInfo);
 
 export default userRouter;
