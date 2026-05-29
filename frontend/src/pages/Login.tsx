@@ -20,7 +20,7 @@ const Login = () => {
   const submitLogin = async (formData: LoginFormValues) => {
     try {
       const data = await apiCall('user/login', 'POST', formData);
-      setUser((user) => (user!.uid = data.uid));
+      setUser(data);
 
       if (openError) setOpenError(false);
       navigate('/dashboard', { replace: true });

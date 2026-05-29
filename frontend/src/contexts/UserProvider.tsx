@@ -14,15 +14,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
-  // Fetch user's id on mount from backend
-  useEffect(() => {
-    const refreshId = async () => {
+  const refreshUser = async () => {
+    try {
       const data = await apiCall('user/me', 'GET');
       setUser(data);
-
+    } catch {
+      setUser(undefined);
+    } finally {
       setLoading(false);
-    };
-    refreshId();
+    }
+  };
+  
+  // Fetch user data on mount from backend
+  useEffect(() => {
+    refreshUser();
   }, []);
 
   return (

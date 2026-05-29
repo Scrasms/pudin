@@ -32,13 +32,13 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
 
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Button>Write</Button>
-            {user!.image ? (
+            {user?.image ? (
               <Avatar
-                src={user!.image}
-                alt={`${user!.username}'s profile picture`}
+                src={user?.image}
+                alt={`${user?.username}'s profile picture`}
               />
             ) : (
-              <Avatar>{user!.username[0].toUpperCase()}</Avatar>
+              <Avatar>{user?.username?.at(0)?.toUpperCase()}</Avatar>
             )}
           </Stack>
         </Header>
@@ -54,7 +54,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
           }}
         >
           <Typography variant="h4" sx={{ color: 'secondary.text' }}>
-            Welcome {user!.username}!
+            Welcome {user?.username}!
           </Typography>
 
           {children}

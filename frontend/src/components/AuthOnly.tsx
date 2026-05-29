@@ -10,8 +10,8 @@ const AuthOnly = () => {
   const { user, loading } = useContext(UserContext);
 
   // Don't redirect while user info is still loading
-  if (loading || !user) return null;
-  if (user.uid === '') return <Navigate to="/" replace />;
+  if (loading) return null;
+  if (!user) return <Navigate to="/" replace />;
   return <Outlet />;
 };
 
