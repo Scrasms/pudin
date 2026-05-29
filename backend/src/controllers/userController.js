@@ -71,6 +71,9 @@ const userSignup = async (req, res, next) => {
 
             return res.status(201).json({
                 uid: user.uid,
+                username: req.user.username,
+                image: req.user.profile_image,
+                joined_at: req.user.joined_at,
                 codes: codes,
             });
         });
@@ -89,6 +92,9 @@ const userLogin = (req, res, next) => {
 
             return res.json({
                 uid: user.uid,
+                username: req.user.username,
+                image: req.user.profile_image,
+                joined_at: req.user.joined_at,
             });
         });
     })(req, res, next);
