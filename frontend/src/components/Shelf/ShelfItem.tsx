@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
 import type { ShelfBook } from '../../utils/types';
+import cover from '../../assets/cover.png';
 
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   const publishTime = new Date(book.book.published_at);
@@ -18,8 +19,20 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
 
   return (
     <>
-      <Box sx={{}}>
-        <Typography sx={{ fontSize: '1.2rem', fontWeight: '500' }}>
+      <Box
+        component="img"
+        src={book.book.image || cover}
+        sx={{ width: '128px', aspectRatio: '512/800' }}
+      />
+      <Box sx={{ p: '5px' }}>
+        <Typography
+          sx={{
+            fontSize: '1.2rem',
+            fontWeight: '500',
+            borderBottom: '2px solid',
+            borderColor: 'primary.dark',
+          }}
+        >
           {book.book.title}
         </Typography>
 
