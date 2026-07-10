@@ -14,8 +14,13 @@ const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
               columns={3}
               sx={{
                 display: 'flex',
-                border: '2px solid',
-                borderColor: 'primary.dark',
+                boxShadow: 3,
+                '&:hover': {
+                  bgcolor: '#e7e5b7',
+                },
+                '&:active': {
+                  bgcolor: 'primary.dark',
+                },
               }}
             >
               <ShelfItem book={book} />

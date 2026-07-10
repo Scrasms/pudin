@@ -9,6 +9,8 @@ export interface Book {
   bid: string;
   title: string;
   blurb: string;
+  
+  // book cover, aspect ratio is 512/800
   image: string;
   written_by: string;
   published_at: string;

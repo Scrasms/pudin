@@ -22,9 +22,9 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
       <Box
         component="img"
         src={book.book.image || cover}
-        sx={{ width: '128px', aspectRatio: '512/800' }}
+        sx={{ width: '128px', height: '200px' }}
       />
-      <Box sx={{ p: '5px' }}>
+      <Box sx={{ p: '5px 12px', width: '250px', maxHeight: '200px' }}>
         <Typography
           sx={{
             fontSize: '1.2rem',
@@ -36,8 +36,21 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
           {book.book.title}
         </Typography>
 
-        <Typography sx={{ fontSize: '1rem', fontStyle: 'italic' }}>
-          {book.book.blurb}
+        <Typography
+          sx={{
+            fontSize: '1rem',
+            fontStyle: 'italic',
+            // Display maximum of 3 lines before truncating with ellipsis
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            textOverflow: 'ellipsis',
+            wordWrap: 'break-word',
+            overflow: 'hidden',
+          }}
+        >
+          {book.book.blurb ||
+            'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint, facere, quam maiores dolorem quis tempora fugiat earum magnam velit suscipit, reprehenderit ab cupiditate. Officia blanditiis ullam quisquam suscipit, deleniti earum!'}
         </Typography>
 
         <Typography sx={{ fontSize: '1rem' }}>
