@@ -1,13 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { UserContext } from './UserContext';
 import { apiCall } from '../utils/api';
-
-export interface User {
-  uid: string;
-  username: string;
-  image: string;
-  joinedAt: string;
-}
+import type { User } from '../utils/types';
 
 // Provider for UserContext
 export const UserProvider = ({ children }: { children: ReactNode }) => {
