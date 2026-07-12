@@ -28,11 +28,12 @@ let theme = createTheme({
     },
     primary: {
       main: '#f9f7c3',
+      text: ''
     },
     secondary: {
       main: '#a97d70',
       dark: '#83473a',
-      text: 'hsl(9, 32%, 20%)',
+      text: '#432823',
     },
   },
   typography: {

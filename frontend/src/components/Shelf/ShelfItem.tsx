@@ -6,6 +6,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
 
+// TODO: implement opening the book
+// TODO: fix responsiveness and add clickable link to author's profile
 // Displays the given book's data as a clickable card
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   const publishTime = new Date(book.book.published_at);
@@ -27,7 +29,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
       <Box
         component="img"
         src={book.book.image || cover}
-        sx={{ width: '128px', height: '200px' }}
+        sx={{ width: '40%', aspectRatio: 128 / 200 }}
       />
 
       <Stack
@@ -42,7 +44,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
           <Typography
             sx={{
               fontSize: '1.2rem',
-              fontWeight: '500',
+              fontWeight: 500,
               borderBottom: '2px solid',
               borderColor: 'primary.dark',
             }}
@@ -61,40 +63,50 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
               textOverflow: 'ellipsis',
               wordWrap: 'break-word',
               overflow: 'hidden',
+              m: '5px 0px',
             }}
           >
             {book.book.blurb ||
               'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint, facere, quam maiores dolorem quis tempora fugiat earum magnam velit suscipit, reprehenderit ab cupiditate. Officia blanditiis ullam quisquam suscipit, deleniti earum!'}
           </Typography>
-
-          <Typography sx={{ fontSize: '1rem' }}>
-            Author: {book.user.username}
-          </Typography>
-
-          <Typography sx={{ fontSize: '1rem' }}>
-            Posted: {publishDate}
-          </Typography>
         </Box>
 
-        <Stack direction={'row'} spacing={2}>
-          <IconLabel
-            icon={FavoriteIcon}
-            label={book.book.total_likes}
-            iconProps={{ sx: { color: 'secondary.dark' } }}
-          />
+        <Box>
+          <Typography sx={{ fontSize: '1rem' }}>
+            <Box component="span" sx={{ fontWeight: 500 }}>
+              Author:
+            </Box>{' '}
+            <Box
+              component="a"
+              sx={{ color: 'secondary.dark' }}
+              href={`/${book.book.written_by}`}
+            >
+              {book.user.username}
+            </Box>{' '}
+          </Typography>
 
-          <IconLabel
-            icon={VisibilityIcon}
-            label={book.book.total_reads}
-            iconProps={{ sx: { color: 'secondary.dark' } }}
-          />
+          <Typography sx={{ fontSize: '1rem' }}>{publishDate}</Typography>
 
-          <IconLabel
-            icon={ListIcon}
-            label={book.book.total_chapters}
-            iconProps={{ sx: { color: 'secondary.dark' } }}
-          />
-        </Stack>
+          <Stack direction={'row'} spacing={2}>
+            <IconLabel
+              icon={FavoriteIcon}
+              label={book.book.total_likes}
+              iconProps={{ sx: { color: 'secondary.dark' } }}
+            />
+
+            <IconLabel
+              icon={VisibilityIcon}
+              label={book.book.total_reads}
+              iconProps={{ sx: { color: 'secondary.dark' } }}
+            />
+
+            <IconLabel
+              icon={ListIcon}
+              label={book.book.total_chapters}
+              iconProps={{ sx: { color: 'secondary.dark' } }}
+            />
+          </Stack>
+        </Box>
       </Stack>
     </>
   );

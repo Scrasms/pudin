@@ -1,16 +1,10 @@
 import { useContext, type ReactNode } from 'react';
 import Header from '../Header';
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Button, Container, Stack } from '@mui/material';
 import pudin from '../../assets/pudin.svg';
 import { UserContext } from '../../contexts/UserContext';
 
+// TODO: Move the user icon to a separate component for reusability
 /**
  * Basic layout containing a header with the rest of page content centred vertically in a column
  * to be used by authenticated routes
@@ -50,13 +44,9 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
             flexDirection: 'column',
             flex: 1,
             gap: 2,
-            mt: 4
+            mt: 4,
           }}
         >
-          <Typography variant="h4" sx={{ color: 'secondary.text' }}>
-            Welcome {user?.username}!
-          </Typography>
-
           {children}
         </Container>
       </Stack>

@@ -30,6 +30,6 @@ export interface Chapter {
 }
 
 export interface ShelfBook {
-  user: Omit<User, 'image' | 'joinedAt' >;
+  user: Omit<User, 'uid' | 'joinedAt' >;
   book: Book;
 }
