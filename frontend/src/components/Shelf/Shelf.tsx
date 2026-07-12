@@ -3,6 +3,8 @@ import ShelfItem from './ShelfItem';
 import type { ShelfBook } from '../../utils/types';
 import { Fragment } from 'react';
 
+// TODO: Use pagination of backend API to NOT display ALL books at once
+// 3-column-wide grid containing books displayed as ShelfItems
 const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
   return (
     <>
@@ -20,7 +22,7 @@ const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
                 },
                 '&:active': {
                   bgcolor: 'primary.dark',
-                },
+                }
               }}
             >
               <ShelfItem book={book} />

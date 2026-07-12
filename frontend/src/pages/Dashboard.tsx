@@ -9,7 +9,6 @@ const Dashboard = () => {
 
   const refreshBooks = async () => {
     const data = await apiCall('book', 'GET');
-    console.log(data);
     setBooks(data);
   };
 
