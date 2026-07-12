@@ -7,7 +7,7 @@ import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
 
 // TODO: implement opening the book
-// TODO: fix responsiveness and add clickable link to author's profile
+// TODO: fix covers shrinking at different rates and add clickable link to author's profile
 // Displays the given book's data as a clickable card
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   const publishTime = new Date(book.book.published_at);

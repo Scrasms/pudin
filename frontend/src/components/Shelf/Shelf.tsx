@@ -8,21 +8,27 @@ import { Fragment } from 'react';
 const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
   return (
     <>
-      <Grid container spacing={2} sx={{ height: '100%', width: '100%' }}>
+      <Grid
+        container
+        spacing={2}
+        columns={{ xs: 1, sm: 2, md: 3 }}
+        sx={{ height: '100%', width: { xs: '60%', sm: '100%' } }}
+      >
         {books.map((book, index) => (
           <Fragment key={index}>
             <Grid
-              size={4}
-              columns={3}
+              size={1}
               sx={{
                 display: 'flex',
                 boxShadow: 3,
                 '&:hover': {
                   bgcolor: '#e7e5b7',
+                  filter: 'brightness(98%)',
+                  cursor: 'pointer'
                 },
                 '&:active': {
-                  bgcolor: 'primary.dark',
-                }
+                  bgcolor: '#bdbb95',
+                },
               }}
             >
               <ShelfItem book={book} />
