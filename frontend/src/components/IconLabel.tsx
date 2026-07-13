@@ -20,7 +20,10 @@ const IconLabel = ({
 
   return (
     <>
-      <Stack direction={dir} sx={{ gap: '0.3rem' }}>
+      <Stack
+        direction={dir}
+        sx={{ gap: '0.3rem', justifyContent: 'center', alignItems: 'center' }}
+      >
         <SvgIcon component={icon} {...iconProps} />
         <Typography>{label}</Typography>
       </Stack>

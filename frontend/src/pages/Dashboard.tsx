@@ -1,12 +1,10 @@
-import { Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 import MainLayout from '../components/Layouts/MainLayout';
 import Shelf from '../components/Shelf/Shelf';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { apiCall } from '../utils/api';
-import { UserContext } from '../contexts/UserContext';
 
 const Dashboard = () => {
-  const { user } = useContext(UserContext);
   const [books, setBooks] = useState([]);
 
   const refreshBooks = async () => {
@@ -22,8 +20,9 @@ const Dashboard = () => {
   return (
     <>
       <MainLayout>
-        <Typography variant="h4">Welcome {user?.username}!</Typography>
-        <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Container
+          sx={{ display: 'flex', justifyContent: 'center', mb: '32px' }}
+        >
           <Shelf books={books} />
         </Container>
       </MainLayout>

@@ -19,16 +19,9 @@ const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
             <Grid
               size={1}
               sx={{
+                bgcolor: 'transparent',
                 display: 'flex',
-                boxShadow: 3,
-                '&:hover': {
-                  bgcolor: '#e7e5b7',
-                  filter: 'brightness(98%)',
-                  cursor: 'pointer'
-                },
-                '&:active': {
-                  bgcolor: '#bdbb95',
-                },
+                justifyContent: 'space-between',
               }}
             >
               <ShelfItem book={book} />
