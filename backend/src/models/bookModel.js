@@ -134,6 +134,41 @@ const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
 };
 
 /**
+ * Counts all published books from the database after applying filters
+ * @param {string} [tag] - the tag to filter by
+ * @param {string} [searchQuery] - only count books with titles that start with the searchQuery
+ * @returns the total number of books that fit the above filters
+ */
+const getTotalPublishedBooks = async (tag, searchQuery) => {
+    let queryStr = "SELECT COUNT(*) FROM BookInfoPublished bi";
+    const params = [];
+    let paramIdx = 1;
+
+    if (tag) {
+        queryStr += `
+            JOIN BookTagsList btl ON bi.bid = btl.bid
+            WHERE $${paramIdx++} = ANY(btl.tags)
+        `;
+        params.push(tag);
+    }
+
+    if (searchQuery) {
+        if (tag) {
+            queryStr += ` AND`;
+        } else {
+            queryStr += ` WHERE`;
+        }
+        searchQuery += "%";
+        queryStr += ` bi.title ILIKE $${paramIdx++}`;
+        params.push(searchQuery);
+    }
+
+    const { rows } = await pool.query(queryStr, params);
+
+    return Number(rows[0].count);
+};
+
+/**
  * Adds book to the Book table
  * @param {string} title - book's title
  * @param {string} blurb - book's blurb
@@ -239,6 +274,7 @@ export {
     getBookChapters,
     getBookTags,
     getAllPublishedBooks,
+    getTotalPublishedBooks,
     createBook,
     updateBookText,
     updateBookCover,

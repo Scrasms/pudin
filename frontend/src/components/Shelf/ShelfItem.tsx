@@ -15,7 +15,7 @@ import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
 
 // TODO: implement opening the book
-// TODO: fix covers shrinking at different rates and add clickable link to author's profile
+// TODO: fix covers shrinking at different rates and add clickable link to author's profile using navigate()
 // Displays the given book's data as a clickable card
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   return (
@@ -40,7 +40,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
               flexDirection: 'column',
               justifyContent: 'space-between',
               p: '5px 12px',
-              width: '60%'
+              width: '60%',
             }}
           >
             <Box>
@@ -88,7 +88,10 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                 </Box>{' '}
               </Typography>
 
-              <Stack direction={'row'} sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap' }}>
+              <Stack
+                direction={'row'}
+                sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap' }}
+              >
                 <IconLabel
                   icon={FavoriteIcon}
                   label={book.book.total_likes}
