@@ -9,6 +9,7 @@ import {
     updateBookCover,
     updateBookPublish,
     deleteBook,
+    getTotalPublishedBooks,
 } from "../models/bookModel.js";
 import { deleteAllUserBookSave } from "../models/saveModel.js";
 import { tagBook, untagBook } from "../models/tagModel.js";
@@ -97,7 +98,9 @@ const bookInfoAll = async (req, res) => {
         allBooksData.push(wrappedBookData);
     }
 
-    res.json(allBooksData);
+    const totalData = await getTotalPublishedBooks(tag, searchQuery);
+
+    res.json({ total: totalData, books: allBooksData});
 };
 
 const bookUpdate = async (req, res) => {

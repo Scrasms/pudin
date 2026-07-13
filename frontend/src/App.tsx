@@ -18,7 +18,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route element={<AuthOnly />}>
-                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/" element={<Dashboard />} />
               </Route>
             </Routes>
           </UserProvider>
