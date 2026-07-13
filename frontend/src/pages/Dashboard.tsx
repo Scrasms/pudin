@@ -1,4 +1,4 @@
-import { Container, Pagination } from '@mui/material';
+import { Container, Pagination, Typography } from '@mui/material';
 import MainLayout from '../components/Layouts/MainLayout';
 import Shelf from '../components/Shelf/Shelf';
 import { useEffect, useState, type ChangeEvent } from 'react';
@@ -16,7 +16,7 @@ const Dashboard = () => {
   }
 
   const [books, setBooks] = useState([]);
-  const [limit] = useState(1);
+  const [limit] = useState(36);
   const [pageCount, setPageCount] = useState(1);
 
   const handlePageChange = (
@@ -47,14 +47,22 @@ const Dashboard = () => {
       <MainLayout>
         <Container
           sx={{
+            height: books.length ? 'auto' : '100%',
             display: 'flex',
             flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
             gap: '48px',
             mb: '32px',
           }}
         >
-          <Shelf books={books} />
+          {books.length ? (
+            <Shelf books={books} />
+          ) : (
+            <Typography variant="h3">
+              Whoops! We let the books run away...
+            </Typography>
+          )}
           <Pagination
             count={pageCount}
             page={page}
