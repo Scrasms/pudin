@@ -4,7 +4,6 @@ import type { ShelfBook } from '../../utils/types';
 import { Fragment } from 'react';
 import ShelfTags from './ShelfTags';
 
-// TODO: Use pagination of backend API to NOT display ALL books at once
 // 3-column-wide grid containing books displayed as ShelfItems
 const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
   return (

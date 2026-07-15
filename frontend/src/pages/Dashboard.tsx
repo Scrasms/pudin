@@ -1,4 +1,6 @@
 import {
+  Box,
+  Chip,
   Container,
   IconButton,
   Pagination,
@@ -11,15 +13,59 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { apiCall } from '../utils/api';
 import { useSearchParams } from 'react-router';
 import ShelfSelect from '../components/Shelf/ShelfSelect';
-import { limits, orders } from '../utils/ShelfOptions';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import ShelfTagField from '../components/Shelf/ShelfTagField';
+import { useTag } from '../hooks/useTag';
 
 const DEFAULT_LIMIT = 12;
 const DEFAULT_ORDER = 'title';
 
-// TODO: implement Tags filters
+const limits = [
+  { label: '1', value: 1 },
+  {
+    label: '12',
+    value: 12,
+  },
+  {
+    label: '24',
+    value: 24,
+  },
+  {
+    label: '36',
+    value: 36,
+  },
+  {
+    label: '48',
+    value: 48,
+  },
+  {
+    label: '60',
+    value: 60,
+  },
+];
+
+const orders = [
+  {
+    label: 'Title',
+    value: 'title',
+  },
+  {
+    label: 'Date Published',
+    value: 'published_at',
+  },
+  {
+    label: 'Likes',
+    value: 'total_likes',
+  },
+  {
+    label: 'Reads',
+    value: 'total_reads',
+  },
+];
+
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [, removeTag] = useTag();
 
   // Clamp searchParams to defaults
   let page = Number(searchParams.get('page'));
@@ -38,6 +84,10 @@ const Dashboard = () => {
     order = DEFAULT_ORDER;
   }
 
+  // Remove dupes and restrict to 5 tags to guard against user input via url
+  let tags = searchParams.getAll('tag');
+  tags = [...new Set(tags.slice(0, 5))];
+
   const [books, setBooks] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [asc, setAsc] = useState(true);
@@ -50,7 +100,6 @@ const Dashboard = () => {
       prev.set('page', page.toString());
       return prev;
     });
-    refreshBooks();
   };
 
   // Also resets page back to 1 to avoid showing empty pages
@@ -77,42 +126,88 @@ const Dashboard = () => {
       limit: limit,
       offset: (page - 1) * Number(limit), // minus 1 since offset is 0-indexed
       order: asc ? '+' + order : '-' + order,
+      ...(tags.length > 0 && { tags: tags }),
     });
 
     setBooks(data.books);
     setPageCount(Math.ceil(data.total / Number(limit)));
   };
 
-  // TODO: Re-fetch books every time tag filters are updated
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshBooks();
-  }, [page, limit, order, asc]);
+  }, [page, limit, order, asc, JSON.stringify(tags)]);
 
   return (
     <>
       <MainLayout>
-        <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
-          <ShelfSelect
-            label="Show"
-            value={limit}
-            setValue={handleLimitChange}
-            options={limits}
-          />
-
-          <ShelfSelect
-            label="Sort by"
-            value={order as string}
-            setValue={handleOrderChange}
-            options={orders}
-          />
-
-          <IconButton
-            aria-label="swap sorting order"
-            onClick={() => setAsc(asc => !asc)}
+        <Box>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              p: {
+                xs: '0px 20px',
+                sm: '0px',
+              },
+            }}
           >
-            <SwapVertIcon sx={{ color: 'secondary.dark' }} />
-          </IconButton>
-        </Stack>
+            <ShelfTagField />
+
+            <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
+              <ShelfSelect
+                label="Show"
+                value={limit}
+                setValue={handleLimitChange}
+                options={limits}
+              />
+
+              <ShelfSelect
+                label="Sort by"
+                value={order as string}
+                setValue={handleOrderChange}
+                options={orders}
+              />
+
+              <IconButton
+                aria-label="swap sorting order"
+                onClick={() => setAsc((asc) => !asc)}
+              >
+                <SwapVertIcon sx={{ color: 'secondary.dark' }} />
+              </IconButton>
+            </Stack>
+          </Stack>
+
+          {tags.length > 0 && (
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                mr: 'auto',
+                height: '50px',
+                width: '100%',
+                m: {
+                  xs: '5px 20px',
+                  sm: '5px',
+                },
+                alignItems: 'center',
+                overflowY: 'hidden',
+                overflowX: 'auto',
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
+              }}
+            >
+              {tags.map((tag, index) => (
+                <Chip
+                  key={index}
+                  label={tag}
+                  sx={{ fontWeight: 600 }}
+                  onDelete={() => removeTag(tag)}
+                />
+              ))}
+            </Stack>
+          )}
+        </Box>
 
         <Container
           sx={{
@@ -129,9 +224,10 @@ const Dashboard = () => {
             <Shelf books={books} />
           ) : (
             <Typography variant="h3">
-              Whoops! We let the books run away...
+              {"We can't find the books you're looking for..."}
             </Typography>
           )}
+
           <Pagination
             count={pageCount}
             page={page}

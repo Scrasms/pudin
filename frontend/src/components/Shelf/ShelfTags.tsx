@@ -1,8 +1,10 @@
 import { Chip, Stack } from '@mui/material';
+import { useTag } from '../../hooks/useTag';
 
 // Displays first 5 tags (chronologically) of the book in a scrollable horizontal container
 const ShelfTags = ({ tags }: { tags: Array<string> }) => {
   const truncTags = tags.slice(0, 5);
+  const [appendTag] = useTag();
 
   return (
     <>
@@ -19,7 +21,13 @@ const ShelfTags = ({ tags }: { tags: Array<string> }) => {
         }}
       >
         {truncTags.map((tag, index) => (
-          <Chip key={index} label={tag} sx={{ fontWeight: 600 }} />
+          <Chip
+            key={index}
+            label={tag}
+            sx={{ fontWeight: 600 }}
+            clickable
+            onClick={() => appendTag(tag)}
+          />
         ))}
       </Stack>
     </>
