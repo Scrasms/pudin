@@ -80,7 +80,13 @@ const bookInfoAll = async (req, res) => {
     const order = req.query.order;
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
-    const tag = req.query.tag;
+    let tags = req.query.tag;
+    if (typeof tags === "string") {
+        tags = [tags]
+    } else if (!Array.isArray(tags)) {
+        tags = [];
+    }
+
     const searchQuery = req.query.searchQuery;
 
     const allBooksData = [];
@@ -90,7 +96,7 @@ const bookInfoAll = async (req, res) => {
         order,
         limit,
         offset,
-        tag,
+        tags,
         searchQuery,
     );
     for (const bookData of data) {
@@ -98,7 +104,7 @@ const bookInfoAll = async (req, res) => {
         allBooksData.push(wrappedBookData);
     }
 
-    const totalData = await getTotalPublishedBooks(tag, searchQuery);
+    const totalData = await getTotalPublishedBooks(tags, searchQuery);
 
     res.json({ total: totalData, books: allBooksData});
 };

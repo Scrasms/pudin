@@ -74,11 +74,11 @@ const getBookTags = async (bid) => {
  * @param {string} [order] - sorting order, format: +/-FIELD, + means ASC, - means DESC
  * @param {number} [limit] - how many books to display in one page
  * @param {number} [offset] - the offset from the beginning of the books (a.k.a the page)
- * @param {string} [tag] - the tag to filter by
+ * @param {Array<string>} [tags] - the tags to filter by
  * @param {string} [searchQuery] - only display books with titles that start with the searchQuery
  * @returns books in the desired page, order and filter
  */
-const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
+const getAllPublishedBooks = async (order, limit, offset, tags, searchQuery) => {
     // Protect against SQL injection
     const allowedOrders = new Set([
         "title",
@@ -96,16 +96,16 @@ const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
     const params = [];
     let paramIdx = 1;
 
-    if (tag) {
+    if (tags.length > 0) {
         queryStr += `
             JOIN BookTagsList btl ON bi.bid = btl.bid
-            WHERE $${paramIdx++} = ANY(btl.tags)
+            WHERE $${paramIdx++} <@ btl.tags
         `;
-        params.push(tag);
+        params.push(tags);
     }
 
     if (searchQuery) {
-        if (tag) {
+        if (tags.length > 0) {
             queryStr += ` AND`;
         } else {
             queryStr += ` WHERE`;
@@ -135,25 +135,25 @@ const getAllPublishedBooks = async (order, limit, offset, tag, searchQuery) => {
 
 /**
  * Counts all published books from the database after applying filters
- * @param {string} [tag] - the tag to filter by
+ * @param {Array<string>} [tags] - the tags to filter by
  * @param {string} [searchQuery] - only count books with titles that start with the searchQuery
  * @returns the total number of books that fit the above filters
  */
-const getTotalPublishedBooks = async (tag, searchQuery) => {
+const getTotalPublishedBooks = async (tags, searchQuery) => {
     let queryStr = "SELECT COUNT(*) FROM BookInfoPublished bi";
     const params = [];
     let paramIdx = 1;
 
-    if (tag) {
+    if (tags.length) {
         queryStr += `
             JOIN BookTagsList btl ON bi.bid = btl.bid
-            WHERE $${paramIdx++} = ANY(btl.tags)
+            WHERE $${paramIdx++} <@ btl.tags
         `;
-        params.push(tag);
+        params.push(tags);
     }
 
     if (searchQuery) {
-        if (tag) {
+        if (tags.length) {
             queryStr += ` AND`;
         } else {
             queryStr += ` WHERE`;
