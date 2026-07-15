@@ -17,7 +17,7 @@ import SwapVertIcon from '@mui/icons-material/SwapVert';
 const DEFAULT_LIMIT = 12;
 const DEFAULT_ORDER = 'title';
 
-// TODO: give users filtering options
+// TODO: implement Tags filters
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -83,7 +83,7 @@ const Dashboard = () => {
     setPageCount(Math.ceil(data.total / Number(limit)));
   };
 
-  // TODO: Re-fetch books every time page, filters or sorting order are updated
+  // TODO: Re-fetch books every time tag filters are updated
   useEffect(() => {
     refreshBooks();
   }, [page, limit, order, asc]);

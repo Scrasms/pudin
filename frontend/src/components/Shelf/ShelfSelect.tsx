@@ -2,6 +2,7 @@ import { MenuItem, TextField } from '@mui/material';
 import { type Dispatch, type SetStateAction } from 'react';
 import type { Option } from '../../utils/types';
 
+// Basic controlled selector input for shelf 
 const ShelfSelect = ({
   label,
   value,
@@ -18,6 +19,7 @@ const ShelfSelect = ({
   return (
     <>
       <TextField
+        id={label.toLowerCase().replaceAll(' ', '-') + '-select'}
         select
         label={label}
         value={value}

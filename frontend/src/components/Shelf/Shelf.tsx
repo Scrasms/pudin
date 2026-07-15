@@ -2,6 +2,7 @@ import { Grid } from '@mui/material';
 import ShelfItem from './ShelfItem';
 import type { ShelfBook } from '../../utils/types';
 import { Fragment } from 'react';
+import ShelfTags from './ShelfTags';
 
 // TODO: Use pagination of backend API to NOT display ALL books at once
 // 3-column-wide grid containing books displayed as ShelfItems
@@ -17,14 +18,17 @@ const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
         {books.map((book, index) => (
           <Fragment key={index}>
             <Grid
+              component="article"
               size={1}
               sx={{
                 bgcolor: 'transparent',
                 display: 'flex',
-                justifyContent: 'space-between',
+                flexDirection: 'column',
+                gap: 1
               }}
             >
               <ShelfItem book={book} />
+              <ShelfTags tags={book.book.tags}/>
             </Grid>
           </Fragment>
         ))}

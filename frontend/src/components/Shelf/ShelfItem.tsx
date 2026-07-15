@@ -20,7 +20,7 @@ import IconLabel from '../IconLabel';
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   return (
     <>
-      <CardActionArea>
+      <CardActionArea sx={{ height: '100%' }}>
         <Card
           sx={{
             display: 'flex',
@@ -43,7 +43,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
               width: '60%',
             }}
           >
-            <Box>
+            <Box component="section">
               <Typography
                 sx={{
                   fontSize: '1.2rem',
@@ -90,7 +90,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
 
               <Stack
                 direction="row"
-                sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap' }}
+                sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap', mt: 0.5 }}
               >
                 <IconLabel
                   icon={FavoriteIcon}
