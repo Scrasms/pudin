@@ -80,13 +80,14 @@ const bookInfoAll = async (req, res) => {
     const order = req.query.order;
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
-    let tags = req.query.tag;
-    if (typeof tags === "string") {
-        tags = [tags]
-    } else if (!Array.isArray(tags)) {
+    let tags = req.query.tags;
+    if (tags === '') {
         tags = [];
+    } else {
+        tags = tags.split(',');
     }
-
+    console.log(tags)
+    
     const searchQuery = req.query.searchQuery;
 
     const allBooksData = [];
