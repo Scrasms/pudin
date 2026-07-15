@@ -33,3 +33,8 @@ export interface ShelfBook {
   user: Omit<User, 'uid' | 'joinedAt' >;
   book: Book;
 }
+
+export interface Option {
+  label: string;
+  value: string | number;
+}

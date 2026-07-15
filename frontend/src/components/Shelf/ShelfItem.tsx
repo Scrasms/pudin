@@ -89,7 +89,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
               </Typography>
 
               <Stack
-                direction={'row'}
+                direction="row"
                 sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap' }}
               >
                 <IconLabel
