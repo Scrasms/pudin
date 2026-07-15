@@ -1,64 +1,23 @@
-import { Container, Pagination, Stack, Typography } from '@mui/material';
+import {
+  Container,
+  IconButton,
+  Pagination,
+  Stack,
+  Typography,
+} from '@mui/material';
 import MainLayout from '../components/Layouts/MainLayout';
 import Shelf from '../components/Shelf/Shelf';
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { apiCall } from '../utils/api';
 import { useSearchParams } from 'react-router';
-import ShelfSelect from '../components/Shelf/ShelfActions';
+import ShelfSelect from '../components/Shelf/ShelfSelect';
+import { limits, orders } from '../utils/ShelfOptions';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 
-const DEFAULT_LIMIT = 1;
+const DEFAULT_LIMIT = 12;
+const DEFAULT_ORDER = 'title';
 
-const limits = [
-  {
-    label: '1',
-    value: 1,
-  },
-  {
-    label: '2',
-    value: 2,
-  },
-  {
-    label: '12',
-    value: 12,
-  },
-  {
-    label: '24',
-    value: 24,
-  },
-  {
-    label: '36',
-    value: 36,
-  },
-  {
-    label: '48',
-    value: 48,
-  },
-  {
-    label: '60',
-    value: 60,
-  },
-];
-
-const orders = [
-  {
-    label: 'Title',
-    value: 'title',
-  },
-  {
-    label: 'Date Published',
-    value: 'published_at',
-  },
-  {
-    label: 'Likes',
-    value: 'total_likes',
-  },
-  {
-    label: 'Reads',
-    value: 'total_reads',
-  },
-];
-
-// TODO: give users sorting and filtering options, including altering limit
+// TODO: give users filtering options
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -73,9 +32,15 @@ const Dashboard = () => {
     limit = DEFAULT_LIMIT;
   }
 
+  let order = searchParams.get('sortBy');
+  if (!orders.some((opt) => opt.value === order)) {
+    // Order will never be null after this so typecasting as string is safe
+    order = DEFAULT_ORDER;
+  }
+
   const [books, setBooks] = useState([]);
   const [pageCount, setPageCount] = useState(1);
-  const [order, setOrder] = useState<string | number>('title');
+  const [asc, setAsc] = useState(true);
 
   const handlePageChange = (
     _event: ChangeEvent<unknown, Element>,
@@ -97,10 +62,21 @@ const Dashboard = () => {
     });
   };
 
+  // Also resets page back to 1 to avoid confusion
+  const handleOrderChange = (value: string | number) => {
+    setSearchParams((prev) => {
+      prev.set('sortBy', value.toString());
+      prev.set('page', '1');
+      return prev;
+    });
+  };
+
+  // Fetch books at current page with filters and sorting order
   const refreshBooks = async () => {
     const data = await apiCall('book', 'GET', null, {
       limit: limit,
       offset: (page - 1) * Number(limit), // minus 1 since offset is 0-indexed
+      order: asc ? '+' + order : '-' + order,
     });
 
     setBooks(data.books);
@@ -110,11 +86,34 @@ const Dashboard = () => {
   // TODO: Re-fetch books every time page, filters or sorting order are updated
   useEffect(() => {
     refreshBooks();
-  }, [page, limit, order]);
+  }, [page, limit, order, asc]);
 
   return (
     <>
       <MainLayout>
+        <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
+          <ShelfSelect
+            label="Show"
+            value={limit}
+            setValue={handleLimitChange}
+            options={limits}
+          />
+
+          <ShelfSelect
+            label="Sort by"
+            value={order as string}
+            setValue={handleOrderChange}
+            options={orders}
+          />
+
+          <IconButton
+            aria-label="swap sorting order"
+            onClick={() => setAsc(asc => !asc)}
+          >
+            <SwapVertIcon sx={{ color: 'secondary.dark' }} />
+          </IconButton>
+        </Stack>
+
         <Container
           sx={{
             height: books.length ? 'auto' : '100%',
@@ -126,22 +125,6 @@ const Dashboard = () => {
             mb: '32px',
           }}
         >
-          <Stack direction="row" spacing={2}>
-            <ShelfSelect
-              label="Show"
-              value={limit}
-              setValue={handleLimitChange}
-              options={limits}
-            />
-
-            <ShelfSelect
-              label="Sort by"
-              value={order}
-              setValue={setOrder}
-              options={orders}
-            />
-          </Stack>
-
           {books.length ? (
             <Shelf books={books} />
           ) : (
