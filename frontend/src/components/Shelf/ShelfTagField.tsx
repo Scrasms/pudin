@@ -33,6 +33,9 @@ const ShelfTagField = () => {
             '& .MuiInputLabel-root.Mui-focused': {
               color: 'secondary.dark',
             },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: 'secondary.dark',
+            },
           }}
         />
       </Box>

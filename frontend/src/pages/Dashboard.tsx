@@ -84,9 +84,15 @@ const Dashboard = () => {
     order = DEFAULT_ORDER;
   }
 
-  // Remove dupes and restrict to 5 tags to guard against user input via url
+  // Remove dupes/null and restrict to 5 tags to guard against user input via url
   let tags = searchParams.getAll('tag');
   tags = [...new Set(tags.slice(0, 5))];
+  tags = tags.filter(tag => tag);
+
+  let search = searchParams.get('search');
+  if (!search) {
+    search = "";
+  }
 
   const [books, setBooks] = useState([]);
   const [pageCount, setPageCount] = useState(1);
@@ -127,6 +133,7 @@ const Dashboard = () => {
       offset: (page - 1) * Number(limit), // minus 1 since offset is 0-indexed
       order: asc ? '+' + order : '-' + order,
       ...(tags.length > 0 && { tags: tags }),
+      searchQuery: search
     });
 
     setBooks(data.books);
@@ -136,7 +143,7 @@ const Dashboard = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshBooks();
-  }, [page, limit, order, asc, JSON.stringify(tags)]);
+  }, [page, limit, order, asc, JSON.stringify(tags), search]);
 
   return (
     <>

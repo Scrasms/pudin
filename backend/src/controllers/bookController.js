@@ -81,12 +81,11 @@ const bookInfoAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
     let tags = req.query.tags;
-    if (tags === '') {
+    if (!tags || tags === '') {
         tags = [];
     } else {
         tags = tags.split(',');
     }
-    console.log(tags)
     
     const searchQuery = req.query.searchQuery;
 

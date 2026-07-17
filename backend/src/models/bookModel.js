@@ -78,7 +78,13 @@ const getBookTags = async (bid) => {
  * @param {string} [searchQuery] - only display books with titles that start with the searchQuery
  * @returns books in the desired page, order and filter
  */
-const getAllPublishedBooks = async (order, limit, offset, tags, searchQuery) => {
+const getAllPublishedBooks = async (
+    order,
+    limit,
+    offset,
+    tags,
+    searchQuery,
+) => {
     // Protect against SQL injection
     const allowedOrders = new Set([
         "title",
@@ -106,9 +112,9 @@ const getAllPublishedBooks = async (order, limit, offset, tags, searchQuery) => 
 
     if (searchQuery) {
         if (tags.length > 0) {
-            queryStr += ` AND`;
+            queryStr += " AND";
         } else {
-            queryStr += ` WHERE`;
+            queryStr += " WHERE";
         }
         searchQuery += "%";
         queryStr += ` bi.title ILIKE $${paramIdx++}`;
@@ -144,7 +150,7 @@ const getTotalPublishedBooks = async (tags, searchQuery) => {
     const params = [];
     let paramIdx = 1;
 
-    if (tags.length) {
+    if (tags.length > 0) {
         queryStr += `
             JOIN BookTagsList btl ON bi.bid = btl.bid
             WHERE $${paramIdx++} <@ btl.tags
@@ -153,10 +159,10 @@ const getTotalPublishedBooks = async (tags, searchQuery) => {
     }
 
     if (searchQuery) {
-        if (tags.length) {
-            queryStr += ` AND`;
+        if (tags.length > 0) {
+            queryStr += " AND";
         } else {
-            queryStr += ` WHERE`;
+            queryStr += " WHERE";
         }
         searchQuery += "%";
         queryStr += ` bi.title ILIKE $${paramIdx++}`;

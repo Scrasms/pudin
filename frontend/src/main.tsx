@@ -16,6 +16,7 @@ declare module '@mui/material/styles' {
   interface PaletteColor {
     text?: string;
   }
+
   interface SimplePaletteColorOptions {
     text?: string;
   }
@@ -27,14 +28,13 @@ let theme = createTheme({
       default: '#f9f7c3',
     },
     primary: {
-      main: '#f9f7c3',
-      text: ''
+      main: '#f9f7c3'
     },
     secondary: {
       main: '#a97d70',
       dark: '#83473a',
       text: '#432823',
-    },
+    }
   },
   typography: {
     fontFamily: ['Inter', 'Roboto', 'Arial', 'Helvetica', 'sans-serif'].join(

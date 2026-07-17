@@ -3,6 +3,7 @@ import Header from '../Header';
 import { Avatar, Box, Button, Container, Stack } from '@mui/material';
 import pudin from '../../assets/pudin.svg';
 import { UserContext } from '../../contexts/UserContext';
+import SearchBar from '../SearchBar';
 
 // TODO: Move the user icon to a separate component for reusability
 /**
@@ -16,13 +17,13 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
     <>
       <Stack sx={{ height: '100dvh', width: '100dvw', overflowY: 'auto' }}>
         <Header>
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-            <Box
-              component="img"
-              src={pudin}
-              sx={{ height: '60px', width: '60px' }}
-            />
-          </Stack>
+          <Box
+            component="img"
+            src={pudin}
+            sx={{ height: '60px', width: '60px' }}
+          />
+
+          <SearchBar />
 
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Button>Write</Button>
