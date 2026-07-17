@@ -87,11 +87,11 @@ const Dashboard = () => {
   // Remove dupes/null and restrict to 5 tags to guard against user input via url
   let tags = searchParams.getAll('tag');
   tags = [...new Set(tags.slice(0, 5))];
-  tags = tags.filter(tag => tag);
+  tags = tags.filter((tag) => tag);
 
   let search = searchParams.get('search');
   if (!search) {
-    search = "";
+    search = '';
   }
 
   const [books, setBooks] = useState([]);
@@ -126,22 +126,20 @@ const Dashboard = () => {
     });
   };
 
-  // Fetch books at current page with filters and sorting order
-  const refreshBooks = async () => {
-    const data = await apiCall('book', 'GET', null, {
-      limit: limit,
-      offset: (page - 1) * Number(limit), // minus 1 since offset is 0-indexed
-      order: asc ? '+' + order : '-' + order,
-      ...(tags.length > 0 && { tags: tags }),
-      searchQuery: search
-    });
-
-    setBooks(data.books);
-    setPageCount(Math.ceil(data.total / Number(limit)));
-  };
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // Fetch books at current page with filters and sorting order
+    const refreshBooks = async () => {
+      const data = await apiCall('book', 'GET', null, {
+        limit: limit,
+        offset: (page - 1) * Number(limit), // minus 1 since offset is 0-indexed
+        order: asc ? '+' + order : '-' + order,
+        ...(tags.length > 0 && { tags: tags }),
+        searchQuery: search,
+      });
+
+      setBooks(data.books);
+      setPageCount(Math.ceil(data.total / Number(limit)));
+    };
     refreshBooks();
   }, [page, limit, order, asc, JSON.stringify(tags), search]);
 

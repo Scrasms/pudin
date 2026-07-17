@@ -8,19 +8,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
-    try {
-      const data = await apiCall('user/me', 'GET');
-      setUser(data);
-    } catch {
-      setUser(undefined);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   // Fetch user data on mount from backend
   useEffect(() => {
+    const refreshUser = async () => {
+      try {
+        const data = await apiCall('user/me', 'GET');
+        setUser(data);
+      } catch {
+        setUser(undefined);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     refreshUser();
   }, []);
 
