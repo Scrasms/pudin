@@ -1,14 +1,17 @@
 import { Box, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useState } from 'react';
 
 // TODO: implement search by user by creating a new Dashboard-like page that refreshes users instead
-// Uncontrolled search bar for searching books and users
+// Search bar for searching books and users
 const SearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   // User's input into searchbar
   const [search, setSearch] = useState(searchParams.get('search'));
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -23,10 +26,15 @@ const SearchBar = () => {
           // Block searching for spaces only
           const search = formData.get('search')?.toString();
           if (!search || !search.trim()) return;
-          setSearchParams((prev) => {
-            prev.set('search', search);
-            return prev;
-          });
+
+          if (location.pathname !== '/dashboard') {
+            navigate({ pathname: '/dashboard', search: `?search=${search}` });
+          } else {
+            setSearchParams((prev) => {
+              prev.set('search', search);
+              return prev;
+            });
+          }
 
           e.target.reset();
         }}
@@ -42,7 +50,7 @@ const SearchBar = () => {
           aria-label="search"
           hiddenLabel
           placeholder="Search"
-          value={search || ""}
+          value={search || ''}
           onChange={(e) => setSearch(e.target.value)}
           sx={{
             width: '100%',
