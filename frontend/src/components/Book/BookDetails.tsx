@@ -68,14 +68,19 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
             <ProfileLink uid={bookData.written_by} username={username} />
           </Stack>
 
-          <Typography sx={{ fontWeight: 500 }}>
-            Published: {publishDate}{' '}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ flexWrap: 'wrap' }}
+            useFlexGap
+          >
+            <Typography sx={{ fontWeight: 500, }}> Published: {publishDate} </Typography>
             {createDate && (
-              <Box component="span" sx={{ color: 'grey' }}>
+              <Typography sx={{ fontWeight: 500, color: 'grey' }}>
                 (Created: {createDate})
-              </Box>
+              </Typography>
             )}
-          </Typography>
+          </Stack>
 
           <BookIconBar
             likes={bookData.total_likes}
@@ -87,7 +92,10 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
             component="pre"
             ref={blurbRef}
             sx={{
-              fontSize: '1rem',
+              fontSize: {
+                xs: '0.8rem',
+                md: '1rem'
+              },
               whiteSpace: 'pre-wrap',
               ...(!allBlurb && {
                 display: '-webkit-box',
