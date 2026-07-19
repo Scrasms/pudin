@@ -68,7 +68,7 @@ const Landing = () => {
             <Button
               sx={{ fontSize: '1.2rem' }}
               color="secondary"
-              onClick={() => navigate('register')}
+              onClick={() => navigate('/register')}
             >
               Get Started
             </Button>
@@ -76,7 +76,7 @@ const Landing = () => {
               variant="outlined"
               sx={{ fontSize: '1.2rem' }}
               color="secondary"
-              onClick={() => navigate('login')}
+              onClick={() => navigate('/login')}
             >
               Login
             </Button>

@@ -69,8 +69,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                   m: '5px 0px',
                 }}
               >
-                {book.book.blurb ||
-                  'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sint, facere, quam maiores dolorem quis tempora fugiat earum magnam velit suscipit, reprehenderit ab cupiditate. Officia blanditiis ullam quisquam suscipit, deleniti earum!'}
+                {book.book.blurb}
               </Typography>
             </Box>
 
@@ -81,11 +80,16 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                 </Box>{' '}
                 <Box
                   component="a"
-                  sx={{ color: 'secondary.dark' }}
+                  sx={{
+                    color: 'secondary.dark',
+                    '&:hover': {
+                      color: 'secondary.main',
+                    },
+                  }}
                   href={`/${book.book.written_by}`}
                 >
                   {book.user.username}
-                </Box>{' '}
+                </Box>
               </Typography>
 
               <Stack

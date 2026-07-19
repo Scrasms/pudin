@@ -42,7 +42,7 @@ const SearchBar = () => {
           aria-label="search"
           hiddenLabel
           placeholder="Search"
-          value={search}
+          value={search || ""}
           onChange={(e) => setSearch(e.target.value)}
           sx={{
             width: '100%',

@@ -1,17 +1,19 @@
 import { useContext, type ReactNode } from 'react';
 import Header from '../Header';
-import { Avatar, Box, Button, Container, Stack } from '@mui/material';
+import { Box, Button, Container, Stack } from '@mui/material';
 import pudin from '../../assets/pudin.svg';
 import { UserContext } from '../../contexts/UserContext';
 import SearchBar from '../SearchBar';
+import UserAvatar from '../UserAvatar';
+import { useNavigate } from 'react-router';
 
-// TODO: Move the user icon to a separate component for reusability
 /**
  * Basic layout containing a header with the rest of page content centred vertically in a column
  * to be used by authenticated routes
  */
 const MainLayout = ({ children }: { children: ReactNode }) => {
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -20,21 +22,15 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
           <Box
             component="img"
             src={pudin}
-            sx={{ height: '60px', width: '60px' }}
+            sx={{ height: '60px', width: '60px', cursor: 'pointer' }}
+            onClick={() => navigate('/dashboard')}
           />
 
           <SearchBar />
 
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Button>Write</Button>
-            {user?.image ? (
-              <Avatar
-                src={user?.image}
-                alt={`${user?.username}'s profile picture`}
-              />
-            ) : (
-              <Avatar>{user?.username?.at(0)?.toUpperCase()}</Avatar>
-            )}
+            {user && <UserAvatar username={user.username} image={user.image} />}
           </Stack>
         </Header>
 
