@@ -8,23 +8,26 @@ import {
   Typography,
 } from '@mui/material';
 import type { ShelfBook } from '../../utils/types';
-import cover from '../../assets/cover.png';
+import defaultCover from '../../assets/cover.png';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
 import { useNavigate } from 'react-router';
+import ProfileLink from '../ProfileLink';
 
 // TODO: add clickable link to author's profile using navigate()
 // Displays the given book's data as a clickable card (takes you to the larger book view)
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
   const navigate = useNavigate();
+  const bookData = book.book;
+  const userData = book.user;
 
   return (
     <>
       <CardActionArea
         sx={{ height: '100%' }}
-        onClick={() => navigate(`/book/${book.book.bid}`)}
+        onClick={() => navigate(`/book/${bookData.bid}`)}
       >
         <Card
           sx={{
@@ -35,7 +38,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
           }}
         >
           <CardMedia
-            image={book.book.image || cover}
+            image={bookData.image || defaultCover}
             sx={{ width: '40%', aspectRatio: 128 / 200 }}
           />
 
@@ -57,7 +60,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                   borderColor: 'primary.dark',
                 }}
               >
-                {book.book.title}
+                {bookData.title}
               </Typography>
 
               <Typography
@@ -74,28 +77,16 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                   m: '5px 0px',
                 }}
               >
-                {book.book.blurb}
+                {bookData.blurb}
               </Typography>
             </Box>
 
             <Box>
-              <Typography sx={{ fontSize: '1rem' }}>
-                <Box component="span" sx={{ fontWeight: 500 }}>
-                  Author:
-                </Box>{' '}
-                <Box
-                  component="a"
-                  sx={{
-                    color: 'secondary.dark',
-                    '&:hover': {
-                      color: 'secondary.main',
-                    },
-                  }}
-                  href={`/${book.book.written_by}`}
-                >
-                  {book.user.username}
-                </Box>
-              </Typography>
+              <ProfileLink
+                uid={bookData.written_by}
+                username={userData.username}
+                label={'Author: '}
+              />
 
               <Stack
                 direction="row"
@@ -103,7 +94,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
               >
                 <IconLabel
                   icon={FavoriteIcon}
-                  label={book.book.total_likes}
+                  label={bookData.total_likes}
                   iconProps={{
                     sx: {
                       color: 'secondary.dark',
@@ -118,7 +109,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
 
                 <IconLabel
                   icon={VisibilityIcon}
-                  label={book.book.total_reads}
+                  label={bookData.total_reads}
                   iconProps={{
                     sx: {
                       color: 'secondary.dark',
@@ -133,7 +124,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
 
                 <IconLabel
                   icon={ListIcon}
-                  label={book.book.total_chapters}
+                  label={bookData.total_chapters}
                   iconProps={{
                     sx: {
                       color: 'secondary.dark',
