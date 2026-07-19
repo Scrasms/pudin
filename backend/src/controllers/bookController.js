@@ -67,11 +67,7 @@ const bookInfo = async (req, res) => {
         throw new InputError("Book not found");
     }
 
-    const wrappedBookData = await wrapBookData(
-        req.user,
-        bookData,
-        publishedOnly,
-    );
+    const wrappedBookData = await wrapBookData(undefined, bookData, publishedOnly);
 
     res.json(wrappedBookData);
 };
@@ -81,12 +77,12 @@ const bookInfoAll = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
     let tags = req.query.tags;
-    if (!tags || tags === '') {
+    if (!tags || tags === "") {
         tags = [];
     } else {
-        tags = tags.split(',');
+        tags = tags.split(",");
     }
-    
+
     const searchQuery = req.query.searchQuery;
 
     const allBooksData = [];
@@ -106,7 +102,7 @@ const bookInfoAll = async (req, res) => {
 
     const totalData = await getTotalPublishedBooks(tags, searchQuery);
 
-    res.json({ total: totalData, books: allBooksData});
+    res.json({ total: totalData, books: allBooksData });
 };
 
 const bookUpdate = async (req, res) => {
