@@ -12,6 +12,7 @@ interface LoginFormValues {
   password: string;
 }
 
+// Login page
 const Login = () => {
   const navigate = useNavigate();
   const { showError, openError, setOpenError } = useContext(ErrorContext);

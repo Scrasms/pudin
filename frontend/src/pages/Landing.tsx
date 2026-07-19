@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import { Box, Button, ButtonGroup, Typography } from '@mui/material';
 import LandingLayout from '../components/Layouts/LandingLayout';
 
+// Default page for unauthorised users
 const Landing = () => {
   const navigate = useNavigate();
 

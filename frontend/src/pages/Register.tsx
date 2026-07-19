@@ -22,6 +22,7 @@ interface RegisterFormValues {
   confirmPassword: string;
 }
 
+// Register page
 const Register = () => {
   const navigate = useNavigate();
   const { showError, openError, setOpenError } = useContext(ErrorContext);

@@ -13,14 +13,19 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
+import { useNavigate } from 'react-router';
 
-// TODO: implement opening the book
-// TODO: fix covers shrinking at different rates and add clickable link to author's profile using navigate()
-// Displays the given book's data as a clickable card
+// TODO: add clickable link to author's profile using navigate()
+// Displays the given book's data as a clickable card (takes you to the larger book view)
 const ShelfItem = ({ book }: { book: ShelfBook }) => {
+  const navigate = useNavigate();
+
   return (
     <>
-      <CardActionArea sx={{ height: '100%' }}>
+      <CardActionArea
+        sx={{ height: '100%' }}
+        onClick={() => navigate(`/book/${book.book.bid}`)}
+      >
         <Card
           sx={{
             display: 'flex',

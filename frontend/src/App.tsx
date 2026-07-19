@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import { UserProvider } from './contexts/UserProvider';
 import AuthOnly from './components/AuthOnly';
 import Dashboard from './pages/Dashboard';
+import Book from './pages/Book';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route element={<AuthOnly />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/book/:bid" element={<Book />} />
               </Route>
             </Routes>
           </UserProvider>

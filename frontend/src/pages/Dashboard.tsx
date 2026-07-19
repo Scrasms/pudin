@@ -1,71 +1,18 @@
-import {
-  Box,
-  Chip,
-  Container,
-  IconButton,
-  Pagination,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Container, Pagination, Typography } from '@mui/material';
 import MainLayout from '../components/Layouts/MainLayout';
 import Shelf from '../components/Shelf/Shelf';
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { apiCall } from '../utils/api';
 import { useSearchParams } from 'react-router';
-import ShelfSelect from '../components/Shelf/ShelfSelect';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
-import ShelfTagField from '../components/Shelf/ShelfTagField';
-import { useTag } from '../hooks/useTag';
+import { limits, orders } from '../utils/options';
+import ShelfToolbar from '../components/Shelf/ShelfToolbar';
 
 const DEFAULT_LIMIT = 12;
 const DEFAULT_ORDER = 'title';
 
-const limits = [
-  { label: '1', value: 1 },
-  {
-    label: '12',
-    value: 12,
-  },
-  {
-    label: '24',
-    value: 24,
-  },
-  {
-    label: '36',
-    value: 36,
-  },
-  {
-    label: '48',
-    value: 48,
-  },
-  {
-    label: '60',
-    value: 60,
-  },
-];
-
-const orders = [
-  {
-    label: 'Title',
-    value: 'title',
-  },
-  {
-    label: 'Date Published',
-    value: 'published_at',
-  },
-  {
-    label: 'Likes',
-    value: 'total_likes',
-  },
-  {
-    label: 'Reads',
-    value: 'total_reads',
-  },
-];
-
+// Default page for authorised users
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [, removeTag] = useTag();
 
   // Clamp searchParams to defaults
   let page = Number(searchParams.get('page'));
@@ -108,24 +55,6 @@ const Dashboard = () => {
     });
   };
 
-  // Also resets page back to 1 to avoid showing empty pages
-  const handleLimitChange = (value: string | number) => {
-    setSearchParams((prev) => {
-      prev.set('show', value.toString());
-      prev.set('page', '1');
-      return prev;
-    });
-  };
-
-  // Also resets page back to 1 to avoid confusion
-  const handleOrderChange = (value: string | number) => {
-    setSearchParams((prev) => {
-      prev.set('sortBy', value.toString());
-      prev.set('page', '1');
-      return prev;
-    });
-  };
-
   useEffect(() => {
     // Fetch books at current page with filters and sorting order
     const refreshBooks = async () => {
@@ -146,73 +75,12 @@ const Dashboard = () => {
   return (
     <>
       <MainLayout>
-        <Box>
-          <Stack
-            direction="row"
-            sx={{
-              justifyContent: 'space-between',
-              p: {
-                xs: '0px 20px',
-                sm: '0px',
-              },
-            }}
-          >
-            <ShelfTagField />
-
-            <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
-              <ShelfSelect
-                label="Show"
-                value={limit}
-                setValue={handleLimitChange}
-                options={limits}
-              />
-
-              <ShelfSelect
-                label="Sort by"
-                value={order as string}
-                setValue={handleOrderChange}
-                options={orders}
-              />
-
-              <IconButton
-                aria-label="swap sorting order"
-                onClick={() => setAsc((asc) => !asc)}
-              >
-                <SwapVertIcon sx={{ color: 'secondary.dark' }} />
-              </IconButton>
-            </Stack>
-          </Stack>
-
-          {tags.length > 0 && (
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{
-                mr: 'auto',
-                height: '50px',
-                width: '100%',
-                m: {
-                  xs: '5px 20px',
-                  sm: '5px',
-                },
-                alignItems: 'center',
-                overflowY: 'hidden',
-                overflowX: 'auto',
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
-              }}
-            >
-              {tags.map((tag, index) => (
-                <Chip
-                  key={index}
-                  label={tag}
-                  sx={{ fontWeight: 600 }}
-                  onDelete={() => removeTag(tag)}
-                />
-              ))}
-            </Stack>
-          )}
-        </Box>
+        <ShelfToolbar
+          limit={limit}
+          order={order as string}
+          tags={tags}
+          setAsc={setAsc}
+        />
 
         <Container
           sx={{

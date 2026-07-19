@@ -13,6 +13,7 @@ export interface Book {
   // book cover, aspect ratio is 512/800
   image: string;
   written_by: string;
+  created_at?: string;
   published_at: string;
   total_likes: number;
   total_reads: number;
@@ -24,6 +25,7 @@ export interface Book {
 export interface Chapter {
   number: number;
   title: string;
+  created_at?: string;
   published_at: string;
   likes: number;
   reads: number;
