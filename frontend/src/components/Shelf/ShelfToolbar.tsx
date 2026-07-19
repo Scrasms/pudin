@@ -71,7 +71,7 @@ const ShelfToolbar = ({
             />
 
             <IconButton
-              aria-label="swap sorting order"
+              aria-label="swap order"
               onClick={() => setAsc((asc) => !asc)}
             >
               <SwapVertIcon sx={{ color: 'secondary.dark' }} />

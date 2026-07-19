@@ -5,6 +5,8 @@ import { timestampToDate } from '../../utils/date';
 import UserAvatar from '../UserAvatar';
 import ProfileLink from '../ProfileLink';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { testBlurb } from '../../utils/options';
+import BookIconBar from './BookIconBar';
 
 // Displays all details about a single book
 const BookDetails = ({ book }: { book: ShelfBook }) => {
@@ -22,6 +24,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
     createDate = timestampToDate(createDate);
   }
 
+  // Display 'show' button for blurb only if text overflows
   useLayoutEffect(() => {
     if (
       blurbRef.current &&
@@ -55,7 +58,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
 
         <Stack sx={{ width: '50%' }} useFlexGap spacing={0.8}>
           <Typography
-            sx={{ fontSize: { xs: '1.8rem', sm: '2.2rem', md: '3rem' } }}
+            sx={{ fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem' } }}
           >
             {bookData.title}
           </Typography>
@@ -66,13 +69,19 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
           </Stack>
 
           <Typography sx={{ fontWeight: 500 }}>
-            Published: {publishDate}
+            Published: {publishDate}{' '}
+            {createDate && (
+              <Box component="span" sx={{ color: 'grey' }}>
+                (Created: {createDate})
+              </Box>
+            )}
           </Typography>
-          {createDate && (
-            <Typography sx={{ fontWeight: 500, color: 'grey' }}>
-              (Created: {createDate})
-            </Typography>
-          )}
+
+          <BookIconBar
+            likes={bookData.total_likes}
+            reads={bookData.total_reads}
+            chapters={bookData.total_chapters}
+          />
 
           <Typography
             component="pre"
@@ -94,8 +103,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
               }),
             }}
           >
-            {bookData.blurb ||
-              "In an alternate timeline, the human race found a way to create superpowers. By extracting energy from stars and inserting that energy into humans, 'powers' were created. Powers allowed humans to gain unnatural abilities such as flight, invisibility, super strength or in other words, superpowers. Of course, with the introduction of something so revolutionary, people rose up in the hundreds of thousands in an event known as the Great Rebellion. The insurgents banded together under a single banner and became collectively known as the Shadow, marking the beginning of the Cosmic Wars.\n Out of the darkness, the Gazers were born. Using what remained of the power technology, the Gazers singlehandedly perished the evil and ended the conflict. However, there was a price to pay. Powers put a toll on the human body and had serious mental and physical repercussions.  The solution was to recruit children from the age of 13 to 18 and train them so their bodies would adapt to their powers, eventually becoming immune to all negative side effects.\n The end of the Cosmic Wars brought forth a new age of peace and prosperity that the world had never seen before. However, the long reign of the Gazers has already begun to crumble, cracks showing up within the very thread of society. Their rule will not last for much longer. The Shadow will rise once again.\n Or in other words, my unintentional and accidental ripoff of My Hero Academia :/ Blurb is a work in progress"}
+            {bookData.blurb || testBlurb}
           </Typography>
 
           {blurbOverflow && (
@@ -103,6 +111,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
               color="secondary"
               sx={{ display: 'block', ml: 'auto' }}
               onClick={() => setAllBlurb((prev) => !prev)}
+              size="small"
             >
               {!allBlurb ? 'Show' : 'Hide'}
             </Button>

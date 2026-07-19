@@ -4,17 +4,14 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Stack,
   Typography,
 } from '@mui/material';
 import type { ShelfBook } from '../../utils/types';
 import defaultCover from '../../assets/cover.png';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ListIcon from '@mui/icons-material/List';
-import IconLabel from '../IconLabel';
 import { useNavigate } from 'react-router';
 import ProfileLink from '../ProfileLink';
+import { testBlurb } from '../../utils/options';
+import BookIconBar from '../Book/BookIconBar';
 
 // TODO: add clickable link to author's profile using navigate()
 // Displays the given book's data as a clickable card (takes you to the larger book view)
@@ -77,7 +74,7 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                   m: '5px 0px',
                 }}
               >
-                {bookData.blurb}
+                {bookData.blurb || testBlurb}
               </Typography>
             </Box>
 
@@ -88,55 +85,11 @@ const ShelfItem = ({ book }: { book: ShelfBook }) => {
                 label={'Author: '}
               />
 
-              <Stack
-                direction="row"
-                sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap', mt: 0.5 }}
-              >
-                <IconLabel
-                  icon={FavoriteIcon}
-                  label={bookData.total_likes}
-                  iconProps={{
-                    sx: {
-                      color: 'secondary.dark',
-                      fontSize: {
-                        xs: '1rem',
-                        sm: '1.2rem',
-                        md: '1.5rem',
-                      },
-                    },
-                  }}
-                />
-
-                <IconLabel
-                  icon={VisibilityIcon}
-                  label={bookData.total_reads}
-                  iconProps={{
-                    sx: {
-                      color: 'secondary.dark',
-                      fontSize: {
-                        xs: '1rem',
-                        sm: '1.2rem',
-                        md: '1.5rem',
-                      },
-                    },
-                  }}
-                />
-
-                <IconLabel
-                  icon={ListIcon}
-                  label={bookData.total_chapters}
-                  iconProps={{
-                    sx: {
-                      color: 'secondary.dark',
-                      fontSize: {
-                        xs: '1rem',
-                        sm: '1.2rem',
-                        md: '1.5rem',
-                      },
-                    },
-                  }}
-                />
-              </Stack>
+              <BookIconBar
+                likes={bookData.total_likes}
+                reads={bookData.total_reads}
+                chapters={bookData.total_chapters}
+              />
             </Box>
           </CardContent>
         </Card>
