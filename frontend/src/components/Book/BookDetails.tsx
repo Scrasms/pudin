@@ -1,18 +1,18 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import type { ShelfBook } from '../../utils/types';
 import defaultCover from '../../assets/cover.png';
 import { timestampToDate } from '../../utils/date';
 import UserAvatar from '../UserAvatar';
 import ProfileLink from '../ProfileLink';
-import { useLayoutEffect, useRef, useState } from 'react';
-import { testBlurb } from '../../utils/options';
 import BookIconBar from './BookIconBar';
+import { useNavigate } from 'react-router';
+import TagList from '../TagList';
+
+const MAX_TAGS = 5;
 
 // Displays all details about a single book
 const BookDetails = ({ book }: { book: ShelfBook }) => {
-  const [allBlurb, setAllBlurb] = useState(false);
-  const [blurbOverflow, setBlurbOverflow] = useState(false);
-  const blurbRef = useRef<HTMLPreElement>(null);
+  const navigate = useNavigate();
 
   const bookData = book.book;
   const username = book.user.username;
@@ -24,106 +24,87 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
     createDate = timestampToDate(createDate);
   }
 
-  // Display 'show' button for blurb only if text overflows
-  useLayoutEffect(() => {
-    if (
-      blurbRef.current &&
-      blurbRef.current.clientHeight < blurbRef.current.scrollHeight
-    ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBlurbOverflow(true);
-    }
-  }, [bookData.blurb]);
-
   return (
     <>
       <Stack
         component="article"
         direction="row"
         spacing={2}
-        sx={{ height: 'fit-content', width: '100%', justifyContent: 'center' }}
+        sx={{ width: '100%' }}
       >
         <Box
           component="img"
           src={bookData.image || defaultCover}
           sx={{
-            height: {
-              xs: '250px',
-              sm: '300px',
-              md: '400px',
+            width: {
+              xs: '128px',
+              sm: '160px',
+              md: '192px',
             },
+            objectFit: 'contain',
             aspectRatio: 128 / 200,
           }}
         />
-
-        <Stack sx={{ width: '50%' }} useFlexGap spacing={0.8}>
-          <Typography
-            sx={{ fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem' } }}
-          >
-            {bookData.title}
-          </Typography>
-
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <UserAvatar username={username} image={avatar} />
-            <ProfileLink uid={bookData.written_by} username={username} />
-          </Stack>
-
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ flexWrap: 'wrap' }}
-            useFlexGap
-          >
-            <Typography sx={{ fontWeight: 500, }}> Published: {publishDate} </Typography>
-            {createDate && (
-              <Typography sx={{ fontWeight: 500, color: 'grey' }}>
-                (Created: {createDate})
-              </Typography>
-            )}
-          </Stack>
-
-          <BookIconBar
-            likes={bookData.total_likes}
-            reads={bookData.total_reads}
-            chapters={bookData.total_chapters}
-          />
-
-          <Typography
-            component="pre"
-            ref={blurbRef}
-            sx={{
-              fontSize: {
-                xs: '0.8rem',
-                md: '1rem'
-              },
-              whiteSpace: 'pre-wrap',
-              ...(!allBlurb && {
-                display: '-webkit-box',
-                WebkitLineClamp: {
-                  xs: 5,
-                  sm: 6,
-                  md: 8,
-                },
-                WebkitBoxOrient: 'vertical',
-                textOverflow: 'ellipsis',
-                wordWrap: 'break-word',
-                overflow: 'hidden',
-              }),
-            }}
-          >
-            {bookData.blurb || testBlurb}
-          </Typography>
-
-          {blurbOverflow && (
-            <Button
-              color="secondary"
-              sx={{ display: 'block', ml: 'auto' }}
-              onClick={() => setAllBlurb((prev) => !prev)}
-              size="small"
+        <Stack sx={{ flex: 1, justifyContent: 'space-between' }}>
+          <Stack useFlexGap spacing={0.8}>
+            <Typography
+              sx={{ fontSize: { xs: '1.5rem', sm: '1.6rem', md: '2rem' } }}
             >
-              {!allBlurb ? 'Show' : 'Hide'}
-            </Button>
-          )}
+              {bookData.title}
+            </Typography>
+
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <UserAvatar username={username} image={avatar} />
+              <ProfileLink uid={bookData.written_by} username={username} />
+            </Stack>
+
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ flexWrap: 'wrap' }}
+              useFlexGap
+            >
+              <Typography
+                sx={{
+                  fontWeight: 500,
+                  fontSize: { xs: '0.8rem', md: '1rem' },
+                }}
+              >
+                {' '}
+                Published: {publishDate}{' '}
+              </Typography>
+              {createDate && (
+                <Typography
+                  sx={{
+                    color: 'grey',
+                    fontWeight: 500,
+                    fontSize: { xs: '0.8rem', md: '1rem' },
+                  }}
+                >
+                  (Created: {createDate})
+                </Typography>
+              )}
+            </Stack>
+
+            <BookIconBar
+              likes={bookData.total_likes}
+              reads={bookData.total_reads}
+              chapters={bookData.total_chapters}
+            />
+          </Stack>
+          
+          <TagList
+            tags={bookData.tags}
+            onClick={(tag) => navigate(`/dashboard?tag=${tag}`)}
+            sx={{
+              flexWrap: 'wrap',
+              alignContent: 'flex-start',
+              overflow: 'auto',
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
+            }}
+            maxDisplayed={MAX_TAGS}
+          />
         </Stack>
       </Stack>
     </>

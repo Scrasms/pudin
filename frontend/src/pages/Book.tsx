@@ -4,7 +4,11 @@ import { apiCall } from '../utils/api';
 import type { ShelfBook } from '../utils/types';
 import MainLayout from '../components/Layouts/MainLayout';
 import BookDetails from '../components/Book/BookDetails';
+import { Stack } from '@mui/material';
+import BookBlurb from '../components/Book/BookBlurb';
+import { testBlurb } from '../utils/options';
 
+//TODO: remove testblurb
 // Page providing expanded details of one book
 const Book = () => {
   const { bid } = useParams();
@@ -20,7 +24,24 @@ const Book = () => {
 
   return (
     <>
-      <MainLayout>{book && <BookDetails book={book} />}</MainLayout>
+      <MainLayout>
+        {book && (
+          <Stack
+            sx={{
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              width: '80%',
+              m: '0 auto'
+            }}
+            useFlexGap
+            spacing={2}
+          >
+            <BookDetails book={book} />
+            <BookBlurb blurb={book.book.blurb || testBlurb} />
+            {/* {book.book.blurb && <BookBlurb blurb={book.book.blurb} />} */}
+          </Stack>
+        )}
+      </MainLayout>
     </>
   );
 };

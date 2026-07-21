@@ -13,6 +13,7 @@ const DEFAULT_ORDER = 'title';
 // Default page for authorised users
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
 
   // Clamp searchParams to defaults
   let page = Number(searchParams.get('page'));
@@ -68,6 +69,7 @@ const Dashboard = () => {
 
       setBooks(data.books);
       setPageCount(Math.ceil(data.total / Number(limit)));
+      setLoading(false);
     };
     refreshBooks();
   }, [page, limit, order, asc, JSON.stringify(tags), search]);
@@ -93,9 +95,9 @@ const Dashboard = () => {
             mb: '32px',
           }}
         >
-          {books.length ? (
-            <Shelf books={books} />
-          ) : (
+          {books.length > 0 && <Shelf books={books} />}
+
+          {books.length === 0 && !loading && (
             <Typography variant="h3">
               {"We can't find the books you're looking for..."}
             </Typography>

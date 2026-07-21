@@ -1,4 +1,4 @@
-import { Box, Chip, IconButton, Stack } from '@mui/material';
+import { Box, IconButton, Stack } from '@mui/material';
 import ShelfTagField from './ShelfTagField';
 import ShelfSelect from './ShelfSelect';
 import { useSearchParams } from 'react-router';
@@ -6,6 +6,7 @@ import { useTag } from '../../hooks/useTag';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import type { Dispatch, SetStateAction } from 'react';
 import { limits, orders } from '../../utils/options';
+import TagList from '../TagList';
 
 // Toolbar that manages the shelf's various filter and sort options
 const ShelfToolbar = ({
@@ -42,15 +43,11 @@ const ShelfToolbar = ({
 
   return (
     <>
-      <Box>
+      <Box sx={{ p: '0px 20px' }}>
         <Stack
           direction="row"
           sx={{
             justifyContent: 'space-between',
-            p: {
-              xs: '0px 20px',
-              sm: '0px',
-            },
           }}
         >
           <ShelfTagField />
@@ -80,33 +77,21 @@ const ShelfToolbar = ({
         </Stack>
 
         {tags.length > 0 && (
-          <Stack
-            direction="row"
-            spacing={2}
+          <TagList
+            tags={tags}
+            onDelete={removeTag}
             sx={{
               mr: 'auto',
               height: '50px',
               width: '100%',
-              m: {
-                xs: '5px 20px',
-                sm: '5px',
-              },
+              mt: '5px',
               alignItems: 'center',
               overflowY: 'hidden',
               overflowX: 'auto',
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgba(155, 155, 155, 0.5) transparent',
             }}
-          >
-            {tags.map((tag, index) => (
-              <Chip
-                key={index}
-                label={tag}
-                sx={{ fontWeight: 600 }}
-                onDelete={() => removeTag(tag)}
-              />
-            ))}
-          </Stack>
+          />
         )}
       </Box>
     </>

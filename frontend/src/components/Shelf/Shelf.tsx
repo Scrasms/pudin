@@ -12,7 +12,7 @@ const Shelf = ({ books }: { books: Array<ShelfBook> }) => {
         container
         spacing={2}
         columns={{ xs: 1, sm: 2, md: 3 }}
-        sx={{ height: '100%', width: { xs: '60%', sm: '100%' } }}
+        sx={{ height: '100%', width: { xs: '80%', sm: '100%' } }}
       >
         {books.map((book, index) => (
           <Fragment key={index}>

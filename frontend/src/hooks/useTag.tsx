@@ -2,6 +2,7 @@ import { useCallback, useContext } from 'react';
 import { ErrorContext } from '../contexts/ErrorContext';
 import { useSearchParams } from 'react-router';
 
+// TODO: fix bug where prev isn't added because of dupe BUT nav history IS updated
 // Adds or removes the given filter tag from search params
 export const useTag = () => {
   const [, setSearchParams] = useSearchParams();

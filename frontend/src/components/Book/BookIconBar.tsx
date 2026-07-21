@@ -4,7 +4,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListIcon from '@mui/icons-material/List';
 import IconLabel from '../IconLabel';
 
-// TODO: allow user to like the book by clicking the like icon
 // Bar displaying icons for the number of likes, reads and chapters of a book
 const BookIconBar = ({
   likes,
