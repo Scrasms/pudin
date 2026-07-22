@@ -18,7 +18,11 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
   const username = book.user.username;
   const avatar = book.user.image;
 
-  const publishDate = timestampToDate(bookData.published_at);
+  let publishDate = bookData.published_at;
+  if (publishDate) {
+    publishDate = timestampToDate(bookData.published_at);
+  }
+
   let createDate = bookData.created_at;
   if (createDate) {
     createDate = timestampToDate(createDate);
@@ -45,6 +49,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
             aspectRatio: 128 / 200,
           }}
         />
+        
         <Stack sx={{ flex: 1, justifyContent: 'space-between' }}>
           <Stack useFlexGap spacing={0.8}>
             <Typography
@@ -54,7 +59,20 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
             </Typography>
 
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <UserAvatar username={username} image={avatar} />
+              <UserAvatar
+                username={username}
+                image={avatar}
+                sx={{
+                  height: {
+                    xs: '30px',
+                    md: '40px',
+                  },
+                  width: {
+                    xs: '30px',
+                    md: '40px',
+                  },
+                }}
+              />
               <ProfileLink uid={bookData.written_by} username={username} />
             </Stack>
 
@@ -64,15 +82,18 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
               sx={{ flexWrap: 'wrap' }}
               useFlexGap
             >
-              <Typography
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: '0.8rem', md: '1rem' },
-                }}
-              >
-                {' '}
-                Published: {publishDate}{' '}
-              </Typography>
+              {publishDate && (
+                <Typography
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: { xs: '0.8rem', md: '1rem' },
+                  }}
+                >
+                  {' '}
+                  Published: {publishDate}{' '}
+                </Typography>
+              )}
+
               {createDate && (
                 <Typography
                   sx={{
@@ -92,7 +113,7 @@ const BookDetails = ({ book }: { book: ShelfBook }) => {
               chapters={bookData.total_chapters}
             />
           </Stack>
-          
+
           <TagList
             tags={bookData.tags}
             onClick={(tag) => navigate(`/dashboard?tag=${tag}`)}

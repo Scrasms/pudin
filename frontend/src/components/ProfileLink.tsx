@@ -15,7 +15,14 @@ const ProfileLink = ({
 
   return (
     <>
-      <Typography sx={{ fontSize: '1rem' }}>
+      <Typography
+        sx={{
+          fontSize: {
+            xs: '0.8rem',
+            sm: '1rem',
+          },
+        }}
+      >
         {label && (
           <Box component="span" sx={{ fontWeight: 500 }}>
             {label}

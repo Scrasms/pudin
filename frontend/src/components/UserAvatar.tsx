@@ -1,20 +1,22 @@
-import { Avatar } from '@mui/material';
+import type { Theme } from '@emotion/react';
+import { Avatar, type SxProps } from '@mui/material';
 
-// Displays provided user's avatar image or defaults to first letter of username
+// Displays provided user's avatar image or the default avatar
 const UserAvatar = ({
   username,
   image,
+  sx,
 }: {
   username: string;
   image: string;
+  sx?: SxProps<Theme>
 }) => {
   return (
     <>
-      {image ? (
-        <Avatar src={image} alt={`${username}'s profile picture`} />
-      ) : (
-        <Avatar>{username?.at(0)?.toUpperCase()}</Avatar>
-      )}
+      <Avatar
+        {...(image && { src: image, alt: `${username}'s profile picture` })}
+        sx={sx}
+      />
     </>
   );
 };

@@ -13,7 +13,7 @@ const TagList = ({
   tags: Array<string>;
   onClick?: (_: string) => void;
   onDelete?: (_: string) => void;
-  sx?: SxProps<Theme> | undefined;
+  sx?: SxProps<Theme>;
   maxDisplayed?: number; // how many tags can be displayed at once
 }) => {
   const [hide, setHide] = useState(true);
@@ -36,6 +36,7 @@ const TagList = ({
               />
             ),
         )}
+
         {showHide && (
           <Button color="secondary" onClick={() => setHide((prev) => !prev)}>
             {hide ? 'Show' : 'Hide'}

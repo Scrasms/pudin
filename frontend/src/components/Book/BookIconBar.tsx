@@ -14,56 +14,24 @@ const BookIconBar = ({
   reads: number;
   chapters: number;
 }) => {
+  const iconSx = {
+    color: 'secondary.dark',
+    fontSize: {
+      xs: '1rem',
+      sm: '1.2rem',
+      md: '1.5rem',
+    },
+  };
+
   return (
     <>
       <Stack
         direction="row"
         sx={{ gap: '0rem 0.8rem', flexWrap: 'wrap', mt: 0.5 }}
       >
-        <IconLabel
-          icon={FavoriteIcon}
-          label={likes}
-          iconProps={{
-            sx: {
-              color: 'secondary.dark',
-              fontSize: {
-                xs: '1rem',
-                sm: '1.2rem',
-                md: '1.5rem',
-              },
-            },
-          }}
-        />
-
-        <IconLabel
-          icon={VisibilityIcon}
-          label={reads}
-          iconProps={{
-            sx: {
-              color: 'secondary.dark',
-              fontSize: {
-                xs: '1rem',
-                sm: '1.2rem',
-                md: '1.5rem',
-              },
-            },
-          }}
-        />
-
-        <IconLabel
-          icon={ListIcon}
-          label={chapters}
-          iconProps={{
-            sx: {
-              color: 'secondary.dark',
-              fontSize: {
-                xs: '1rem',
-                sm: '1.2rem',
-                md: '1.5rem',
-              },
-            },
-          }}
-        />
+        <IconLabel icon={FavoriteIcon} label={likes} iconSx={iconSx} />
+        <IconLabel icon={VisibilityIcon} label={reads} iconSx={iconSx} />
+        <IconLabel icon={ListIcon} label={chapters} iconSx={iconSx} />
       </Stack>
     </>
   );

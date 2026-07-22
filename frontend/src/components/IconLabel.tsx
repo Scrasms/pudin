@@ -1,4 +1,5 @@
-import { Stack, SvgIcon, Typography, type SvgIconProps } from '@mui/material';
+import type { Theme } from '@emotion/react';
+import { Stack, SvgIcon, Typography, type SxProps } from '@mui/material';
 import type { ElementType } from 'react';
 
 // Adds the given label text to an MUI icon
@@ -6,12 +7,14 @@ const IconLabel = ({
   icon,
   label,
   bottom,
-  iconProps,
+  iconSx,
+  textSx,
 }: {
   icon: ElementType;
   label: string | number;
   bottom?: boolean;
-  iconProps?: Omit<SvgIconProps, 'component'>;
+  iconSx?: SxProps<Theme>;
+  textSx?: SxProps<Theme>;
 }) => {
   let dir: 'row' | 'column' = 'row';
   if (bottom) {
@@ -24,8 +27,8 @@ const IconLabel = ({
         direction={dir}
         sx={{ gap: '0.3rem', justifyContent: 'center', alignItems: 'center' }}
       >
-        <SvgIcon component={icon} {...iconProps} />
-        <Typography>{label}</Typography>
+        <SvgIcon component={icon} sx={iconSx} />
+        <Typography sx={textSx}>{label}</Typography>
       </Stack>
     </>
   );

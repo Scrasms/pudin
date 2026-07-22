@@ -1,42 +1,26 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Typography,
-} from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { Typography } from '@mui/material';
+import BookAccordion from './BookAccordian';
 
 // Displays the provided blurb in an accordion
 const BookBlurb = ({ blurb }: { blurb: string }) => {
   return (
     <>
-      <Accordion sx={{ bgcolor: '#6d6c6c', width: '100%' }} defaultExpanded>
-        <AccordionSummary
-          id="blurb-header"
-          aria-controls="blurb-content"
-          expandIcon={<ArrowDropDownIcon />}
+      <BookAccordion name="blurb" summary="Blurb">
+        <Typography
+          component="pre"
+          sx={{
+            fontSize: {
+              xs: '0.8rem',
+              sm: '1rem',
+            },
+            whiteSpace: 'pre-wrap',
+            overflow: 'auto',
+            ...(!blurb && { color: '#0000008a' }),
+          }}
         >
-          <Typography component="span" sx={{ color: 'white' }}>
-            Blurb
-          </Typography>
-        </AccordionSummary>
-
-        <AccordionDetails id="blurb-content" sx={{ bgcolor: '#e0e0e0' }}>
-          <Typography
-            component="pre"
-            sx={{
-              fontSize: {
-                xs: '0.8rem',
-                md: '1rem',
-              },
-              whiteSpace: 'pre-wrap',
-              overflow: 'scroll',
-            }}
-          >
-            {blurb}
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+          {blurb || 'No blurb yet...'}
+        </Typography>
+      </BookAccordion>
     </>
   );
 };

@@ -7,6 +7,7 @@ import BookDetails from '../components/Book/BookDetails';
 import { Stack } from '@mui/material';
 import BookBlurb from '../components/Book/BookBlurb';
 import { testBlurb } from '../utils/options';
+import ChapterList from '../components/Book/ChapterList';
 
 //TODO: remove testblurb
 // Page providing expanded details of one book
@@ -31,14 +32,15 @@ const Book = () => {
               justifyContent: 'center',
               alignItems: 'flex-start',
               width: '80%',
-              m: '0 auto'
+              m: '0 auto',
+              mb: '32px'
             }}
             useFlexGap
             spacing={2}
           >
             <BookDetails book={book} />
             <BookBlurb blurb={book.book.blurb || testBlurb} />
-            {/* {book.book.blurb && <BookBlurb blurb={book.book.blurb} />} */}
+            <ChapterList chapters={book.book.chapters}/>
           </Stack>
         )}
       </MainLayout>
