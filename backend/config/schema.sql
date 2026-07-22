@@ -105,7 +105,7 @@ CREATE TABLE Comment (
     cid uuid DEFAULT gen_random_uuid(),
     message text NOT NULL,
     bid uuid NOT NULL,
-    number integer,
+    number integer NOT NULL,
     posted_at timestamp with time zone DEFAULT now(),
     posted_by uuid NOT NULL,
     replies_to uuid,
