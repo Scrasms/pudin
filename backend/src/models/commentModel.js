@@ -71,34 +71,46 @@ const deleteComment = async (cid, uid) => {
 
 /**
  * Gets all top-level comments of a chapter
+ * @param {uuid} uid - user's uid
  * @param {uuid} bid - book's bid
  * @param {number} number - chapter number
  * @returns the top-level comments of that chapter
  */
-const getCommentByChapter = async (bid, number) => {
+const getCommentByChapter = async (uid, bid, number) => {
     const queryStr = `
-        SELECT *
-        FROM Comment
-        WHERE bid = $1 AND number = $2 AND replies_to IS NULL
-        ORDER BY posted_at ASC
+        SELECT 
+            c.*,
+            EXISTS ( 
+                SELECT 1 FROM CommentLikes l 
+                WHERE l.uid = $1 AND l.cid = c.cid
+            ) as liked
+        FROM Comment c
+        WHERE c.bid = $2 AND c.number = $3 AND c.replies_to IS NULL
+        ORDER BY c.posted_at ASC
     `;
-    const { rows } = await pool.query(queryStr, [bid, number]);
+    const { rows } = await pool.query(queryStr, [uid, bid, number]);
     return rows;
 };
 
 /**
  * Gets all the replies to a comment of a chapter
+ * @param {uuid} uid - user's uid
  * @param {uuid} cid - comment's cid
  * @param {uuid} bid - book's bid
  * @param {uuid} number - chapter number
  * @returns comment's replies
  */
-const getCommentReplies = async (cid, bid, number) => {
+const getCommentReplies = async (uid, cid, bid, number) => {
     const queryStr = `
-        SELECT *
-        FROM Comment
-        WHERE bid = $1 AND number = $2 AND replies_to = $3
-        ORDER BY posted_at ASC
+        SELECT 
+            c.*,
+            EXISTS ( 
+                SELECT 1 FROM CommentLikes l 
+                WHERE l.uid = $1 AND l.cid = c.cid
+            ) as liked
+        FROM Comment c
+        WHERE c.bid = $1 AND c.number = $2 AND c.replies_to = $3
+        ORDER BY c.posted_at ASC
     `;
 
     const { rows } = await pool.query(queryStr, [bid, number, cid]);
@@ -131,26 +143,6 @@ const deleteCommentLikes = async (cid, uid) => {
     return rowCount > 0;
 };
 
-/**
- * Increments the number of likes for a comment by one
- * @param {uuid} cid - comment's cid
- */
-const addCommentNumlikes = async (cid) => {
-    await pool.query("UPDATE Comment SET likes = likes + 1 WHERE cid = $1", [
-        cid,
-    ]);
-};
-
-/**
- * Decrements the number of likes for a comment by one
- * @param {uuid} cid - comment's cid
- */
-const subCommentNumLikes = async (cid) => {
-    await pool.query("UPDATE Comment SET likes = likes - 1 WHERE cid = $1", [
-        cid,
-    ]);
-};
-
 export {
     checkCommentExists,
     createComment,
@@ -160,6 +152,4 @@ export {
     getCommentReplies,
     createCommentLikes,
     deleteCommentLikes,
-    addCommentNumlikes,
-    subCommentNumLikes,
 };

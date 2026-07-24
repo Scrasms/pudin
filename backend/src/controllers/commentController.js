@@ -2,7 +2,6 @@ import DBError from "../errors/DBError.js";
 import InputError from "../errors/InputError.js";
 import { checkChapterExists } from "../models/chapterModel.js";
 import {
-    addCommentNumlikes,
     checkCommentExists,
     createComment,
     createCommentLikes,
@@ -10,7 +9,6 @@ import {
     deleteCommentLikes,
     getCommentByChapter,
     getCommentReplies,
-    subCommentNumLikes,
     updateComment,
 } from "../models/commentModel.js";
 import { checkPublishedOnly } from "../utils/publish.js";
@@ -110,7 +108,11 @@ const commentInfo = async (req, res) => {
             throw new InputError("Chapter not found");
         }
 
-        const allCommentsData = await getCommentByChapter(bid, number);
+        const allCommentsData = await getCommentByChapter(
+            req.user.uid,
+            bid,
+            number,
+        );
 
         res.json(allCommentsData);
     } catch (err) {
@@ -130,7 +132,12 @@ const commentReplyInfo = async (req, res) => {
             throw new InputError("Chapter not found");
         }
 
-        const allRepliesData = await getCommentReplies(cid, bid, number);
+        const allRepliesData = await getCommentReplies(
+            req.user.uid,
+            cid,
+            bid,
+            number,
+        );
 
         res.json(allRepliesData);
     } catch (err) {
@@ -157,7 +164,6 @@ const commentLike = async (req, res) => {
         }
 
         await createCommentLikes(cid, uid);
-        await addCommentNumlikes(cid);
 
         res.status(201).json({ message: "Comment successfully liked" });
     } catch (err) {
@@ -187,7 +193,6 @@ const commentUnlike = async (req, res) => {
         if (!success) {
             throw new InputError("User has already unliked the comment");
         }
-        await subCommentNumLikes(cid);
 
         res.json({ message: "Comment successfully unliked" });
     } catch (err) {

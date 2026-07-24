@@ -13,9 +13,8 @@ import {
     addChapterNumReads,
     updateChapterPublish,
     updateChapterText,
-    addChapterNumLikes,
-    subChapterNumLikes,
     checkChapterExists,
+    getChapterLiked,
 } from "../models/chapterModel.js";
 import { checkPublishedOnly } from "../utils/publish.js";
 
@@ -89,6 +88,8 @@ const chapterInfo = async (req, res) => {
         if (!chapterData.length) {
             throw new InputError("Chapter not found");
         }
+        const likeData = await getChapterLiked(bid, number, req.user.uid);
+        chapterData[0].liked = likeData;
 
         // Update read number if its not the owner reading the book
         if (publishedOnly) {
@@ -100,7 +101,7 @@ const chapterInfo = async (req, res) => {
             await createChapterReads(bid, number, req.user.uid);
         }
 
-        res.json(chapterData);
+        res.json(chapterData[0]);
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
@@ -154,7 +155,7 @@ const chapterLike = async (req, res) => {
         }
 
         await createChapterLikes(bid, number, uid);
-        await addChapterNumLikes(bid, number);
+
         res.status(201).json({ message: "Chapter successfully liked" });
     } catch (err) {
         throw new DBError(err);
@@ -177,13 +178,14 @@ const chapterUnlike = async (req, res) => {
         if (!success) {
             throw new InputError("User has already unliked the chapter");
         }
-        await subChapterNumLikes(bid, number);
+
         res.json({ message: "Chapter successfully unliked" });
     } catch (err) {
         if (err instanceof InputError) throw err;
         throw new DBError(err);
     }
 };
+
 export {
     chapterCreate,
     chapterUpdate,
